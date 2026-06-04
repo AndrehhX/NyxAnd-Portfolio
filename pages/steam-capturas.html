@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capturas — Steam Library Manager</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo"><a href="../index.html"><div class="logo-box">◈</div></a></div>
+    <ul class="nav-links">
+      <li><a href="projects.html" class="nav-link">Proyectos</a></li>
+      <li><a href="steam-capturas.html" class="nav-link active">Capturas</a></li>
+      <li><a href="steam-codigo.html" class="nav-link">Código</a></li>
+      <li><a href="contact.html" class="nav-link">Contacto</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="projects.html">Proyectos</a></li>
+      <li><a href="steam-capturas.html">Capturas</a></li>
+      <li><a href="steam-codigo.html">Código</a></li>
+      <li><a href="contact.html">Contacto</a></li>
+    </ul>
+  </div>
+
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <p class="hero-eyebrow animate-up delay-1">Gestión de bibliotecas Steam ✦</p>
+      <h1 class="page-title animate-up delay-2">Capturas — Steam Library Manager</h1>
+      <p class="page-subtitle animate-up delay-3">Sistema para gestionar, filtrar y compartir bibliotecas de Steam con estados de juego y colecciones personalizadas.</p>
+    </div>
+  </header>
+  <div class="page-nav-buttons">
+    <a href="https://github.com/AndrehhX/steam-library-manager" target="_blank" rel="noopener noreferrer" class="page-nav-btn">GitHub</a>
+    <a href="steam-capturas.html" class="page-nav-btn active">Capturas</a>
+    <a href="steam-codigo.html" class="page-nav-btn">Código</a>
+  </div>
+
+  <main class="capture-page">
+    <section class="capture-overview reveal">
+      <div class="section-header">
+        <h2 class="section-title">Vista general</h2>
+      </div>
+      <div class="capture-summary">
+        <p>Steam Library Manager es una aplicación para organizar bibliotecas de Steam con filtros inteligentes, estados de juego y una experiencia rápida de compartir colecciones. Pensada para jugadores que quieren ordenar sus títulos y mostrar bibliotecas limpias a amigos o comunidades.</p>
+      </div>
+    </section>
+
+    <section class="capture-gallery reveal-card" data-index="0">
+      <div class="section-header">
+        <h2 class="section-title">Capturas</h2>
+      </div>
+      <div class="capture-grid">
+        <div class="capture-card">
+          <div class="placeholder-img pi-1" style="height:260px;"><div class="pi-noise"></div><span class="pi-label">Biblioteca Steam</span></div>
+          <p>Interfaz limpia para ver juegos, estados, horas jugadas y etiquetas personalizadas.</p>
+        </div>
+        <div class="capture-card">
+          <div class="placeholder-img pi-2" style="height:260px;"><div class="pi-noise"></div><span class="pi-label">Filtrado</span></div>
+          <p>Filtros activos por estado, categoría, fecha y colecciones compartidas.</p>
+        </div>
+        <div class="capture-card">
+          <div class="placeholder-img pi-3" style="height:260px;"><div class="pi-noise"></div><span class="pi-label">Compartir</span></div>
+          <p>Creación de colecciones para compartir con enlaces de vista previa o exportación.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="capture-details reveal-card" data-index="1">
+      <div class="section-header">
+        <h2 class="section-title">Detalles</h2>
+      </div>
+      <div class="capture-info">
+        <div>
+          <strong>Tecnologías usadas</strong>
+          <ul class="pd-list">
+            <li>React</li>
+            <li>TypeScript</li>
+            <li>Steam Web API</li>
+            <li>CSS moderno</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Características clave</strong>
+          <ul class="pd-list">
+            <li>Gestión de biblioteca con filtros y estados</li>
+            <li>Creación y exportación de colecciones</li>
+            <li>Vista de juegos con información de horas jugadas</li>
+            <li>Integración con Steam para mostrar datos reales</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand"><div class="logo-box small">◈</div><span>NYXAND</span></div>
+      <nav class="footer-nav">
+        <a href="projects.html">Proyectos</a>
+        <a href="steam-capturas.html">Capturas</a>
+        <a href="steam-codigo.html">Código</a>
+        <a href="contact.html">Contacto</a>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NYXAND | Dereck Andreh Callejas Ajin.</span>
+    </div>
+  </footer>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <script src="../js/main.js"></script>
+</body>
+</html>
