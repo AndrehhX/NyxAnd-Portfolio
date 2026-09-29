@@ -36,6 +36,14 @@ for (const command of ['help', 'about', 'projects', 'stack', 'status', 'contact'
 }
 assert.match(main, /initTerminal\(\)/, 'La terminal debe tener un inicializador propio');
 assert.doesNotMatch(main, /child_process|window\.open\(['"]shell|eval\(/i, 'La terminal no debe ejecutar comandos reales');
+assert.match(index, /id="nyxand-lab"/i, 'Debe existir el laboratorio de NYXAND');
+assert.match(index, /id="labEditor"/i, 'El laboratorio debe tener un editor');
+assert.match(index, /id="labPreview"[^>]+sandbox/i, 'La vista previa debe estar aislada en un iframe sandbox');
+assert.doesNotMatch(index, /allow-scripts/i, 'El laboratorio no debe habilitar scripts en la vista previa');
+assert.match(index, /id="labRun"/i, 'El laboratorio debe tener un control de ejecución');
+assert.match(index, /id="labReset"/i, 'El laboratorio debe poder restaurar su ejemplo');
+assert.match(index, /data-starter=/i, 'El laboratorio debe incluir ejemplos intercambiables');
+assert.match(main, /initLaboratory\(\)/, 'El laboratorio debe tener un inicializador propio');
 assert.match(style, /\.work-in-progress\s*\{[\s\S]*?background:\s*var\(--white\)/i);
 assert.match(style, /@keyframes\s+wip/i, 'NEXUS debe tener una animación propia');
 

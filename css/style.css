@@ -958,6 +958,31 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .terminal-submit:focus-visible,
 .terminal-form input:focus-visible { outline: 2px solid #50fa7b; outline-offset: 3px; }
 
+/* ─── NYXAND LABORATORY ─── */
+.lab-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 2.5rem;
+  border-bottom: var(--border-width) solid var(--black);
+}
+.lab-header { align-items: end; }
+.lab-note { color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.lab-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2px; border: var(--border-width) solid var(--black); background: var(--black); }
+.lab-editor-panel,
+.lab-preview-panel { min-width: 0; padding: 1rem; background: var(--white); }
+.lab-editor-panel { display: flex; flex-direction: column; }
+.lab-tabs { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.lab-tab { padding: 0.4rem 0.55rem; color: var(--gray-dark); border: 1px solid var(--border-light); font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.08em; }
+.lab-tab:hover,
+.lab-tab.is-active { color: var(--white); background: var(--black); border-color: var(--black); }
+.lab-editor-label,
+.lab-preview-topline { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 0.45rem; color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; }
+#labEditor { width: 100%; min-height: 270px; resize: vertical; padding: 1rem; color: #e7e1d8; background: var(--black); border: var(--border-width) solid var(--black); outline: 0; font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.6; }
+#labEditor:focus-visible { outline: 2px solid #50fa7b; outline-offset: 3px; }
+.lab-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; margin-top: 1rem; }
+.lab-preview-panel { display: flex; flex-direction: column; }
+#labPreview { width: 100%; min-height: 345px; flex: 1; background: #fbf8f2; border: var(--border-width) solid var(--black); }
+
 @keyframes wipScan {
   0%, 20% { transform: translateY(-100%); opacity: 0; }
   35% { opacity: 0.65; }
@@ -1274,6 +1299,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .projects-grid { grid-template-columns: 1fr; }
   .about-inner { grid-template-columns: 1fr; }
   .wip-layout { grid-template-columns: 1fr; }
+  .lab-layout { grid-template-columns: 1fr; }
   .footer-top { flex-direction: column; }
 }
 @media (max-width: 640px) {
@@ -1285,6 +1311,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .blog-section,
   .live-status-section,
   .terminal-section,
+  .lab-section,
   .experience-section,
   .technology-section,
   .education-section,
@@ -1307,6 +1334,8 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .terminal-form { align-items: stretch; flex-wrap: wrap; }
   .terminal-form label { width: 100%; }
   .terminal-form input { flex-basis: calc(100% - 5rem); }
+  .lab-preview-panel { border-top: var(--border-width) solid var(--black); }
+  #labPreview { min-height: 280px; }
   .wip-window-footer { align-items: flex-start; flex-direction: column; }
   .wip-library-grid { grid-template-columns: 1fr; }
   .hero-illustration { padding-top: 104px; }

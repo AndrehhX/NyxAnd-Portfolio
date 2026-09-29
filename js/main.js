@@ -136,6 +136,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initTerminal();
 
+  function initLaboratory() {
+    const editor = document.getElementById('labEditor');
+    const preview = document.getElementById('labPreview');
+    const run = document.getElementById('labRun');
+    const reset = document.getElementById('labReset');
+    const tabs = document.querySelectorAll('.lab-tab');
+    if (!editor || !preview || !run || !reset || !tabs.length) return;
+
+    const starters = {
+      card: `<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f4efe6;color:#111;font:14px Arial,sans-serif}
+.card{width:min(280px,80vw);padding:24px;border:2px solid #111;box-shadow:8px 8px 0 #111;background:#fff}
+.card small{letter-spacing:.14em;text-transform:uppercase}.card h1{font-size:38px;margin:28px 0 8px}.card p{margin:0;color:#4b4b45}
+</style><article class="card"><small>NYXAND / ID-01</small><h1>Andreh</h1><p>Java / React / Automation</p></article>`,
+      badge: `<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111;color:#f4efe6;font:14px Arial,sans-serif}
+.badge{padding:18px 22px;border:1px solid #f4efe6;display:flex;gap:14px;align-items:center}.dot{width:10px;height:10px;background:#9ee37d;border-radius:50%;box-shadow:0 0 16px #9ee37d}.badge span{letter-spacing:.12em;text-transform:uppercase}
+</style><div class="badge"><i class="dot"></i><span>building in public</span></div>`,
+      grid: `<style>
+body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4efe6;color:#111;font:14px Arial,sans-serif}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:360px;margin:auto}.tile{min-height:100px;border:1px solid #111;padding:14px;display:flex;align-items:end;background:#fff}.tile:nth-child(2){background:#9ee37d}.tile:nth-child(3){background:#111;color:#f4efe6}.tile b{font-size:20px}
+</style><div class="grid"><div class="tile"><b>01 / motion</b></div><div class="tile"><b>02 / systems</b></div><div class="tile"><b>03 / ideas</b></div><div class="tile"><b>04 / craft</b></div></div>`
+    };
+
+    let currentStarter = 'card';
+
+    const renderPreview = () => {
+      preview.srcdoc = editor.value;
+    };
+
+    const loadStarter = name => {
+      currentStarter = starters[name] ? name : 'card';
+      editor.value = starters[currentStarter];
+      tabs.forEach(tab => tab.classList.toggle('is-active', tab.dataset.starter === currentStarter));
+      renderPreview();
+    };
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => loadStarter(tab.dataset.starter));
+    });
+    run.addEventListener('click', renderPreview);
+    reset.addEventListener('click', () => loadStarter(currentStarter));
+    loadStarter(currentStarter);
+  }
+
+  initLaboratory();
+
   // SITE LOADER
   const siteLoader = document.getElementById('siteLoader');
   const loaderProgress = document.getElementById('loaderProgress');
