@@ -5,6 +5,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  function initHeroMotion(reducedMotion) {
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+
+    if (reducedMotion) {
+      hero.classList.add('hero-motion-ready');
+      return;
+    }
+
+    requestAnimationFrame(() => hero.classList.add('hero-motion-ready'));
+  }
+
+  initHeroMotion(prefersReducedMotion);
+
   // SITE LOADER
   const siteLoader = document.getElementById('siteLoader');
   const loaderProgress = document.getElementById('loaderProgress');
@@ -227,21 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.boxShadow = '';
     });
   });
-
-
-  // ── TYPING EFFECT (HERO CODE) ─────────────
-  const codeLines = document.querySelectorAll('.code-line');
-  if (codeLines.length) {
-    codeLines.forEach((line, i) => {
-      line.style.opacity = '0';
-      line.style.transform = 'translateX(-10px)';
-      line.style.transition = `opacity 0.3s ease ${0.8 + i * 0.15}s, transform 0.3s ease ${0.8 + i * 0.15}s`;
-      setTimeout(() => {
-        line.style.opacity = '1';
-        line.style.transform = 'translateX(0)';
-      }, 50);
-    });
-  }
 
 
   // ── STAGGERED NAV REVEAL ──────────────────
