@@ -20,6 +20,7 @@ El contenido visible se limita a información y proyectos que cuentan con una re
 index.html        Página principal
 css/style.css     Estilos generales y responsive
 js/main.js        Navegación, transiciones y animaciones
+pages/about.html  Página independiente About me
 CV/               Currículum enlazado desde el sitio
 ```
 

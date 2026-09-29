@@ -729,6 +729,26 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   padding: 5rem 2.5rem;
   max-width: 100%;
 }
+.about-page-main { padding-top: 60px; }
+.about-page-hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 7rem 2.5rem 4rem;
+  border-bottom: var(--border-width) solid var(--black);
+}
+.about-page-title {
+  margin: 0.75rem 0 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 11vw, 8rem);
+  line-height: 0.85;
+  letter-spacing: 0.02em;
+}
+.about-page-lead {
+  max-width: 560px;
+  color: var(--gray-dark);
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
 .about-inner {
   max-width: 1100px; margin: 0 auto;
   display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
