@@ -86,6 +86,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initLiveStatus();
 
+  function initTerminal() {
+    const form = document.getElementById('terminalForm');
+    const input = document.getElementById('terminalInput');
+    const output = document.getElementById('terminalOutput');
+    if (!form || !input || !output) return;
+
+    const scrollToSection = id => {
+      const section = document.getElementById(id);
+      if (section) section.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    };
+
+    const commands = {
+      'help': () => 'Commands: about · projects · stack · status · contact · clear',
+      'about': () => 'Andreh Callejas / Computer Science student at UVG / software, automation and clear interfaces.',
+      'projects': () => { scrollToSection('projects'); return 'Opening selected work.'; },
+      'stack': () => 'Java · JavaScript · TypeScript · React · Git · HTML/CSS · automation',
+      'status': () => { scrollToSection('live-status'); return 'Opening live signal.'; },
+      'contact': () => { scrollToSection('contact'); return 'Opening contact channel.'; },
+      'clear': () => { output.replaceChildren(); return ''; }
+    };
+
+    const addLine = (className, text) => {
+      if (!text) return;
+      const line = document.createElement('p');
+      line.className = className;
+      line.textContent = text;
+      output.appendChild(line);
+      while (output.children.length > 18) output.firstElementChild.remove();
+      output.scrollTop = output.scrollHeight;
+    };
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const rawCommand = input.value.trim().toLowerCase();
+      if (!rawCommand) return;
+
+      addLine('terminal-command', `guest@nyxand:~$ ${rawCommand}`);
+      const command = rawCommand.split(/\s+/)[0];
+      const handler = commands[command];
+      const response = handler
+        ? handler()
+        : `Command not found: ${command}. Type help to see the available commands.`;
+      addLine('terminal-response', response);
+      input.value = '';
+      input.focus();
+    });
+  }
+
+  initTerminal();
+
   // SITE LOADER
   const siteLoader = document.getElementById('siteLoader');
   const loaderProgress = document.getElementById('loaderProgress');

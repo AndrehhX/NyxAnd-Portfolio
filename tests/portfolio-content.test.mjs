@@ -28,6 +28,14 @@ assert.match(index, /id="githubActivity"/i, 'El estado debe reservar la activida
 assert.match(index, /Offline|sin conexión|no disponible/i, 'El estado debe tener un fallback entendible');
 assert.match(main, /api\.github\.com\/users\/AndrehhX\/events/i, 'El estado debe usar la actividad pública de GitHub');
 assert.doesNotMatch(main, /Bearer\s+|github[_-]?token/i, 'La actividad pública no debe requerir secretos');
+assert.match(index, /id="nyxand-terminal"/i, 'Debe existir la terminal visual de NYXAND');
+assert.match(index, /id="terminalInput"/i, 'La terminal debe tener una entrada de teclado');
+assert.match(index, /id="terminalOutput"[^>]+aria-live="polite"/i, 'La salida de terminal debe ser accesible');
+for (const command of ['help', 'about', 'projects', 'stack', 'status', 'contact', 'clear']) {
+  assert.match(main, new RegExp(`['"]${command}['"]`, 'i'), `La terminal debe reconocer ${command}`);
+}
+assert.match(main, /initTerminal\(\)/, 'La terminal debe tener un inicializador propio');
+assert.doesNotMatch(main, /child_process|window\.open\(['"]shell|eval\(/i, 'La terminal no debe ejecutar comandos reales');
 assert.match(style, /\.work-in-progress\s*\{[\s\S]*?background:\s*var\(--white\)/i);
 assert.match(style, /@keyframes\s+wip/i, 'NEXUS debe tener una animación propia');
 
