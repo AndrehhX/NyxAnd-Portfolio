@@ -238,18 +238,18 @@
   <section class="work-in-progress" id="work-in-progress">
     <div class="section-header wip-header">
       <p class="wip-kicker reveal">Work in progress / 01</p>
-      <h2 class="section-title reveal">NEXUS</h2>
+      <h2 class="section-title reveal">AEVORA</h2>
     </div>
     <div class="wip-layout">
-      <div class="wip-visual reveal" aria-label="Concepto visual de NEXUS">
+      <div class="wip-visual reveal" aria-label="Vista previa visual de Aevora">
         <div class="wip-window">
           <div class="wip-window-bar">
             <span class="card-dots"><i></i><i></i></span>
-            <span>nexus / library</span>
+            <span>aevora / library</span>
             <span>BUILD 01</span>
           </div>
           <div class="wip-window-body">
-            <div class="wip-wordmark">NEXUS</div>
+            <div class="wip-wordmark">AEVORA</div>
             <div class="wip-library-grid">
               <span>STEAM</span>
               <span>EPIC GAMES</span>
@@ -264,17 +264,30 @@
       </div>
       <div class="wip-copy reveal">
         <div class="wip-status"><span class="build-pulse"></span> Currently building</div>
-        <h3>Una biblioteca para tres plataformas.</h3>
-        <p>Estoy trabajando en una aplicación para reunir Steam, Epic Games y GOG en una sola interfaz. La primera etapa está enfocada en cómo se descubren, organizan y abren los juegos sin saltar entre launchers.</p>
+        <h3>Una biblioteca para varios launchers.</h3>
+        <p>Aevora es un launcher de escritorio en desarrollo. La visión es reunir Steam, Epic Games y GOG en una sola interfaz; la versión actual ya trabaja la integración local con Steam: biblioteca, carátulas, noticias y lanzamiento desde Tauri.</p>
         <div class="wip-focus">
           <span>Current focus</span>
           <ul>
-            <li>Arquitectura de navegación</li>
-            <li>Organización de biblioteca</li>
-            <li>Sistema visual de la interfaz</li>
+            <li>Biblioteca y noticias reales de Steam</li>
+            <li>Credenciales guardadas solo en el equipo</li>
+            <li>Arquitectura preparada para más proveedores</li>
           </ul>
         </div>
-        <p class="wip-note">Proyecto en desarrollo. Todavía no hay demo pública ni repositorio para consultar.</p>
+        <div class="wip-stack">
+          <span class="wip-stack-label">Tools / role</span>
+          <div class="wip-stack-grid">
+            <div class="wip-stack-item"><strong>React / TypeScript</strong><span>Interfaz y estado de la biblioteca.</span></div>
+            <div class="wip-stack-item"><strong>Tauri / Rust</strong><span>Ventana de escritorio y comandos nativos.</span></div>
+            <div class="wip-stack-item"><strong>Steam Web API</strong><span>Juegos, detalles, carátulas y noticias.</span></div>
+            <div class="wip-stack-item"><strong>Credential Manager</strong><span>API key local, fuera del repositorio.</span></div>
+            <div class="wip-stack-item"><strong>Vite / Vitest</strong><span>Build y pruebas del launcher.</span></div>
+          </div>
+        </div>
+        <div class="wip-actions">
+          <a class="btn btn-sm btn-outline" href="https://github.com/AndrehhX/Aevora" target="_blank" rel="noreferrer">Ver código ↗</a>
+          <p class="wip-note">Proyecto en desarrollo. La integración con otros proveedores todavía está pendiente.</p>
+        </div>
       </div>
     </div>
   </section>

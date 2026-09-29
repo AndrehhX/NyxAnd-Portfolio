@@ -14,7 +14,7 @@ El contenido visible se limita a información y proyectos que cuentan con una re
 - [Student-Organizer-Web](https://github.com/AndrehhX/Student-Organizer-Web): proyecto grupal académico para organizar estudiantes, calificaciones, tareas y promedios. Incluye el flujo de inicio de sesión y la base del dashboard.
 - [POO-Ejercicio-4-RentaMovil](https://github.com/AndrehhX/POO-Ejercicio-4-RentaMovil): ejercicio académico de herencia en Java con menú de consulta, cotización, alquiler y devolución de vehículos.
 
-NEXUS también aparece en el portafolio como proyecto en desarrollo: una aplicación para reunir bibliotecas de Steam, Epic Games y GOG en una sola interfaz. Todavía no cuenta con demo pública ni repositorio.
+Aevora también aparece en el portafolio como proyecto en desarrollo: un launcher de escritorio construido con React, TypeScript, Tauri y Rust. La versión actual integra Steam para biblioteca, carátulas, noticias y lanzamiento; la conexión con Epic Games y GOG forma parte de la siguiente etapa. El código está disponible en https://github.com/AndrehhX/Aevora.
 
 ## Estructura
 
