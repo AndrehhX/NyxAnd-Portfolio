@@ -3,6 +3,7 @@
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── PAGE TRANSITION ──────────────────────
   const overlay = document.createElement('div');
@@ -10,8 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.appendChild(overlay);
 
   // Animate in on load
-  overlay.classList.add('leaving');
-  setTimeout(() => overlay.classList.remove('leaving'), 500);
+  if (!prefersReducedMotion) {
+    overlay.classList.add('leaving');
+    setTimeout(() => overlay.classList.remove('leaving'), 500);
+  }
 
   // Intercept internal link clicks
   document.querySelectorAll('a[href]').forEach(link => {
@@ -42,18 +45,22 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mousemove', e => {
     mouseX = e.clientX;
     mouseY = e.clientY;
-    dot.style.left = mouseX + 'px';
-    dot.style.top  = mouseY + 'px';
+    if (dot) {
+      dot.style.left = mouseX + 'px';
+      dot.style.top  = mouseY + 'px';
+    }
   });
 
   function animateRing() {
     ringX += (mouseX - ringX) * 0.15;
     ringY += (mouseY - ringY) * 0.15;
-    ring.style.left = ringX + 'px';
-    ring.style.top  = ringY + 'px';
+    if (ring) {
+      ring.style.left = ringX + 'px';
+      ring.style.top  = ringY + 'px';
+    }
     rafId = requestAnimationFrame(animateRing);
   }
-  animateRing();
+  if (ring && !prefersReducedMotion) animateRing();
 
   // Hover states
   const hoverEls = document.querySelectorAll('a, button, .ql-item, .skill-item, .project-card');
@@ -63,9 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Hide on mobile
-  if ('ontouchstart' in window) {
-    dot.style.display = 'none';
-    ring.style.display = 'none';
+  if ('ontouchstart' in window || prefersReducedMotion) {
+    if (dot) dot.style.display = 'none';
+    if (ring) ring.style.display = 'none';
   }
 
 
@@ -132,6 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── COUNTER ANIMATION ────────────────────
   function animateCounter(el) {
     const target = parseInt(el.dataset.target, 10);
+    if (prefersReducedMotion) {
+      el.textContent = target;
+      return;
+    }
     let start = 0;
     const duration = 1200;
     const startTime = performance.now();
@@ -169,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── CARD TILT EFFECT ─────────────────────
   document.querySelectorAll('.project-card').forEach(card => {
+    if (prefersReducedMotion) return;
     card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;

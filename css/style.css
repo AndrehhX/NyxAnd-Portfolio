@@ -922,6 +922,8 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
   .hero-content { grid-template-columns: 1fr; gap: 3rem; }
   .hero-illustration { order: -1; }
   .ql-grid { grid-template-columns: repeat(2,1fr); }
@@ -934,8 +936,6 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 }
 @media (max-width: 640px) {
   .navbar { padding: 0 1.2rem; }
-  .nav-links { display: none; }
-  .hamburger { display: flex; }
   .hero { padding: 100px 1.2rem 60px; }
   .quick-links,
   .projects-section,
@@ -969,3 +969,12 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .page-transition.leaving { animation: ptLeave 0.4s ease forwards; }
 @keyframes ptEnter { from{transform:translateY(100%)} to{transform:translateY(0)} }
 @keyframes ptLeave { from{transform:translateY(0)} to{transform:translateY(-100%)} }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
