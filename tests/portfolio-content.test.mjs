@@ -9,6 +9,8 @@ const workSection = index.match(/<section[^>]+id="work-in-progress"[\s\S]*?<\/se
 
 assert.doesNotMatch(index, /class="hero-identity-card"/i, 'El hero no debe mostrar la ficha de identidad');
 assert.doesNotMatch(index, /id="profilePortrait"|Retrato pendiente/i, 'El hero no debe reservar un retrato pendiente');
+assert.match(index, /Construyo interfaces y sistemas que vuelven más claros los procesos\./i, 'El hero debe comunicar una propuesta más concreta');
+assert.match(index, /ANDREH CALLEJAS \/ UVG \/ GUATEMALA/i, 'El hero debe incluir una firma personal breve');
 assert.match(main, /initHeroMotion\(prefersReducedMotion\)/, 'La entrada del hero debe tener un único inicializador');
 assert.match(main, /initHeroDepth\(prefersReducedMotion\)/, 'El hero debe tener una profundidad interactiva propia');
 assert.match(main, /--hero-shift-x|--hero-shift-y/, 'La profundidad debe comunicarse mediante variables visuales');

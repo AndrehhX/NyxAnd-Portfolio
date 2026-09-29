@@ -298,6 +298,22 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 }
 
 .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-signature {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.2rem;
+  color: var(--gray-dark);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+}
+.hero-signature::before {
+  content: '';
+  width: 2.4rem;
+  height: 1px;
+  background: var(--black);
+}
 
 /* ─── HERO ILLUSTRATION ─── */
 .hero-illustration {
@@ -316,6 +332,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .hero-motion-ready .hero-reveal--3 { animation-delay: 0.34s; }
 .hero-motion-ready .hero-reveal--4 { animation-delay: 0.48s; }
 .hero-motion-ready .hero-reveal--5 { animation-delay: 0.62s; }
+.hero-motion-ready .hero-reveal--6 { animation-delay: 0.78s; }
 .hero-motion-ready .hero-reveal--visual { animation-name: heroRevealIn; animation-delay: 0.2s; }
 @keyframes heroRevealUp { to { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0% 0); } }
 @keyframes heroRevealIn { to { opacity: 1; transform: translateX(0); } }
