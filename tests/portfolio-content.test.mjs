@@ -10,6 +10,10 @@ const workSection = index.match(/<section[^>]+id="work-in-progress"[\s\S]*?<\/se
 assert.doesNotMatch(index, /class="hero-identity-card"/i, 'El hero no debe mostrar la ficha de identidad');
 assert.doesNotMatch(index, /id="profilePortrait"|Retrato pendiente/i, 'El hero no debe reservar un retrato pendiente');
 assert.match(main, /initHeroMotion\(prefersReducedMotion\)/, 'La entrada del hero debe tener un único inicializador');
+assert.match(style, /\.monitor-wrapper\s*\{[^}]*width:\s*330px/i, 'El monitor debe crecer ligeramente');
+assert.match(style, /\.monitor-screen\s*\{[^}]*min-height:\s*230px/i, 'La pantalla debe ganar presencia sin exagerar');
+assert.match(style, /@keyframes\s+monitorFloat/i, 'El monitor debe tener una flotación sutil');
+assert.match(style, /@keyframes\s+monitorScan/i, 'La pantalla debe tener un barrido sutil');
 assert.ok(workSection, 'NEXUS debe tener una sección independiente');
 assert.match(workSection, /NEXUS/i);
 assert.match(workSection, /WORK IN PROGRESS/i);

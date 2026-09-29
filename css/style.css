@@ -335,26 +335,42 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   display: flex; justify-content: center;
 }
 .monitor-wrapper {
-  position: relative; width: 280px;
+  position: relative; width: 330px;
 }
 .monitor {
   border: 3px solid var(--black);
-  border-radius: 12px 12px 4px 4px;
+  border-radius: 16px 16px 6px 6px;
   background: var(--black);
   overflow: hidden;
-  box-shadow: 6px 6px 0 var(--black);
+  box-shadow: 8px 8px 0 var(--gray-mid);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.monitor:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 12px 0 var(--gray-mid);
 }
 .monitor-screen {
+  position: relative;
+  overflow: hidden;
   background: #0d0d0d;
-  padding: 1.5rem;
-  min-height: 200px;
+  padding: 1.75rem;
+  min-height: 230px;
   border-bottom: 3px solid var(--black);
+}
+.monitor-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: rgba(127, 196, 136, 0.45);
+  pointer-events: none;
+  animation: monitorScan 5.5s ease-in-out infinite;
 }
 .screen-content {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: #ccc;
-  line-height: 1.8;
+  line-height: 1.95;
 }
 .code-line { display: block; }
 .code-line.pad { padding-left: 1rem; }
@@ -380,13 +396,13 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
 .monitor-stand {
-  width: 50px; height: 30px;
+  width: 56px; height: 32px;
   background: var(--black);
   margin: 0 auto;
   clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
 }
 .monitor-base {
-  width: 120px; height: 10px;
+  width: 136px; height: 10px;
   background: var(--black);
   margin: 0 auto;
   border-radius: 2px;
@@ -413,8 +429,9 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
 /* MONITOR IDLE ANIMATION */
-.monitor-wrapper { animation: monitorFloat 4s ease-in-out infinite; }
-@keyframes monitorFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+.monitor-wrapper { animation: monitorFloat 6s ease-in-out infinite; }
+@keyframes monitorFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+@keyframes monitorScan { 0%,100%{transform:translateY(0);opacity:0} 18%{opacity:0.65} 78%{opacity:0.2} 92%{transform:translateY(228px);opacity:0} }
 
 /* ─── SCROLL INDICATOR ─── */
 .scroll-indicator {
@@ -1307,6 +1324,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .wip-library-grid { grid-template-columns: 1fr; }
   .footer { padding: 1.5rem 1.2rem; }
   .footer-nav { flex-wrap: wrap; gap: 1rem; }
+  .monitor-wrapper { width: min(330px, 88vw); }
 }
 
 /* ─── PAGE TRANSITION ─── */
