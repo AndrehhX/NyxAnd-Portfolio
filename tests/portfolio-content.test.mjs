@@ -110,5 +110,7 @@ assert.doesNotMatch(about, /href="#"/i, 'About Me no debe dejar enlaces placehol
 assert.match(style, /\.about-hero-grid\s*\{/i, 'About Me debe tener una composicion de hero propia');
 assert.match(style, /\.about-profile-card\s*\{/i, 'About Me debe tener estilos para la tarjeta principal');
 assert.match(style, /@keyframes\s+aboutCardIn/i, 'About Me debe tener una entrada de cards propia');
+assert.match(style, /\.about-profile-card\.reveal-card\.visible/i, 'About Me debe animar la ficha principal al entrar');
+assert.match(style, /about-reveal--4\s*\{\s*transition-delay/i, 'About Me debe escalonar la entrada del hero');
 
 console.log('portfolio-content: ok');
