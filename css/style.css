@@ -265,6 +265,32 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   margin-bottom: 2.5rem;
   line-height: 1.7;
 }
+.current-build {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  max-width: 480px;
+  margin: 1.25rem 0 1.5rem;
+  padding: 0.65rem 0.8rem;
+  border-left: var(--border-width) solid var(--black);
+  background: var(--gray-light);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.build-pulse {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #28ca41;
+  box-shadow: 0 0 0 3px rgba(40, 202, 65, 0.15);
+}
+.build-label { color: var(--gray-dark); }
+.current-build strong { font-weight: 700; }
+.build-detail { color: var(--gray-dark); }
 
 .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
 
@@ -520,7 +546,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   position: relative;
 }
 .project-card:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--black); z-index: 2; }
-.project-card.featured { grid-column: span 1; }
+.project-card.featured { grid-column: span 2; }
 
 .card-actions {
   display: flex;
@@ -720,6 +746,35 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   color: var(--gray-dark);
   margin-bottom: 1.5rem;
 }
+.nexus-card { background: var(--black); color: var(--white); }
+.nexus-card .card-topbar { background: #171717; border-color: var(--white); }
+.nexus-card .card-dots i { border-color: var(--white); background: var(--black); }
+.nexus-card .card-dots i:first-child { background: #ff5f57; }
+.nexus-card .card-dots i:last-child { background: #28ca41; }
+.nexus-card .card-filename { color: var(--gray-mid); }
+.nexus-card .featured-badge { background: var(--white); color: var(--black); }
+.nexus-card .card-body { border-top: var(--border-width) solid var(--white); }
+.nexus-card .tag { border-color: var(--white); color: var(--white); }
+.nexus-card .card-desc { color: var(--gray-mid); }
+.nexus-preview {
+  min-height: 220px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  background: radial-gradient(circle at 78% 20%, #3e3e3e 0, #171717 42%, #090909 100%);
+  font-family: var(--font-mono);
+}
+.nexus-preview-top,
+.nexus-preview-footer { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+.nexus-wordmark { font-family: var(--font-display); font-size: clamp(2.4rem, 7vw, 4.6rem); line-height: 0.8; letter-spacing: 0.04em; }
+.nexus-signal,
+.nexus-preview-footer { color: var(--gray-mid); font-size: 0.6rem; letter-spacing: 0.08em; }
+.nexus-signal { display: inline-flex; align-items: center; gap: 0.5rem; }
+.nexus-library-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+.nexus-library-grid span { padding: 1rem 0.75rem; border: 1px solid #6e6e6e; color: var(--white); font-size: 0.7rem; letter-spacing: 0.08em; }
+.nexus-status { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--gray-mid); font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; }
 
 /* ─── ABOUT ─── */
 .about-section {
@@ -1021,6 +1076,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .ql-item:nth-child(1),
   .ql-item:nth-child(2) { border-bottom: var(--border-width) solid var(--black); }
   .projects-grid { grid-template-columns: 1fr; }
+  .project-card.featured { grid-column: span 1; }
   .about-inner { grid-template-columns: 1fr; }
   .footer-top { flex-direction: column; }
 }
@@ -1044,6 +1100,9 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .education-grid,
   .contact-grid,
   .tech-grid { grid-template-columns: 1fr; }
+  .nexus-preview-top,
+  .nexus-preview-footer { align-items: flex-start; flex-direction: column; }
+  .nexus-library-grid { grid-template-columns: 1fr; }
   .footer { padding: 1.5rem 1.2rem; }
   .footer-nav { flex-wrap: wrap; gap: 1rem; }
 }
