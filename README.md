@@ -14,7 +14,7 @@ El contenido visible se limita a información y proyectos que cuentan con una re
 - [Student-Organizer-Web](https://github.com/AndrehhX/Student-Organizer-Web): proyecto grupal académico para organizar estudiantes, calificaciones, tareas y promedios. Incluye el flujo de inicio de sesión y la base del dashboard.
 - [POO-Ejercicio-4-RentaMovil](https://github.com/AndrehhX/POO-Ejercicio-4-RentaMovil): ejercicio académico de herencia en Java con menú de consulta, cotización, alquiler y devolución de vehículos.
 
-NEXUS tambiÃ©n aparece en el portafolio como proyecto en desarrollo: una aplicaciÃ³n para reunir bibliotecas de Steam, Epic Games y GOG en una sola interfaz. TodavÃ­a no cuenta con demo pÃºblica ni repositorio.
+NEXUS también aparece en el portafolio como proyecto en desarrollo: una aplicación para reunir bibliotecas de Steam, Epic Games y GOG en una sola interfaz. Todavía no cuenta con demo pública ni repositorio.
 
 ## Estructura
 
