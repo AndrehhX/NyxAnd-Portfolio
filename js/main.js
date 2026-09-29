@@ -19,6 +19,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initHeroMotion(prefersReducedMotion);
 
+  function initHeroDepth(reducedMotion) {
+    const hero = document.getElementById('hero');
+    const monitor = hero?.querySelector('.monitor-wrapper');
+    if (!hero || !monitor || reducedMotion) return;
+
+    let frame = 0;
+    let shiftX = 0;
+    let shiftY = 0;
+
+    const render = () => {
+      frame = 0;
+      monitor.style.setProperty('--hero-shift-x', `${shiftX.toFixed(2)}px`);
+      monitor.style.setProperty('--hero-shift-y', `${shiftY.toFixed(2)}px`);
+    };
+
+    const scheduleRender = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+
+    hero.addEventListener('pointermove', event => {
+      if (event.pointerType === 'touch') return;
+
+      const bounds = hero.getBoundingClientRect();
+      const normalizedX = (event.clientX - (bounds.left + bounds.width / 2)) / bounds.width;
+      const normalizedY = (event.clientY - (bounds.top + bounds.height / 2)) / bounds.height;
+      shiftX = Math.max(-1, Math.min(1, normalizedX)) * 8;
+      shiftY = Math.max(-1, Math.min(1, normalizedY)) * 4;
+      scheduleRender();
+    });
+
+    hero.addEventListener('pointerleave', () => {
+      shiftX = 0;
+      shiftY = 0;
+      scheduleRender();
+    });
+  }
+
+  initHeroDepth(prefersReducedMotion);
+
   function initLiveStatus() {
     const section = document.getElementById('live-status');
     if (!section) return;
@@ -245,7 +284,7 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       if (loaderFrame) cancelAnimationFrame(loaderFrame);
       if (loaderProgress) loaderProgress.style.width = '100%';
       siteLoader.classList.add('is-ready');
-      setTimeout(() => siteLoader.remove(), 700);
+      setTimeout(() => siteLoader.remove(), 900);
     };
 
     if (prefersReducedMotion) {

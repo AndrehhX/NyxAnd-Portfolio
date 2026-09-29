@@ -10,6 +10,13 @@ const workSection = index.match(/<section[^>]+id="work-in-progress"[\s\S]*?<\/se
 assert.doesNotMatch(index, /class="hero-identity-card"/i, 'El hero no debe mostrar la ficha de identidad');
 assert.doesNotMatch(index, /id="profilePortrait"|Retrato pendiente/i, 'El hero no debe reservar un retrato pendiente');
 assert.match(main, /initHeroMotion\(prefersReducedMotion\)/, 'La entrada del hero debe tener un único inicializador');
+assert.match(main, /initHeroDepth\(prefersReducedMotion\)/, 'El hero debe tener una profundidad interactiva propia');
+assert.match(main, /--hero-shift-x|--hero-shift-y/, 'La profundidad debe comunicarse mediante variables visuales');
+assert.match(main, /pointermove/, 'La profundidad del hero debe responder al puntero');
+assert.match(style, /\.site-loader\.is-ready\s*\{[^}]*transform:\s*translateY\(-100%\)/i, 'El loader debe salir como una cortina limpia');
+assert.match(style, /@keyframes\s+loaderMarkIn/i, 'El símbolo del loader debe tener una entrada propia');
+assert.match(style, /@keyframes\s+heroSweep/i, 'El hero debe tener un barrido inicial sutil');
+assert.match(style, /--hero-shift-x/, 'El monitor debe aceptar el desplazamiento interactivo');
 assert.match(style, /\.monitor-wrapper\s*\{[^}]*width:\s*330px/i, 'El monitor debe crecer ligeramente');
 assert.match(style, /\.monitor-screen\s*\{[^}]*min-height:\s*230px/i, 'La pantalla debe ganar presencia sin exagerar');
 assert.match(style, /@keyframes\s+monitorFloat/i, 'El monitor debe tener una flotación sutil');
