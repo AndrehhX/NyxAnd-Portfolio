@@ -959,6 +959,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .lab-tab { padding: 0.4rem 0.55rem; color: var(--gray-dark); border: 1px solid var(--border-light); font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.08em; }
 .lab-tab:hover,
 .lab-tab.is-active { color: var(--white); background: var(--black); border-color: var(--black); }
+.lab-tab[data-starter="motion"].is-active { background: #477952; border-color: #477952; }
 .lab-editor-label,
 .lab-preview-topline { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 0.45rem; color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; }
 #labEditor { width: 100%; min-height: 270px; resize: vertical; padding: 1rem; color: var(--black); background: var(--gray-light); border: var(--border-width) solid var(--black); outline: 0; font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.6; }

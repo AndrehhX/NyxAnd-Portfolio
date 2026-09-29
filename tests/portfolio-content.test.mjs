@@ -50,7 +50,11 @@ assert.doesNotMatch(index, /allow-scripts/i, 'El laboratorio no debe habilitar s
 assert.match(index, /id="labRun"/i, 'El laboratorio debe tener un control de ejecución');
 assert.match(index, /id="labReset"/i, 'El laboratorio debe poder restaurar su ejemplo');
 assert.match(index, /data-starter=/i, 'El laboratorio debe incluir ejemplos intercambiables');
+assert.match(index, /data-starter="motion"/i, 'El laboratorio debe incluir un ejemplo de animaciones');
 assert.match(main, /initLaboratory\(\)/, 'El laboratorio debe tener un inicializador propio');
+assert.match(main, /motion:\s*`[\s\S]*?@keyframes/i, 'El ejemplo de animaciones debe incluir CSS real');
+assert.match(main, /motion:[\s\S]*?animation:/i, 'El ejemplo de animaciones debe aplicar movimiento');
+assert.match(main, /motion:[\s\S]*?prefers-reduced-motion/i, 'El starter de animaciones debe contemplar movimiento reducido');
 assert.match(style, /\.terminal-window\s*\{[^}]*background:\s*var\(--white\)/i, 'La terminal debe seguir la paleta clara de NYXAND');
 assert.match(style, /\.lab-editor-panel[\s\S]*?background:\s*var\(--white\)/i, 'El laboratorio debe evitar otro panel negro dominante');
 assert.doesNotMatch(style, /\.terminal-window\s*\{[^}]*background:\s*var\(--black\)/i, 'La terminal no debe ser otro bloque negro');
