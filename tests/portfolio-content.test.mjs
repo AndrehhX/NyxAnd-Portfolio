@@ -42,9 +42,10 @@ assert.match(index, /id="availabilityStatus"[^>]+aria-live="polite"/i, 'La dispo
 assert.doesNotMatch(index, /Offline \/ no recent activity/i, 'El widget no debe sugerir inactividad sin contexto');
 assert.match(main, /getDay\(\)/i, 'La disponibilidad debe considerar el dia de la semana');
 assert.match(main, /21|04/, 'La disponibilidad debe contemplar el horario definido');
-assert.match(main, /api\.github\.com\/users\/AndrehhX\/events/i, 'El estado debe usar la actividad pública de GitHub');
-assert.match(main, /created_at/i, 'El estado debe usar la fecha pública del evento');
-assert.match(main, /payload\?\.commits/i, 'El estado debe mostrar el commit cuando GitHub lo expone');
+assert.match(main, /api\.github\.com\/repos\/AndrehhX\/NyxAnd-Portfolio\/commits\?per_page=1/i, 'El estado debe consultar el último commit del repositorio');
+assert.doesNotMatch(main, /api\.github\.com\/users\/AndrehhX\/events/i, 'El estado no debe depender del feed retrasado de eventos');
+assert.match(main, /commit\?\.author\?\.date|commit\?\.committer\?\.date/i, 'El estado debe usar la fecha del commit');
+assert.match(main, /commit\?\.commit\?\.message/i, 'El estado debe mostrar el mensaje del commit');
 assert.doesNotMatch(main, /Bearer\s+|github[_-]?token/i, 'La actividad pública no debe requerir secretos');
 assert.match(index, /id="nyxand-terminal"/i, 'Debe existir la terminal visual de NYXAND');
 assert.match(index, /id="terminalInput"/i, 'La terminal debe tener una entrada de teclado');

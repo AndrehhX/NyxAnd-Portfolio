@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 4500);
 
-    fetch('https://api.github.com/users/AndrehhX/events?per_page=1', {
+    fetch('https://api.github.com/repos/AndrehhX/NyxAnd-Portfolio/commits?per_page=1', {
       headers: { Accept: 'application/vnd.github+json' },
       signal: controller.signal
     })
@@ -110,8 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) throw new Error(`GitHub responded with ${response.status}`);
         return response.json();
       })
-      .then(async events => {
-        const latest = Array.isArray(events) ? events[0] : null;
+      .then(commits => {
+        const latest = Array.isArray(commits) ? commits[0] : null;
         if (!githubActivity) return;
         if (!latest) {
           githubActivity.textContent = 'Sin actividad pública reciente.';
@@ -120,26 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        const eventName = latest.type === 'PushEvent'
-          ? 'Último push'
-          : String(latest.type || 'Activity').replace(/Event$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
-        const repository = latest.repo?.name || 'public profile';
-        let commit = null;
-        const head = latest.payload?.head;
-        if (head && latest.repo?.name) {
-          try {
-            const commitResponse = await fetch(`https://api.github.com/repos/${latest.repo.name}/commits/${head}`, {
-              headers: { Accept: 'application/vnd.github+json' },
-              signal: controller.signal
-            });
-            if (commitResponse.ok) commit = await commitResponse.json();
-          } catch {
-            commit = null;
-          }
-        }
-        githubActivity.textContent = `${eventName} · ${repository}`;
-        if (githubEventTime) githubEventTime.textContent = `Fecha: ${formatGithubDate(latest.created_at)}`;
-        if (githubEventMessage) githubEventMessage.textContent = `Commit: ${getCommitMessage(latest, commit)}`;
+        githubActivity.textContent = 'Último push · AndrehhX/NyxAnd-Portfolio';
+        const commitDate = latest.commit?.author?.date || latest.commit?.committer?.date;
+        if (githubEventTime) githubEventTime.textContent = `Fecha: ${formatGithubDate(commitDate)}`;
+        if (githubEventMessage) githubEventMessage.textContent = `Commit: ${getCommitMessage(null, latest)}`;
       })
       .catch(() => {
         if (githubActivity) githubActivity.textContent = 'Actividad pública no disponible ahora.';
