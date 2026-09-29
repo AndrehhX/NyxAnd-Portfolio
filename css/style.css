@@ -917,8 +917,8 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 }
 .status-state { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--gray-dark); }
 .status-state::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gray-mid); }
-#live-status[data-state="ready"] .status-state::before { background: #50fa7b; }
-#live-status[data-state="offline"] .status-state::before { background: #d85b4b; }
+#live-status[data-state="available"] .status-state::before { background: #50fa7b; }
+#live-status[data-state="sleeping"] .status-state::before { background: var(--gray-mid); }
 .status-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; border: var(--border-width) solid var(--black); }
 .status-card { min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; gap: 0.7rem; padding: 1.35rem; border-right: var(--border-width) solid var(--black); background: var(--white); }
 .status-card.reveal-card { opacity: 0; transform: translateY(14px); transition: none; }
@@ -935,10 +935,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .status-signal i { width: 6px; height: 6px; border-radius: 50%; background: #588b60; animation: signalPulse 2.2s ease-in-out infinite; }
 #githubActivity { min-height: 1.6em; margin: auto 0 0; color: var(--black); font-family: var(--font-mono); font-size: 0.82rem; }
 .status-meta { margin-top: 0.35rem; color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.68rem; line-height: 1.5; }
-.status-fallback { display: none; }
-#live-status[data-state="offline"] #githubActivity { display: none; }
-#live-status[data-state="offline"] .status-meta { display: none; }
-#live-status[data-state="offline"] .status-fallback { display: block; margin: auto 0 0; color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.82rem; }
+.status-availability { margin-top: 0.7rem; color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.68rem; line-height: 1.5; }
 @keyframes statusCardReveal { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes signalPulse { 0%, 100% { opacity: 0.45; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.15); } }
 

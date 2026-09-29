@@ -38,7 +38,10 @@ assert.match(index, /id="pageTime"/i, 'El estado debe mostrar el tiempo en la p�
 assert.match(index, /id="githubActivity"/i, 'El estado debe reservar la actividad de GitHub');
 assert.match(index, /id="githubEventTime"/i, 'El estado debe mostrar cuándo ocurrió la actividad');
 assert.match(index, /id="githubEventMessage"/i, 'El estado debe reservar el mensaje del commit');
-assert.match(index, /Offline|sin conexión|no disponible/i, 'El estado debe tener un fallback entendible');
+assert.match(index, /id="availabilityStatus"[^>]+aria-live="polite"/i, 'La disponibilidad debe anunciarse a lectores de pantalla');
+assert.doesNotMatch(index, /Offline \/ no recent activity/i, 'El widget no debe sugerir inactividad sin contexto');
+assert.match(main, /getDay\(\)/i, 'La disponibilidad debe considerar el dia de la semana');
+assert.match(main, /21|04/, 'La disponibilidad debe contemplar el horario definido');
 assert.match(main, /api\.github\.com\/users\/AndrehhX\/events/i, 'El estado debe usar la actividad pública de GitHub');
 assert.match(main, /created_at/i, 'El estado debe usar la fecha pública del evento');
 assert.match(main, /payload\?\.commits/i, 'El estado debe mostrar el commit cuando GitHub lo expone');
@@ -70,5 +73,8 @@ assert.match(style, /@keyframes\s+statusCardReveal/i, 'Live debe tener una entra
 assert.match(style, /@keyframes\s+signalPulse/i, 'Live debe tener una señal animada');
 assert.match(style, /\.work-in-progress\s*\{[\s\S]*?background:\s*var\(--white\)/i);
 assert.match(style, /@keyframes\s+wip/i, 'NEXUS debe tener una animación propia');
+assert.match(index, /og:image" content="https:\/\/www\.nyxand\.site\/og-image\.svg/i, 'La vista social debe usar una imagen propia');
+assert.match(index, /twitter:image/i, 'La vista social de Twitter debe tener imagen');
+assert.doesNotMatch(index, /og:image" content="[^"]*favicon\.svg/i, 'El favicon no debe usarse como imagen social');
 
 console.log('portfolio-content: ok');

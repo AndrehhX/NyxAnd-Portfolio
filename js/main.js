@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const githubActivity = document.getElementById('githubActivity');
     const githubEventTime = document.getElementById('githubEventTime');
     const githubEventMessage = document.getElementById('githubEventMessage');
+    const availabilityStatus = document.getElementById('availabilityStatus');
     const statusLabel = section.querySelector('[data-status-label]');
     const startedAt = performance.now();
 
@@ -42,6 +43,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
       const seconds = String(elapsed % 60).padStart(2, '0');
       return `${minutes}:${seconds}`;
+    };
+
+    const getAvailability = () => {
+      const now = new Date();
+      const day = now.getDay();
+      const hour = now.getHours();
+      const isWeekend = day === 0 || day === 6;
+      const isSleeping = !isWeekend && (hour >= 21 || hour < 4);
+
+      if (isSleeping) {
+        return { state: 'sleeping', label: 'Dormido', message: 'Vuelvo a las 04:00.' };
+      }
+      if (isWeekend) {
+        return { state: 'available', label: 'Activo 24/7', message: 'Activo todo el fin de semana.' };
+      }
+      return { state: 'available', label: 'Disponible', message: 'Disponible hoy hasta las 21:00.' };
+    };
+
+    const updateAvailability = () => {
+      const availability = getAvailability();
+      section.dataset.state = availability.state;
+      if (statusLabel) statusLabel.textContent = availability.label;
+      if (availabilityStatus) availabilityStatus.textContent = `Horario: ${availability.message}`;
     };
 
     const formatGithubDate = value => {
@@ -70,13 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (pageTime) pageTime.textContent = formatElapsed();
     };
 
-    const setState = (state, label) => {
-      section.dataset.state = state;
-      if (statusLabel) statusLabel.textContent = label;
-    };
-
     updateClocks();
+    updateAvailability();
     window.setInterval(updateClocks, 1000);
+    window.setInterval(updateAvailability, 60000);
 
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 4500);
@@ -93,10 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const latest = Array.isArray(events) ? events[0] : null;
         if (!githubActivity) return;
         if (!latest) {
-          githubActivity.textContent = 'No recent public activity.';
-          if (githubEventTime) githubEventTime.textContent = 'Fecha: sin actividad reciente';
-          if (githubEventMessage) githubEventMessage.textContent = 'Commit: sin mensaje disponible';
-          setState('ready', 'Ready');
+          githubActivity.textContent = 'Sin actividad pública reciente.';
+          if (githubEventTime) githubEventTime.textContent = 'Fecha: no hay un evento reciente';
+          if (githubEventMessage) githubEventMessage.textContent = 'Commit: no disponible';
           return;
         }
 
@@ -120,9 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
         githubActivity.textContent = `${eventName} · ${repository}`;
         if (githubEventTime) githubEventTime.textContent = `Fecha: ${formatGithubDate(latest.created_at)}`;
         if (githubEventMessage) githubEventMessage.textContent = `Commit: ${getCommitMessage(latest, commit)}`;
-        setState('ready', 'Live');
       })
-      .catch(() => setState('offline', 'Offline'))
+      .catch(() => {
+        if (githubActivity) githubActivity.textContent = 'Actividad pública no disponible ahora.';
+        if (githubEventTime) githubEventTime.textContent = 'Fecha: pendiente de respuesta';
+        if (githubEventMessage) githubEventMessage.textContent = 'Commit: pendiente de respuesta';
+      })
       .finally(() => window.clearTimeout(timeout));
   }
 
