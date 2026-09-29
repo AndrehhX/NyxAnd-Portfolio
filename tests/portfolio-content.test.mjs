@@ -28,6 +28,7 @@ assert.doesNotMatch(projectsSection, /NEXUS/i, 'NEXUS no debe verse como un proy
 assert.match(index, /class="tech-group"/i, 'Technologies debe estar organizada por grupos');
 assert.match(index, /Core \/ Development/i, 'Technologies debe identificar el grupo principal');
 assert.match(style, /\.tech-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,/i, 'Technologies debe distribuirse en columnas');
+assert.doesNotMatch(style, /\.tech-group:first-child\s*\{\s*grid-row:\s*span 2/i, 'Technologies no debe dejar una caja sobredimensionada');
 assert.doesNotMatch(index, /Colegio Mixto|Bachillerato en Computaci/i, 'El portafolio no debe mostrar educaciÃ³n escolar');
 assert.match(style, /\.education-grid\s*\{[^}]*max-width:\s*760px/i, 'Education debe concentrarse en el contenido relevante');
 assert.equal((projectsSection.match(/class="project-proof"/g) || []).length, 3, 'Cada proyecto terminado debe explicar qué demuestra');

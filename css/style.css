@@ -614,8 +614,6 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   background: var(--gray-light);
 }
 
-.tech-group:first-child { grid-row: span 2; }
-
 .tech-group-label {
   margin-bottom: 1rem;
   color: var(--gray-dark);
@@ -1341,7 +1339,6 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .education-grid,
   .contact-grid,
   .tech-grid { grid-template-columns: 1fr; }
-  .tech-group:first-child { grid-row: auto; }
   .status-grid { grid-template-columns: 1fr; }
   .status-card,
   .status-card:nth-child(2),
