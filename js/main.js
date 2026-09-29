@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const localTime = document.getElementById('localTime');
     const pageTime = document.getElementById('pageTime');
     const githubActivity = document.getElementById('githubActivity');
+    const githubEventTime = document.getElementById('githubEventTime');
+    const githubEventMessage = document.getElementById('githubEventMessage');
     const statusLabel = section.querySelector('[data-status-label]');
     const startedAt = performance.now();
 
@@ -40,6 +42,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
       const seconds = String(elapsed % 60).padStart(2, '0');
       return `${minutes}:${seconds}`;
+    };
+
+    const formatGithubDate = value => {
+      if (!value) return 'Fecha no disponible';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return 'Fecha no disponible';
+      return new Intl.DateTimeFormat('es-GT', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      }).format(date);
+    };
+
+    const getCommitMessage = (event, commit) => {
+      const message = commit?.commit?.message || event?.payload?.commits?.[0]?.message;
+      return typeof message === 'string' && message.trim()
+        ? message.split(/\r?\n/, 1)[0].trim()
+        : 'Sin mensaje de commit disponible';
     };
 
     const updateClocks = () => {
@@ -66,18 +89,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) throw new Error(`GitHub responded with ${response.status}`);
         return response.json();
       })
-      .then(events => {
+      .then(async events => {
         const latest = Array.isArray(events) ? events[0] : null;
         if (!githubActivity) return;
         if (!latest) {
           githubActivity.textContent = 'No recent public activity.';
+          if (githubEventTime) githubEventTime.textContent = 'Fecha: sin actividad reciente';
+          if (githubEventMessage) githubEventMessage.textContent = 'Commit: sin mensaje disponible';
           setState('ready', 'Ready');
           return;
         }
 
-        const eventName = String(latest.type || 'Activity').replace(/Event$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
+        const eventName = latest.type === 'PushEvent'
+          ? 'Último push'
+          : String(latest.type || 'Activity').replace(/Event$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
         const repository = latest.repo?.name || 'public profile';
+        let commit = null;
+        const head = latest.payload?.head;
+        if (head && latest.repo?.name) {
+          try {
+            const commitResponse = await fetch(`https://api.github.com/repos/${latest.repo.name}/commits/${head}`, {
+              headers: { Accept: 'application/vnd.github+json' },
+              signal: controller.signal
+            });
+            if (commitResponse.ok) commit = await commitResponse.json();
+          } catch {
+            commit = null;
+          }
+        }
         githubActivity.textContent = `${eventName} · ${repository}`;
+        if (githubEventTime) githubEventTime.textContent = `Fecha: ${formatGithubDate(latest.created_at)}`;
+        if (githubEventMessage) githubEventMessage.textContent = `Commit: ${getCommitMessage(latest, commit)}`;
         setState('ready', 'Live');
       })
       .catch(() => setState('offline', 'Offline'))

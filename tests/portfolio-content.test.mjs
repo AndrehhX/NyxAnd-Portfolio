@@ -10,6 +10,7 @@ const workSection = index.match(/<section[^>]+id="work-in-progress"[\s\S]*?<\/se
 assert.match(index, /class="hero-identity-card"/i, 'El hero debe tener una tarjeta de identidad NYXAND');
 assert.match(index, /id="profilePortrait"/i, 'El hero debe reservar un hook para el retrato personal');
 assert.match(index, /Retrato pendiente|identity slot|portrait slot/i, 'El hero debe tener un fallback honesto si no hay retrato');
+assert.doesNotMatch(index, /NYXAND\s*\/\s*ID-01/i, 'La ficha no debe mostrar la etiqueta ID-01');
 assert.match(main, /initHeroMotion\(prefersReducedMotion\)/, 'La entrada del hero debe tener un único inicializador');
 assert.ok(workSection, 'NEXUS debe tener una sección independiente');
 assert.match(workSection, /NEXUS/i);
@@ -25,8 +26,12 @@ assert.match(index, /id="live-status"/i, 'Debe existir el módulo de estado NYXA
 assert.match(index, /id="localTime"/i, 'El estado debe mostrar la hora local');
 assert.match(index, /id="pageTime"/i, 'El estado debe mostrar el tiempo en la página');
 assert.match(index, /id="githubActivity"/i, 'El estado debe reservar la actividad de GitHub');
+assert.match(index, /id="githubEventTime"/i, 'El estado debe mostrar cuándo ocurrió la actividad');
+assert.match(index, /id="githubEventMessage"/i, 'El estado debe reservar el mensaje del commit');
 assert.match(index, /Offline|sin conexión|no disponible/i, 'El estado debe tener un fallback entendible');
 assert.match(main, /api\.github\.com\/users\/AndrehhX\/events/i, 'El estado debe usar la actividad pública de GitHub');
+assert.match(main, /created_at/i, 'El estado debe usar la fecha pública del evento');
+assert.match(main, /payload\?\.commits/i, 'El estado debe mostrar el commit cuando GitHub lo expone');
 assert.doesNotMatch(main, /Bearer\s+|github[_-]?token/i, 'La actividad pública no debe requerir secretos');
 assert.match(index, /id="nyxand-terminal"/i, 'Debe existir la terminal visual de NYXAND');
 assert.match(index, /id="terminalInput"/i, 'La terminal debe tener una entrada de teclado');
@@ -44,6 +49,11 @@ assert.match(index, /id="labRun"/i, 'El laboratorio debe tener un control de eje
 assert.match(index, /id="labReset"/i, 'El laboratorio debe poder restaurar su ejemplo');
 assert.match(index, /data-starter=/i, 'El laboratorio debe incluir ejemplos intercambiables');
 assert.match(main, /initLaboratory\(\)/, 'El laboratorio debe tener un inicializador propio');
+assert.match(style, /\.terminal-window\s*\{[^}]*background:\s*var\(--white\)/i, 'La terminal debe seguir la paleta clara de NYXAND');
+assert.match(style, /\.lab-editor-panel[\s\S]*?background:\s*var\(--white\)/i, 'El laboratorio debe evitar otro panel negro dominante');
+assert.doesNotMatch(style, /\.terminal-window\s*\{[^}]*background:\s*var\(--black\)/i, 'La terminal no debe ser otro bloque negro');
+assert.match(style, /@keyframes\s+statusCardReveal/i, 'Live debe tener una entrada propia');
+assert.match(style, /@keyframes\s+signalPulse/i, 'Live debe tener una señal animada');
 assert.match(style, /\.work-in-progress\s*\{[\s\S]*?background:\s*var\(--white\)/i);
 assert.match(style, /@keyframes\s+wip/i, 'NEXUS debe tener una animación propia');
 

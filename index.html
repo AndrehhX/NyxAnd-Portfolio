@@ -105,10 +105,6 @@
       </div>
       <div class="hero-illustration hero-reveal hero-reveal--visual">
         <article class="hero-identity-card" aria-label="Ficha de identidad NYXAND">
-          <div class="identity-card-topline">
-            <span>NYXAND / ID-01</span>
-            <span>2026</span>
-          </div>
           <div class="identity-card-body">
             <div class="identity-portrait" id="profilePortrait" aria-label="Retrato pendiente de añadir">
               <span class="identity-initials" aria-hidden="true">DA</span>
@@ -302,22 +298,24 @@
       <span class="status-state" data-status-label>Loading</span>
     </div>
     <div class="status-grid">
-      <article class="status-card">
+      <article class="status-card status-card--1 reveal-card">
         <span class="status-kicker">Local time</span>
         <strong id="localTime">--:--:--</strong>
         <span>Hora local del visitante</span>
       </article>
-      <article class="status-card">
+      <article class="status-card status-card--2 reveal-card">
         <span class="status-kicker">Session</span>
         <strong id="pageTime">00:00</strong>
         <span>Tiempo en esta página</span>
       </article>
-      <article class="status-card status-card-wide">
+      <article class="status-card status-card-wide status-card--3 reveal-card">
         <div class="status-card-heading">
           <span class="status-kicker">Public GitHub activity</span>
           <span class="status-signal"><i></i> AndrehhX</span>
         </div>
         <p id="githubActivity">Consultando actividad pública…</p>
+        <p id="githubEventTime" class="status-meta">Fecha del evento: consultando…</p>
+        <p id="githubEventMessage" class="status-meta">Commit: consultando…</p>
         <p class="status-fallback">Offline / no recent activity</p>
       </article>
     </div>
