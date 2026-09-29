@@ -14,6 +14,9 @@ assert.match(index, /ANDREH CALLEJAS \/ UVG \/ GUATEMALA/i, 'El hero debe inclui
 assert.match(main, /initHeroMotion\(prefersReducedMotion\)/, 'La entrada del hero debe tener un único inicializador');
 assert.match(main, /initHeroDepth\(prefersReducedMotion\)/, 'El hero debe tener una profundidad interactiva propia');
 assert.match(main, /initHeroSignal\(prefersReducedMotion\)/, 'El monitor debe tener una señal de estado propia');
+assert.match(main, /initMonitorInteraction\(prefersReducedMotion\)/, 'El monitor debe tener una interaccion propia');
+assert.match(main, /classList\.add\(['"]is-disassembled['"]\)/, 'El monitor debe poder desarmarse');
+assert.match(main, /pointerleave/, 'El monitor debe rearmarse al salir el cursor');
 assert.match(main, /BUILDING[\s\S]*TESTING[\s\S]*READY/, 'La señal debe recorrer estados de construccion');
 assert.match(main, /--hero-shift-x|--hero-shift-y/, 'La profundidad debe comunicarse mediante variables visuales');
 assert.match(main, /pointermove/, 'La profundidad del hero debe responder al puntero');
@@ -21,7 +24,12 @@ assert.match(style, /\.site-loader\.is-ready\s*\{[^}]*transform:\s*translateY\(-
 assert.match(style, /@keyframes\s+loaderMarkIn/i, 'El símbolo del loader debe tener una entrada propia');
 assert.match(style, /@keyframes\s+heroSweep/i, 'El hero debe tener un barrido inicial sutil');
 assert.match(style, /@keyframes\s+heroSignalPulse/i, 'La señal del monitor debe tener un pulso breve');
+assert.match(style, /\.monitor-wrapper\.is-disassembled/, 'El monitor debe tener un estado visual desarmado');
+assert.match(style, /\.monitor\s*\{[\s\S]*?transition:[^;]+;/i, 'La pantalla debe separarse con una transicion suave');
+assert.match(style, /\.monitor-stand\s*\{[\s\S]*?transition:[^;]+;/i, 'El soporte debe separarse con una transicion suave');
+assert.match(style, /\.monitor-base\s*\{[\s\S]*?transition:[^;]+;/i, 'La base debe separarse con una transicion suave');
 assert.match(style, /--hero-shift-x/, 'El monitor debe aceptar el desplazamiento interactivo');
+assert.match(index, /id="heroMonitor"[^>]+role="button"[^>]+aria-expanded="false"/i, 'El monitor debe ser una interaccion accesible');
 assert.match(index, /id="heroSignal"[^>]+data-state="building"/i, 'El monitor debe exponer su estado inicial');
 assert.match(style, /\.monitor-wrapper\s*\{[^}]*width:\s*330px/i, 'El monitor debe crecer ligeramente');
 assert.match(style, /\.monitor-screen\s*\{[^}]*min-height:\s*230px/i, 'La pantalla debe ganar presencia sin exagerar');

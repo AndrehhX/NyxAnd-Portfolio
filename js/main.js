@@ -80,6 +80,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initHeroSignal(prefersReducedMotion);
 
+  function initMonitorInteraction(reducedMotion) {
+    const monitor = document.getElementById('heroMonitor');
+    if (!monitor) return;
+
+    const openMonitor = () => {
+      monitor.classList.add('is-disassembled');
+      monitor.setAttribute('aria-expanded', 'true');
+    };
+
+    const closeMonitor = () => {
+      monitor.classList.remove('is-disassembled');
+      monitor.setAttribute('aria-expanded', 'false');
+    };
+
+    monitor.addEventListener('click', openMonitor);
+    monitor.addEventListener('pointerleave', closeMonitor);
+    monitor.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openMonitor();
+      }
+    });
+
+    if (reducedMotion) monitor.dataset.reducedMotion = 'true';
+  }
+
+  initMonitorInteraction(prefersReducedMotion);
+
   function initLiveStatus() {
     const section = document.getElementById('live-status');
     if (!section) return;
