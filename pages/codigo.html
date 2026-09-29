@@ -3,90 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Código — VoidemAbiss</title>
+  <title>Código — NYXAND</title>
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/pages.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
   <nav class="navbar" id="navbar">
     <div class="nav-logo"><a href="../index.html"><div class="logo-box">◈</div></a></div>
     <ul class="nav-links">
-      <li><a href="projects.html" class="nav-link">Proyectos</a></li>
-      <li><a href="capturas.html" class="nav-link">Capturas</a></li>
+      <li><a href="../index.html#projects" class="nav-link">Proyectos</a></li>
       <li><a href="codigo.html" class="nav-link active">Código</a></li>
-      <li><a href="contact.html" class="nav-link">Contacto</a></li>
+      <li><a href="../index.html#contact" class="nav-link">Contacto</a></li>
     </ul>
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false"><span></span><span></span><span></span></button>
   </nav>
   <div class="mobile-menu" id="mobileMenu">
     <ul>
-      <li><a href="projects.html">Proyectos</a></li>
-      <li><a href="capturas.html">Capturas</a></li>
+      <li><a href="../index.html#projects">Proyectos</a></li>
       <li><a href="codigo.html">Código</a></li>
-      <li><a href="contact.html">Contacto</a></li>
+      <li><a href="../index.html#contact">Contacto</a></li>
     </ul>
   </div>
 
   <header class="page-hero">
     <div class="page-hero-inner">
-      <p class="hero-eyebrow animate-up delay-1">Código y vista previa ✦</p>
-      <h1 class="page-title animate-up delay-2">Código — VoidemAbiss</h1>
-      <p class="page-subtitle animate-up delay-3">Panel dividido entre el código principal y la ejecución del proyecto.</p>
+      <p class="hero-eyebrow animate-up delay-1">Repositorios verificados ✦</p>
+      <h1 class="page-title animate-up delay-2">Código real</h1>
+      <p class="page-subtitle animate-up delay-3">Enlaces directos a los proyectos públicos que sí tienen código disponible.</p>
     </div>
   </header>
   <div class="page-nav-buttons">
-    <a href="https://github.com/AndrehhX" target="_blank" rel="noopener noreferrer" class="page-nav-btn">GitHub</a>
-    <a href="capturas.html" class="page-nav-btn">Capturas</a>
+    <a href="../index.html#projects" class="page-nav-btn">Proyectos</a>
     <a href="codigo.html" class="page-nav-btn active">Código</a>
+    <a href="https://github.com/AndrehhX" target="_blank" rel="noopener noreferrer" class="page-nav-btn">GitHub ↗</a>
   </div>
 
   <main class="code-page">
-    <div class="code-split-layout reveal">
-      <section class="code-panel">
-        <div class="section-header">
-          <h2 class="section-title">Código</h2>
-        </div>
-        <pre class="code-block"><code>// Ejemplo de validación de compatibilidad en VoidemAbiss
-const component = {
-  name: 'Intel Core i5-12400F',
-  socket: 'LGA1700',
-  power: 65
-};
-const motherboard = {
-  name: 'ASUS TUF Gaming B660',
-  socket: 'LGA1700',
-  maxPower: 125
-};
-
-function isCompatible(cpu, board) {
-  return cpu.socket === board.socket && cpu.power <= board.maxPower;
-}
-
-if (isCompatible(component, motherboard)) {
-  console.log('Compatible ✔');
-} else {
-  console.log('Incompatible ✖');
-}
-</code></pre>
-      </section>
-      <section class="preview-panel">
-        <div class="section-header">
-          <h2 class="section-title">Vista previa</h2>
-        </div>
-        <div class="preview-box">
-          <div class="preview-card">
-            <div class="preview-header">VoidemAbiss</div>
-            <div class="preview-body">
-              <p><strong>Componente:</strong> Intel Core i5-12400F</p>
-              <p><strong>Placa madre:</strong> ASUS TUF Gaming B660</p>
-              <p><strong>Estado:</strong> Compatible ✔</p>
-              <p>La IA muestra alertas si detecta montaje incorrecto o piezas incompatibles.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div class="code-index-grid reveal">
+      <article class="code-index-card">
+        <span class="code-index-number">01</span>
+        <h2>Mono Motion</h2>
+        <p>Experimento editorial de frontend con React, TypeScript, GSAP y transiciones interactivas.</p>
+        <a href="https://github.com/AndrehhX/mono-motion" target="_blank" rel="noopener noreferrer" class="btn btn-sm">Abrir repositorio ↗</a>
+      </article>
+      <article class="code-index-card">
+        <span class="code-index-number">02</span>
+        <h2>Student Organizer Web</h2>
+        <p>Proyecto grupal académico con Java y tecnologías web. Incluye el flujo de login y la base del dashboard.</p>
+        <a href="https://github.com/AndrehhX/Student-Organizer-Web" target="_blank" rel="noopener noreferrer" class="btn btn-sm">Abrir repositorio ↗</a>
+      </article>
+      <article class="code-index-card">
+        <span class="code-index-number">03</span>
+        <h2>RentaMóvil</h2>
+        <p>Ejercicio de herencia para POO en Java, con pruebas y menú de consulta y alquiler de vehículos.</p>
+        <a href="https://github.com/AndrehhX/POO-Ejercicio-4-RentaMovil" target="_blank" rel="noopener noreferrer" class="btn btn-sm">Abrir repositorio ↗</a>
+      </article>
     </div>
   </main>
 
@@ -94,15 +67,12 @@ if (isCompatible(component, motherboard)) {
     <div class="footer-top">
       <div class="footer-brand"><div class="logo-box small">◈</div><span>NYXAND</span></div>
       <nav class="footer-nav">
-        <a href="projects.html">Proyectos</a>
-        <a href="capturas.html">Capturas</a>
+        <a href="../index.html#projects">Proyectos</a>
         <a href="codigo.html">Código</a>
-        <a href="contact.html">Contacto</a>
+        <a href="../index.html#contact">Contacto</a>
       </nav>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 NYXAND | Dereck Andreh Callejas Ajin.</span>
-    </div>
+    <div class="footer-bottom"><span>© 2026 NYXAND | Andreh Callejas.</span></div>
   </footer>
 
   <div class="cursor-dot" id="cursorDot"></div>
