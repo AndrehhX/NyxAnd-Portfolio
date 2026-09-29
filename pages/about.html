@@ -51,39 +51,112 @@
 
   <main class="about-page-main">
     <header class="about-page-hero">
-      <p class="hero-eyebrow animate-up delay-1">A closer look at NYXAND</p>
-      <h1 class="about-page-title animate-up delay-2">About me</h1>
-      <p class="about-page-lead animate-up delay-3">Una página reservada para contar mejor quién soy, cómo trabajo y qué estoy construyendo.</p>
+      <div class="about-hero-grid">
+        <article class="about-profile-card reveal-card about-card--primary" data-index="0" aria-label="Ficha de Andreh Callejas">
+          <div class="about-profile-topline">
+            <span>NYXAND / ABOUT 01</span>
+            <span>UVG · GT</span>
+          </div>
+          <div class="about-profile-mark">
+            <span>DA</span>
+            <small>Computer Science<br />Student</small>
+          </div>
+          <div class="about-profile-footer">
+            <div>
+              <strong>ANDREH CALLEJAS</strong>
+              <span>Software / automation / interfaces</span>
+            </div>
+            <span class="about-profile-status"><i></i>Building</span>
+          </div>
+        </article>
+
+        <div class="about-hero-copy">
+          <p class="hero-eyebrow reveal about-reveal--1">A closer look at NYXAND</p>
+          <h1 class="about-page-title reveal about-reveal--2">Más allá<br /><span>del código.</span></h1>
+          <p class="about-page-lead reveal about-reveal--3">Soy estudiante de Ingeniería en Ciencias de la Computación en la UVG. Me interesa entender cómo funcionan las herramientas y convertir necesidades concretas en soluciones claras.</p>
+          <div class="about-hero-index reveal about-reveal--4">
+            <span>01—05</span>
+            <span>PERSONAL SYSTEM / 2026</span>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <section class="about-section" aria-labelledby="about-heading">
-      <div class="section-header">
-        <h2 class="section-title reveal" id="about-heading">Base personal</h2>
+    <section class="about-panel" id="about-story" aria-labelledby="about-heading">
+      <div class="about-panel-heading">
+        <span>02 / BASE</span>
+        <h2 id="about-heading">Cómo trabajo</h2>
       </div>
-      <div class="about-inner">
-        <div class="about-copy reveal">
-          <p class="about-p"><strong>Soy estudiante de Ingeniería en Ciencias de la Computación en la UVG.</strong> Me interesa entender cómo funcionan las herramientas y convertir necesidades concretas en soluciones que se puedan usar y mantener.</p>
-          <p class="about-p">Actualmente combino proyectos académicos con experiencia en soporte técnico y gestión de datos. Esta página queda como base para documentar mejor mi proceso más adelante.</p>
-          <div class="skills-grid" aria-label="Tecnologías principales">
-            <span class="skill-item">Java</span>
-            <span class="skill-item">JavaScript</span>
-            <span class="skill-item">TypeScript</span>
-            <span class="skill-item">React</span>
-            <span class="skill-item">Git</span>
-          </div>
+      <div class="about-story-grid">
+        <div class="about-story-note reveal">
+          <p><strong>Me gusta que las cosas se entiendan.</strong> Por eso combino lógica, composición visual y pruebas pequeñas antes de dar algo por terminado.</p>
+          <span class="about-note-label">CLARITY / PROCESS / PROOF</span>
         </div>
-        <div class="about-visual reveal" aria-label="Identidad visual de NYXAND">
-          <div class="av-frame">
-            <div class="av-inner">
-              <div class="av-placeholder">
-                <span class="av-initials">DA</span>
-                <span class="av-hint">About / 2026</span>
-              </div>
-            </div>
-            <div class="av-border-deco"></div>
-          </div>
+        <div class="about-card-grid">
+          <article class="about-card reveal-card" data-index="1">
+            <span class="about-card-number">01</span>
+            <h3>Observar</h3>
+            <p>Primero intento entender el problema, el flujo y a quién le tiene que servir.</p>
+          </article>
+          <article class="about-card reveal-card" data-index="2">
+            <span class="about-card-number">02</span>
+            <h3>Construir</h3>
+            <p>Convierto la idea en una interfaz o sistema pequeño que se pueda probar.</p>
+          </article>
+          <article class="about-card reveal-card" data-index="3">
+            <span class="about-card-number">03</span>
+            <h3>Revisar</h3>
+            <p>Corrijo detalles, documento lo importante y dejo una base fácil de continuar.</p>
+          </article>
         </div>
       </div>
+    </section>
+
+    <section class="about-panel about-panel--split" id="about-stack" aria-labelledby="about-stack-heading">
+      <div class="about-panel-heading">
+        <span>03 / TOOLS</span>
+        <h2 id="about-stack-heading">Con qué construyo</h2>
+      </div>
+      <div class="about-split-grid">
+        <article class="about-card about-stack-card reveal-card" data-index="1">
+          <div class="about-card-topline"><span>STACK / CORE</span><span>01</span></div>
+          <h3>Herramientas que uso para pasar de idea a interfaz.</h3>
+          <div class="about-skill-list" aria-label="Tecnologías principales">
+            <span>Java</span><span>JavaScript</span><span>TypeScript</span><span>React</span><span>HTML / CSS</span><span>Git</span>
+          </div>
+        </article>
+        <article class="about-card about-current-card reveal-card" data-index="2">
+          <div class="about-card-topline"><span>CURRENT / BUILD</span><span>02</span></div>
+          <span class="about-current-label"><i></i>WORK IN PROGRESS</span>
+          <h3>NEXUS</h3>
+          <p>Una aplicación en desarrollo para reunir bibliotecas de Steam, Epic Games y GOG en una sola interfaz.</p>
+          <ul>
+            <li>Arquitectura de navegación</li>
+            <li>Organización de biblioteca</li>
+            <li>Sistema visual de la interfaz</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="about-panel about-panel--path" id="about-path" aria-labelledby="about-path-heading">
+      <div class="about-panel-heading">
+        <span>04 / PATH</span>
+        <h2 id="about-path-heading">Experiencia que suma</h2>
+      </div>
+      <div class="about-path-grid">
+        <article class="about-path-item reveal-card" data-index="1">
+          <span>2026 — ACTUALIDAD</span>
+          <h3>Asistente de soporte CRM</h3>
+          <p>Pruebas funcionales, documentación de incidencias y apoyo en procesos académicos y administrativos en la UVG.</p>
+        </article>
+        <article class="about-path-item reveal-card" data-index="2">
+          <span>SEP — NOV 2025</span>
+          <h3>Gestión de datos</h3>
+          <p>Verificación de inventarios, reportes y organización de información institucional en el Departamento de Educación.</p>
+        </article>
+      </div>
+      <div class="about-bottom-line reveal"><span>05 / KEEP BUILDING</span><span>ANDREH CALLEJAS · GUATEMALA</span></div>
     </section>
   </main>
 

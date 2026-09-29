@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 const index = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const style = await readFile(new URL('../css/style.css', import.meta.url), 'utf8');
 const main = await readFile(new URL('../js/main.js', import.meta.url), 'utf8');
+const about = await readFile(new URL('../pages/about.html', import.meta.url), 'utf8');
 const projectsSection = index.match(/<section[^>]+id="projects"[\s\S]*?<\/section>/i)?.[0];
 const workSection = index.match(/<section[^>]+id="work-in-progress"[\s\S]*?<\/section>/i)?.[0];
 
@@ -99,5 +100,15 @@ assert.match(style, /@keyframes\s+wip/i, 'NEXUS debe tener una animación propia
 assert.match(index, /og:image" content="https:\/\/www\.nyxand\.site\/og-image\.svg/i, 'La vista social debe usar una imagen propia');
 assert.match(index, /twitter:image/i, 'La vista social de Twitter debe tener imagen');
 assert.doesNotMatch(index, /og:image" content="[^"]*favicon\.svg/i, 'El favicon no debe usarse como imagen social');
+
+assert.match(about, /class="about-profile-card[^"]*"/i, 'About Me debe tener una tarjeta principal de identidad');
+assert.match(about, /ABOUT 01/i, 'About Me debe tener una entrada editorial propia');
+assert.match(about, /Cómo trabajo/i, 'About Me debe explicar una forma de trabajo');
+assert.match(about, /NEXUS/i, 'About Me debe reservar un bloque para lo que se está construyendo');
+assert.ok((about.match(/class="about-card reveal-card/g) || []).length >= 3, 'About Me debe tener cards animables');
+assert.doesNotMatch(about, /href="#"/i, 'About Me no debe dejar enlaces placeholder');
+assert.match(style, /\.about-hero-grid\s*\{/i, 'About Me debe tener una composicion de hero propia');
+assert.match(style, /\.about-profile-card\s*\{/i, 'About Me debe tener estilos para la tarjeta principal');
+assert.match(style, /@keyframes\s+aboutCardIn/i, 'About Me debe tener una entrada de cards propia');
 
 console.log('portfolio-content: ok');
