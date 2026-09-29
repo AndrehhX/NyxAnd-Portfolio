@@ -14,16 +14,12 @@ El contenido visible se limita a información y proyectos que cuentan con una re
 - [Student-Organizer-Web](https://github.com/AndrehhX/Student-Organizer-Web): proyecto grupal académico para organizar estudiantes, calificaciones, tareas y promedios. Incluye el flujo de inicio de sesión y la base del dashboard.
 - [POO-Ejercicio-4-RentaMovil](https://github.com/AndrehhX/POO-Ejercicio-4-RentaMovil): ejercicio académico de herencia en Java con menú de consulta, cotización, alquiler y devolución de vehículos.
 
-El índice de repositorios está disponible en [`pages/codigo.html`](pages/codigo.html).
-
 ## Estructura
 
 ```text
 index.html        Página principal
 css/style.css     Estilos generales y responsive
-css/pages.css     Estilos de páginas internas
 js/main.js        Navegación, transiciones y animaciones
-pages/codigo.html Índice de repositorios públicos
 CV/               Currículum enlazado desde el sitio
 ```
 
