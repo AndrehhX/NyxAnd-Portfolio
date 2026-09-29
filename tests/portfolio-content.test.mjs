@@ -104,8 +104,8 @@ assert.doesNotMatch(index, /og:image" content="[^"]*favicon\.svg/i, 'El favicon 
 assert.match(about, /class="about-profile-card[^"]*"/i, 'About Me debe tener una tarjeta principal de identidad');
 assert.match(about, /ABOUT 01/i, 'About Me debe tener una entrada editorial propia');
 assert.match(about, /Cómo trabajo/i, 'About Me debe explicar una forma de trabajo');
-assert.match(about, /NEXUS/i, 'About Me debe reservar un bloque para lo que se está construyendo');
 assert.ok((about.match(/class="about-card reveal-card/g) || []).length >= 3, 'About Me debe tener cards animables');
+assert.doesNotMatch(about, /Con qué construyo|Experiencia que suma|NEXUS/i, 'About Me no debe repetir bloques que ya existen en la pestaña principal');
 assert.doesNotMatch(about, /href="#"/i, 'About Me no debe dejar enlaces placeholder');
 assert.match(style, /\.about-hero-grid\s*\{/i, 'About Me debe tener una composicion de hero propia');
 assert.match(style, /\.about-profile-card\s*\{/i, 'About Me debe tener estilos para la tarjeta principal');
