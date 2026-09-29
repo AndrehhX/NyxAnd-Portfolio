@@ -5,6 +5,36 @@
 document.addEventListener('DOMContentLoaded', () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // SITE LOADER
+  const siteLoader = document.getElementById('siteLoader');
+  const loaderProgress = document.getElementById('loaderProgress');
+  if (siteLoader) {
+    const loaderStart = performance.now();
+    let loaderFrame;
+
+    const finishLoader = () => {
+      if (loaderFrame) cancelAnimationFrame(loaderFrame);
+      if (loaderProgress) loaderProgress.style.width = '100%';
+      siteLoader.classList.add('is-ready');
+      setTimeout(() => siteLoader.remove(), 700);
+    };
+
+    if (prefersReducedMotion) {
+      finishLoader();
+    } else {
+      const tickLoader = now => {
+        const progress = Math.min((now - loaderStart) / 900, 1);
+        if (loaderProgress) loaderProgress.style.width = `${Math.round(progress * 100)}%`;
+        if (progress < 1) {
+          loaderFrame = requestAnimationFrame(tickLoader);
+        } else {
+          finishLoader();
+        }
+      };
+      loaderFrame = requestAnimationFrame(tickLoader);
+    }
+  }
+
   // ── PAGE TRANSITION ──────────────────────
   const overlay = document.createElement('div');
   overlay.className = 'page-transition';
