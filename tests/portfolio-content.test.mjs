@@ -13,12 +13,16 @@ assert.match(index, /Construyo interfaces y sistemas que vuelven más claros los
 assert.match(index, /ANDREH CALLEJAS \/ UVG \/ GUATEMALA/i, 'El hero debe incluir una firma personal breve');
 assert.match(main, /initHeroMotion\(prefersReducedMotion\)/, 'La entrada del hero debe tener un único inicializador');
 assert.match(main, /initHeroDepth\(prefersReducedMotion\)/, 'El hero debe tener una profundidad interactiva propia');
+assert.match(main, /initHeroSignal\(prefersReducedMotion\)/, 'El monitor debe tener una señal de estado propia');
+assert.match(main, /BUILDING[\s\S]*TESTING[\s\S]*READY/, 'La señal debe recorrer estados de construccion');
 assert.match(main, /--hero-shift-x|--hero-shift-y/, 'La profundidad debe comunicarse mediante variables visuales');
 assert.match(main, /pointermove/, 'La profundidad del hero debe responder al puntero');
 assert.match(style, /\.site-loader\.is-ready\s*\{[^}]*transform:\s*translateY\(-100%\)/i, 'El loader debe salir como una cortina limpia');
 assert.match(style, /@keyframes\s+loaderMarkIn/i, 'El símbolo del loader debe tener una entrada propia');
 assert.match(style, /@keyframes\s+heroSweep/i, 'El hero debe tener un barrido inicial sutil');
+assert.match(style, /@keyframes\s+heroSignalPulse/i, 'La señal del monitor debe tener un pulso breve');
 assert.match(style, /--hero-shift-x/, 'El monitor debe aceptar el desplazamiento interactivo');
+assert.match(index, /id="heroSignal"[^>]+data-state="building"/i, 'El monitor debe exponer su estado inicial');
 assert.match(style, /\.monitor-wrapper\s*\{[^}]*width:\s*330px/i, 'El monitor debe crecer ligeramente');
 assert.match(style, /\.monitor-screen\s*\{[^}]*min-height:\s*230px/i, 'La pantalla debe ganar presencia sin exagerar');
 assert.match(style, /@keyframes\s+monitorFloat/i, 'El monitor debe tener una flotación sutil');

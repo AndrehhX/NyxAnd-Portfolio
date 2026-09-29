@@ -413,6 +413,31 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   color: #ccc;
   line-height: 1.95;
 }
+.hero-signal {
+  position: absolute;
+  right: 1.75rem;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #8e8e8e;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.hero-signal strong { color: #f8f8f2; font-weight: 400; }
+.hero-signal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f1fa8c;
+  box-shadow: 0 0 0 3px rgba(241,250,140,0.12);
+  animation: heroSignalPulse 1.8s ease-in-out infinite;
+}
+.hero-signal[data-state="testing"] .hero-signal-dot { background: #8be9fd; box-shadow: 0 0 0 3px rgba(139,233,253,0.12); }
+.hero-signal[data-state="ready"] .hero-signal-dot { background: #50fa7b; box-shadow: 0 0 0 3px rgba(80,250,123,0.12); }
+@keyframes heroSignalPulse { 0%,100% { transform: scale(0.78); opacity: 0.58; } 50% { transform: scale(1); opacity: 1; } }
 .code-line { display: block; }
 .code-line.pad { padding-left: 1rem; }
 .c-pink { color: #ff79c6; }

@@ -58,6 +58,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initHeroDepth(prefersReducedMotion);
 
+  function initHeroSignal(reducedMotion) {
+    const signal = document.getElementById('heroSignal');
+    const label = signal?.querySelector('[data-signal-label]');
+    if (!signal || !label) return;
+
+    const setState = state => {
+      signal.dataset.state = state.toLowerCase();
+      label.textContent = state;
+    };
+
+    if (reducedMotion) {
+      setState('READY');
+      return;
+    }
+
+    setState('BUILDING');
+    window.setTimeout(() => setState('TESTING'), 780);
+    window.setTimeout(() => setState('READY'), 1660);
+  }
+
+  initHeroSignal(prefersReducedMotion);
+
   function initLiveStatus() {
     const section = document.getElementById('live-status');
     if (!section) return;
