@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setInterval(updateAvailability, 60000);
 
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 4500);
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
 
     fetch('https://api.github.com/repos/AndrehhX/NyxAnd-Portfolio/commits?per_page=1', {
       headers: { Accept: 'application/vnd.github+json' },

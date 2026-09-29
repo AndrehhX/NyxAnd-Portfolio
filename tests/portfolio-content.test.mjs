@@ -44,6 +44,7 @@ assert.match(main, /getDay\(\)/i, 'La disponibilidad debe considerar el dia de l
 assert.match(main, /21|04/, 'La disponibilidad debe contemplar el horario definido');
 assert.match(main, /api\.github\.com\/repos\/AndrehhX\/NyxAnd-Portfolio\/commits\?per_page=1/i, 'El estado debe consultar el último commit del repositorio');
 assert.doesNotMatch(main, /api\.github\.com\/users\/AndrehhX\/events/i, 'El estado no debe depender del feed retrasado de eventos');
+assert.match(main, /setTimeout\(\(\) => controller\.abort\(\), 10000\)/i, 'La consulta de GitHub debe tolerar una respuesta lenta');
 assert.match(main, /commit\?\.author\?\.date|commit\?\.committer\?\.date/i, 'El estado debe usar la fecha del commit');
 assert.match(main, /commit\?\.commit\?\.message/i, 'El estado debe mostrar el mensaje del commit');
 assert.doesNotMatch(main, /Bearer\s+|github[_-]?token/i, 'La actividad pública no debe requerir secretos');
