@@ -521,7 +521,10 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
 /* ─── SECTIONS LAYOUT ─── */
-.projects-section,
+.projects-section {
+  padding: 5rem 2.5rem;
+  max-width: 1200px; margin: 0 auto;
+}
 .about-section,
 .blog-section {
   padding: 5rem 2.5rem;
@@ -554,8 +557,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 
 /* ─── PROJECTS GRID ─── */
 .projects-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
-  border: var(--border-width) solid var(--black);
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;
 }
 
 .project-card {

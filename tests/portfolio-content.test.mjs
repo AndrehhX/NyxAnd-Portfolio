@@ -22,6 +22,8 @@ assert.match(workSection, /Epic Games/i);
 assert.match(workSection, /GOG/i);
 assert.doesNotMatch(workSection, /href=/i, 'NEXUS no debe fingir un demo o repositorio');
 assert.ok(projectsSection, 'El grid de proyectos debe seguir existiendo');
+assert.match(style, /\.projects-section\s*\{[^}]*max-width:\s*1200px/i, 'Proyectos debe aprovechar mejor el ancho disponible');
+assert.match(style, /\.projects-grid\s*\{[^}]*gap:\s*1rem/i, 'Las tarjetas de proyectos deben respirar entre sÃ­');
 assert.doesNotMatch(projectsSection, /NEXUS/i, 'NEXUS no debe verse como un proyecto terminado');
 assert.equal((projectsSection.match(/class="project-proof"/g) || []).length, 3, 'Cada proyecto terminado debe explicar qué demuestra');
 assert.match(index, /id="live-status"/i, 'Debe existir el módulo de estado NYXAND');
