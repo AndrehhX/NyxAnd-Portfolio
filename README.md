@@ -1,27 +1,42 @@
 # NYXAND
 
-Portafolio personal de Andreh Callejas, hecho con HTML, CSS y JavaScript sin framework.
+Portafolio personal de Andreh Callejas. Es un sitio estático desarrollado con HTML, CSS y JavaScript, enfocado en presentar experiencia, formación académica y proyectos de software.
 
-## Proyectos enlazados
+## Descripción
 
-El sitio solo muestra proyectos con repositorio público verificable:
+El sitio utiliza una estética monocromática y una interfaz orientada a frontend. Incluye navegación por secciones, transiciones entre páginas, animaciones de entrada, cursor personalizado y una adaptación básica para dispositivos pequeños.
 
-- [mono-motion](https://github.com/AndrehhX/mono-motion) — experimento editorial de frontend con React, TypeScript y GSAP.
-- [Student-Organizer-Web](https://github.com/AndrehhX/Student-Organizer-Web) — proyecto grupal académico con Java y tecnologías web.
-- [POO-Ejercicio-4-RentaMovil](https://github.com/AndrehhX/POO-Ejercicio-4-RentaMovil) — ejercicio de herencia en Java para POO.
+El contenido visible se limita a información y proyectos que cuentan con una referencia pública. Los enlaces de código apuntan directamente a sus repositorios correspondientes.
 
-La página [Código](pages/codigo.html) concentra los enlaces directos a esos repositorios. Las capturas y demos se añadirán cuando existan materiales reales para cada proyecto.
+## Proyectos
 
-## Ejecutarlo localmente
+- [mono-motion](https://github.com/AndrehhX/mono-motion): experimento de frontend editorial con React, TypeScript, GSAP y transiciones interactivas.
+- [Student-Organizer-Web](https://github.com/AndrehhX/Student-Organizer-Web): proyecto grupal académico para organizar estudiantes, calificaciones, tareas y promedios. Incluye el flujo de inicio de sesión y la base del dashboard.
+- [POO-Ejercicio-4-RentaMovil](https://github.com/AndrehhX/POO-Ejercicio-4-RentaMovil): ejercicio académico de herencia en Java con menú de consulta, cotización, alquiler y devolución de vehículos.
 
-Como es un sitio estático, basta con servir la carpeta con cualquier servidor local. También puedes abrir `index.html` directamente en el navegador.
+El índice de repositorios está disponible en [`pages/codigo.html`](pages/codigo.html).
 
 ## Estructura
 
 ```text
-index.html       Página principal
-css/             Estilos generales y páginas internas
-js/              Menú, cursor, transiciones y animaciones
+index.html        Página principal
+css/style.css     Estilos generales y responsive
+css/pages.css     Estilos de páginas internas
+js/main.js        Navegación, transiciones y animaciones
 pages/codigo.html Índice de repositorios públicos
-CV/              Currículum enlazado desde el sitio
+CV/               Currículum enlazado desde el sitio
 ```
+
+## Ejecución local
+
+No requiere un proceso de compilación. Puede abrirse directamente desde `index.html` o servirse con un servidor local:
+
+```powershell
+python -m http.server 4173
+```
+
+Después, abre `http://localhost:4173` en el navegador.
+
+## Estado
+
+El portafolio se mantiene como una presentación estática. Las capturas y demostraciones adicionales se incorporarán únicamente cuando exista material real para documentar cada proyecto.
