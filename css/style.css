@@ -595,6 +595,11 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   gap: 2rem;
 }
 
+.education-grid {
+  max-width: 760px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .tech-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
