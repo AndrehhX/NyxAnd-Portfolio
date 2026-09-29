@@ -896,6 +896,43 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .wip-focus ul { display: grid; gap: 0.55rem; margin-top: 0.75rem; color: var(--gray-dark); font-size: 0.9rem; }
 .wip-focus li::before { content: "↳ "; color: var(--black); }
 .wip-note { margin-top: 1.5rem; color: var(--gray-dark) !important; line-height: 1.6 !important; }
+
+/* ─── LIVE STATUS ─── */
+.live-status-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 2.5rem;
+  border-bottom: var(--border-width) solid var(--black);
+}
+.status-header { align-items: end; }
+.status-header .section-label { margin-bottom: 0.45rem; }
+.status-state,
+.status-kicker,
+.status-signal {
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.status-state { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--gray-dark); }
+.status-state::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gray-mid); }
+#live-status[data-state="ready"] .status-state::before { background: #50fa7b; }
+#live-status[data-state="offline"] .status-state::before { background: #d85b4b; }
+.status-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; border: var(--border-width) solid var(--black); }
+.status-card { min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; gap: 0.7rem; padding: 1.35rem; border-right: var(--border-width) solid var(--black); background: var(--white); }
+.status-card:nth-child(2) { border-right: none; }
+.status-card-wide { grid-column: 1 / -1; min-height: 130px; border-top: var(--border-width) solid var(--black); border-right: none; }
+.status-card strong { font-family: var(--font-display); font-size: clamp(2.3rem, 5vw, 4rem); font-weight: 400; line-height: 0.9; letter-spacing: 0.03em; }
+.status-card > span:last-child,
+.status-card-wide > p { color: var(--gray-dark); font-size: 0.78rem; }
+.status-card-heading { display: flex; justify-content: space-between; gap: 1rem; }
+.status-signal { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--gray-dark); }
+.status-signal i { width: 6px; height: 6px; border-radius: 50%; background: #50fa7b; }
+#githubActivity { min-height: 1.6em; margin: auto 0 0; color: var(--black); font-family: var(--font-mono); font-size: 0.82rem; }
+.status-fallback { display: none; }
+#live-status[data-state="offline"] #githubActivity { display: none; }
+#live-status[data-state="offline"] .status-fallback { display: block; margin: auto 0 0; color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.82rem; }
+
 @keyframes wipScan {
   0%, 20% { transform: translateY(-100%); opacity: 0; }
   35% { opacity: 0.65; }
@@ -1221,6 +1258,7 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .projects-section,
   .about-section,
   .blog-section,
+  .live-status-section,
   .experience-section,
   .technology-section,
   .education-section,
@@ -1234,6 +1272,11 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   .education-grid,
   .contact-grid,
   .tech-grid { grid-template-columns: 1fr; }
+  .status-grid { grid-template-columns: 1fr; }
+  .status-card,
+  .status-card:nth-child(2),
+  .status-card-wide { border-right: none; border-top: none; }
+  .status-card + .status-card { border-top: var(--border-width) solid var(--black); }
   .wip-window-footer { align-items: flex-start; flex-direction: column; }
   .wip-library-grid { grid-template-columns: 1fr; }
   .hero-illustration { padding-top: 104px; }

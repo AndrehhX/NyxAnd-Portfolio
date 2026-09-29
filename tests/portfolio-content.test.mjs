@@ -21,6 +21,13 @@ assert.doesNotMatch(workSection, /href=/i, 'NEXUS no debe fingir un demo o repos
 assert.ok(projectsSection, 'El grid de proyectos debe seguir existiendo');
 assert.doesNotMatch(projectsSection, /NEXUS/i, 'NEXUS no debe verse como un proyecto terminado');
 assert.equal((projectsSection.match(/class="project-proof"/g) || []).length, 3, 'Cada proyecto terminado debe explicar qué demuestra');
+assert.match(index, /id="live-status"/i, 'Debe existir el módulo de estado NYXAND');
+assert.match(index, /id="localTime"/i, 'El estado debe mostrar la hora local');
+assert.match(index, /id="pageTime"/i, 'El estado debe mostrar el tiempo en la página');
+assert.match(index, /id="githubActivity"/i, 'El estado debe reservar la actividad de GitHub');
+assert.match(index, /Offline|sin conexión|no disponible/i, 'El estado debe tener un fallback entendible');
+assert.match(main, /api\.github\.com\/users\/AndrehhX\/events/i, 'El estado debe usar la actividad pública de GitHub');
+assert.doesNotMatch(main, /Bearer\s+|github[_-]?token/i, 'La actividad pública no debe requerir secretos');
 assert.match(style, /\.work-in-progress\s*\{[\s\S]*?background:\s*var\(--white\)/i);
 assert.match(style, /@keyframes\s+wip/i, 'NEXUS debe tener una animación propia');
 

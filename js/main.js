@@ -19,6 +19,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initHeroMotion(prefersReducedMotion);
 
+  function initLiveStatus() {
+    const section = document.getElementById('live-status');
+    if (!section) return;
+
+    const localTime = document.getElementById('localTime');
+    const pageTime = document.getElementById('pageTime');
+    const githubActivity = document.getElementById('githubActivity');
+    const statusLabel = section.querySelector('[data-status-label]');
+    const startedAt = performance.now();
+
+    const formatClock = () => new Intl.DateTimeFormat(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(new Date());
+
+    const formatElapsed = () => {
+      const elapsed = Math.max(0, Math.floor((performance.now() - startedAt) / 1000));
+      const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const seconds = String(elapsed % 60).padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    };
+
+    const updateClocks = () => {
+      if (localTime) localTime.textContent = formatClock();
+      if (pageTime) pageTime.textContent = formatElapsed();
+    };
+
+    const setState = (state, label) => {
+      section.dataset.state = state;
+      if (statusLabel) statusLabel.textContent = label;
+    };
+
+    updateClocks();
+    window.setInterval(updateClocks, 1000);
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 4500);
+
+    fetch('https://api.github.com/users/AndrehhX/events?per_page=1', {
+      headers: { Accept: 'application/vnd.github+json' },
+      signal: controller.signal
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`GitHub responded with ${response.status}`);
+        return response.json();
+      })
+      .then(events => {
+        const latest = Array.isArray(events) ? events[0] : null;
+        if (!githubActivity) return;
+        if (!latest) {
+          githubActivity.textContent = 'No recent public activity.';
+          setState('ready', 'Ready');
+          return;
+        }
+
+        const eventName = String(latest.type || 'Activity').replace(/Event$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
+        const repository = latest.repo?.name || 'public profile';
+        githubActivity.textContent = `${eventName} · ${repository}`;
+        setState('ready', 'Live');
+      })
+      .catch(() => setState('offline', 'Offline'))
+      .finally(() => window.clearTimeout(timeout));
+  }
+
+  initLiveStatus();
+
   // SITE LOADER
   const siteLoader = document.getElementById('siteLoader');
   const loaderProgress = document.getElementById('loaderProgress');
