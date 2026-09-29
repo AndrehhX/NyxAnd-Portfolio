@@ -7,10 +7,8 @@ const main = await readFile(new URL('../js/main.js', import.meta.url), 'utf8');
 const projectsSection = index.match(/<section[^>]+id="projects"[\s\S]*?<\/section>/i)?.[0];
 const workSection = index.match(/<section[^>]+id="work-in-progress"[\s\S]*?<\/section>/i)?.[0];
 
-assert.match(index, /class="hero-identity-card"/i, 'El hero debe tener una tarjeta de identidad NYXAND');
-assert.match(index, /id="profilePortrait"/i, 'El hero debe reservar un hook para el retrato personal');
-assert.match(index, /Retrato pendiente|identity slot|portrait slot/i, 'El hero debe tener un fallback honesto si no hay retrato');
-assert.doesNotMatch(index, /NYXAND\s*\/\s*ID-01/i, 'La ficha no debe mostrar la etiqueta ID-01');
+assert.doesNotMatch(index, /class="hero-identity-card"/i, 'El hero no debe mostrar la ficha de identidad');
+assert.doesNotMatch(index, /id="profilePortrait"|Retrato pendiente/i, 'El hero no debe reservar un retrato pendiente');
 assert.match(main, /initHeroMotion\(prefersReducedMotion\)/, 'La entrada del hero debe tener un único inicializador');
 assert.ok(workSection, 'NEXUS debe tener una sección independiente');
 assert.match(workSection, /NEXUS/i);

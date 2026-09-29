@@ -276,56 +276,13 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 
 .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
 
-/* ─── HERO IDENTITY CARD ─── */
+/* ─── HERO ILLUSTRATION ─── */
 .hero-illustration {
   position: relative;
   width: min(420px, 100%);
-  padding-top: 112px;
   flex-direction: column;
   align-items: center;
 }
-.hero-identity-card {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  z-index: 2;
-  width: min(360px, 92%);
-  padding: 0.85rem;
-  color: var(--black);
-  background: var(--white);
-  border: var(--border-width) solid var(--black);
-  box-shadow: 6px 6px 0 var(--gray-mid);
-}
-.identity-card-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-.identity-card-body { display: grid; grid-template-columns: 92px 1fr; gap: 1rem; align-items: center; padding: 0.9rem 0; }
-.identity-portrait {
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 0.3rem;
-  color: var(--black);
-  background: var(--gray-light);
-  border: 2px solid var(--black);
-  text-align: center;
-}
-.identity-initials { font-family: var(--font-display); font-size: 2.1rem; line-height: 0.9; letter-spacing: 0.05em; }
-.identity-placeholder { max-width: 62px; font-family: var(--font-mono); font-size: 0.45rem; line-height: 1.2; text-transform: uppercase; }
-.identity-card-copy { display: grid; gap: 0.35rem; }
-.identity-label,
-.identity-card-copy > span:last-child { color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em; }
-.identity-card-copy strong { font-family: var(--font-display); font-size: 1.5rem; line-height: 0.95; letter-spacing: 0.02em; }
-.identity-card-footer { padding-top: 0.7rem; color: var(--gray-dark); border-top: 1px solid var(--border-light); }
-.identity-signal { display: inline-flex; align-items: center; gap: 0.35rem; }
-.identity-signal i { width: 6px; height: 6px; display: inline-block; border-radius: 50%; background: #588b60; }
 
 /* ─── HERO MOTION ─── */
 .hero-reveal { opacity: 0; transform: translateY(22px); }
@@ -1348,10 +1305,6 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   #labPreview { min-height: 280px; }
   .wip-window-footer { align-items: flex-start; flex-direction: column; }
   .wip-library-grid { grid-template-columns: 1fr; }
-  .hero-illustration { padding-top: 104px; }
-  .hero-identity-card { width: 100%; }
-  .identity-card-body { grid-template-columns: 76px 1fr; gap: 0.75rem; }
-  .identity-card-copy strong { font-size: 1.25rem; }
   .footer { padding: 1.5rem 1.2rem; }
   .footer-nav { flex-wrap: wrap; gap: 1rem; }
 }
