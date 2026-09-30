@@ -424,7 +424,13 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   white-space: pre;
   transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease, filter 0.72s ease;
 }
-.monitor-code code { display: block; }
+.monitor-code code {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
 .code-line { display: block; transition: color 0.35s ease, transform 0.72s cubic-bezier(0.22, 1, 0.36, 1); }
 .code-keyword { color: #ef8fc2; }
 .code-property { color: #d8d8cf; }

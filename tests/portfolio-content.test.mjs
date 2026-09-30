@@ -41,6 +41,7 @@ assert.match(style, /\.monitor-screen\s*\{[^}]*min-height:\s*230px/i, 'La pantal
 assert.match(style, /@keyframes\s+monitorFloat/i, 'El monitor debe tener una flotación sutil');
 assert.match(style, /@keyframes\s+monitorScan/i, 'La pantalla debe tener un barrido sutil');
 assert.match(style, /\.monitor-code\s*\{/i, 'El codigo del monitor debe tener una capa visual propia');
+assert.match(style, /\.monitor-code\s+code\s*\{[^}]*margin:\s*0\s+auto/i, 'El bloque de codigo debe quedar centrado dentro de la pantalla');
 assert.match(style, /\.monitor-wrapper\.is-disassembled\s+\.monitor-code/i, 'El codigo debe reaccionar al estado desarmado');
 assert.match(style, /transition-delay:\s*[^;]+;/i, 'El rearmado del monitor debe tener una secuencia visual');
 assert.ok(workSection, 'Aevora debe tener una sección independiente');
