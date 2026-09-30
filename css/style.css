@@ -411,6 +411,26 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   pointer-events: none;
   animation: monitorScan 5.5s ease-in-out infinite;
 }
+.monitor-code {
+  position: relative;
+  z-index: 1;
+  min-height: 150px;
+  margin: 0;
+  padding: 0.2rem 0.25rem 2.2rem;
+  color: #c9c9c0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.55rem, 1.3vw, 0.68rem);
+  line-height: 1.7;
+  white-space: pre;
+  transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease, filter 0.72s ease;
+}
+.monitor-code code { display: block; }
+.code-line { display: block; transition: color 0.35s ease, transform 0.72s cubic-bezier(0.22, 1, 0.36, 1); }
+.code-keyword { color: #ef8fc2; }
+.code-property { color: #d8d8cf; }
+.monitor-code .code-property:nth-child(2) { color: #7ec488; }
+.monitor-code .code-property:nth-child(3) { color: #8bc6dd; }
+.monitor-code .code-property:nth-child(4) { color: #f1dd88; }
 .hero-signal {
   position: absolute;
   right: 1.75rem;
@@ -454,18 +474,26 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   background: var(--black);
   margin: 0 auto;
   clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
-  transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.72s 0.08s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .monitor-base {
   width: 136px; height: 10px;
   background: var(--black);
   margin: 0 auto;
   border-radius: 2px;
-  transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.72s 0.14s cubic-bezier(0.22, 1, 0.36, 1);
 }
+.monitor-code { transition-delay: 0.03s; }
+.deco-circle,
+.deco-dot { transition: transform 0.72s 0.14s cubic-bezier(0.22, 1, 0.36, 1); }
 .monitor-wrapper.is-disassembled .monitor {
   transform: translate(-7px, -10px) rotate(-1.4deg);
   box-shadow: 12px 15px 0 var(--gray-mid);
+}
+.monitor-wrapper.is-disassembled .monitor-code {
+  transform: translate(-9px, 8px) scale(0.97);
+  opacity: 0.78;
+  filter: blur(0.2px);
 }
 .monitor-wrapper.is-disassembled .monitor-stand {
   transform: translate(5px, 9px) rotate(4deg);
@@ -477,6 +505,12 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .monitor-wrapper.is-disassembled .deco-circle.c2 { transform: translate(-5px, 7px) scale(0.94); }
 .monitor-wrapper.is-disassembled .deco-dot.d2 { transform: translate(-5px, -9px); }
 .monitor-wrapper.is-disassembled .deco-dot.d3 { transform: translate(5px, 7px); }
+.monitor-wrapper.is-reassembling .monitor,
+.monitor-wrapper.is-reassembling .monitor-code { transition-delay: 0.12s; }
+.monitor-wrapper.is-reassembling .monitor-stand { transition-delay: 0s; }
+.monitor-wrapper.is-reassembling .monitor-base,
+.monitor-wrapper.is-reassembling .deco-circle,
+.monitor-wrapper.is-reassembling .deco-dot { transition-delay: 0.04s; }
 
 .deco-circle {
   position: absolute;

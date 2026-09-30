@@ -17,6 +17,7 @@ assert.match(main, /initHeroDepth\(prefersReducedMotion\)/, 'El hero debe tener 
 assert.match(main, /initHeroSignal\(prefersReducedMotion\)/, 'El monitor debe tener una señal de estado propia');
 assert.match(main, /initMonitorInteraction\(prefersReducedMotion\)/, 'El monitor debe tener una interaccion propia');
 assert.match(main, /classList\.add\(['"]is-disassembled['"]\)/, 'El monitor debe poder desarmarse');
+assert.match(main, /classList\.add\(['"]is-reassembling['"]\)/, 'El monitor debe tener una fase de rearmado');
 assert.match(main, /pointerleave/, 'El monitor debe rearmarse al salir el cursor');
 assert.match(main, /BUILDING[\s\S]*TESTING[\s\S]*READY/, 'La señal debe recorrer estados de construccion');
 assert.match(main, /--hero-shift-x|--hero-shift-y/, 'La profundidad debe comunicarse mediante variables visuales');
@@ -32,10 +33,16 @@ assert.match(style, /\.monitor-base\s*\{[\s\S]*?transition:[^;]+;/i, 'La base de
 assert.match(style, /--hero-shift-x/, 'El monitor debe aceptar el desplazamiento interactivo');
 assert.match(index, /id="heroMonitor"[^>]+role="button"[^>]+aria-expanded="false"/i, 'El monitor debe ser una interaccion accesible');
 assert.match(index, /id="heroSignal"[^>]+data-state="building"/i, 'El monitor debe exponer su estado inicial');
+assert.match(index, /class="monitor-code"/i, 'El monitor debe mostrar un bloque de codigo propio');
+assert.match(index, /const nyxand = \{/i, 'El monitor debe recuperar el snippet de NYXAND');
+assert.match(index, /name:\s*["']Andreh["']/i, 'El snippet debe conservar el nombre del hero');
 assert.match(style, /\.monitor-wrapper\s*\{[^}]*width:\s*330px/i, 'El monitor debe crecer ligeramente');
 assert.match(style, /\.monitor-screen\s*\{[^}]*min-height:\s*230px/i, 'La pantalla debe ganar presencia sin exagerar');
 assert.match(style, /@keyframes\s+monitorFloat/i, 'El monitor debe tener una flotación sutil');
 assert.match(style, /@keyframes\s+monitorScan/i, 'La pantalla debe tener un barrido sutil');
+assert.match(style, /\.monitor-code\s*\{/i, 'El codigo del monitor debe tener una capa visual propia');
+assert.match(style, /\.monitor-wrapper\.is-disassembled\s+\.monitor-code/i, 'El codigo debe reaccionar al estado desarmado');
+assert.match(style, /transition-delay:\s*[^;]+;/i, 'El rearmado del monitor debe tener una secuencia visual');
 assert.ok(workSection, 'Aevora debe tener una sección independiente');
 assert.match(workSection, /Aevora/i);
 assert.match(workSection, /WORK IN PROGRESS/i);

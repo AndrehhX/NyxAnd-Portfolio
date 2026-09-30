@@ -84,14 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const monitor = document.getElementById('heroMonitor');
     if (!monitor) return;
 
+    let reassembleTimer;
+
     const openMonitor = () => {
+      window.clearTimeout(reassembleTimer);
+      monitor.classList.remove('is-reassembling');
       monitor.classList.add('is-disassembled');
       monitor.setAttribute('aria-expanded', 'true');
     };
 
     const closeMonitor = () => {
+      if (!monitor.classList.contains('is-disassembled')) return;
+
+      monitor.classList.add('is-reassembling');
       monitor.classList.remove('is-disassembled');
       monitor.setAttribute('aria-expanded', 'false');
+      reassembleTimer = window.setTimeout(() => monitor.classList.remove('is-reassembling'), 820);
     };
 
     monitor.addEventListener('click', openMonitor);
