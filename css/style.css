@@ -411,12 +411,6 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   pointer-events: none;
   animation: monitorScan 5.5s ease-in-out infinite;
 }
-.screen-content {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: #ccc;
-  line-height: 1.95;
-}
 .hero-signal {
   position: absolute;
   right: 1.75rem;
@@ -442,16 +436,6 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
 .hero-signal[data-state="testing"] .hero-signal-dot { background: #8be9fd; box-shadow: 0 0 0 3px rgba(139,233,253,0.12); }
 .hero-signal[data-state="ready"] .hero-signal-dot { background: #50fa7b; box-shadow: 0 0 0 3px rgba(80,250,123,0.12); }
 @keyframes heroSignalPulse { 0%,100% { transform: scale(0.78); opacity: 0.58; } 50% { transform: scale(1); opacity: 1; } }
-.code-line { display: block; }
-.code-line.pad { padding-left: 1rem; }
-.c-pink { color: #ff79c6; }
-.c-blue { color: #8be9fd; }
-.c-green { color: #50fa7b; }
-.c-yellow { color: #f1fa8c; }
-.code-cursor { color: #f8f8f2; }
-.blink { animation: blink 1s step-end infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
 .monitor-chin {
   background: #1a1a1a;
   padding: 0.5rem;
