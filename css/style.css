@@ -830,6 +830,14 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   color: var(--gray-dark);
   flex: 1; text-align: center;
 }
+.card-status {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  color: var(--gray-dark);
+  border: 1px solid var(--black);
+  padding: 2px 6px;
+}
 .featured-badge {
   font-family: var(--font-mono);
   font-size: 0.6rem;
@@ -862,6 +870,112 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   display: flex; align-items: center; justify-content: center;
   position: relative;
   overflow: hidden;
+}
+.orunei-visual {
+  height: 200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e8e3db 0%, #d9d0df 52%, #b7a2c6 100%);
+}
+.orunei-visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.28) 0 1px, transparent 1px 12px);
+  opacity: 0.55;
+}
+.orunei-glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(88, 139, 96, 0.28);
+  filter: blur(28px);
+  transform: translate(70px, -45px);
+  animation: oruneiGlow 5s ease-in-out infinite;
+}
+.orunei-window {
+  position: relative;
+  z-index: 1;
+  width: min(84%, 360px);
+  padding: 0.7rem;
+  border: 2px solid var(--black);
+  background: rgba(245, 240, 232, 0.94);
+  box-shadow: 7px 7px 0 rgba(31, 29, 26, 0.22);
+  transform: rotate(-1.2deg);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.project-card--orunei:hover .orunei-window {
+  transform: translate(-3px, -3px) rotate(0deg);
+  box-shadow: 10px 10px 0 rgba(31, 29, 26, 0.24);
+}
+.orunei-window-top,
+.orunei-window-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.orunei-window-top {
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--black);
+}
+.orunei-window-top span:last-child { color: var(--gray-dark); }
+.orunei-window-body {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 88px;
+  padding: 0.9rem 0.3rem;
+}
+.orunei-avatar {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border: 2px solid var(--black);
+  border-radius: 50%;
+  background: #d9c6ea;
+  font-family: var(--font-mono);
+}
+.orunei-copy { display: grid; gap: 0.25rem; min-width: 0; }
+.orunei-copy > span {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--gray-dark);
+}
+.orunei-copy strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+}
+.orunei-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.35rem; }
+.orunei-tags i {
+  border: 1px solid var(--black);
+  padding: 2px 4px;
+  font-family: var(--font-mono);
+  font-size: 0.46rem;
+  font-style: normal;
+  letter-spacing: 0.08em;
+}
+.orunei-window-nav {
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--black);
+  color: var(--gray-dark);
+}
+.orunei-window-nav span:first-child { color: var(--black); }
+@keyframes oruneiGlow {
+  0%, 100% { transform: translate(70px, -45px) scale(0.94); opacity: 0.65; }
+  50% { transform: translate(45px, -30px) scale(1.05); opacity: 0.85; }
 }
 .pi-noise {
   position: absolute; inset: 0;

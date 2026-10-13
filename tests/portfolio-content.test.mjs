@@ -59,6 +59,13 @@ assert.match(workSection, /Credential Manager/i, 'Aevora debe explicar el almace
 assert.match(workSection, /github\.com\/AndrehhX\/Aevora/i, 'Aevora debe enlazar al repositorio real');
 assert.doesNotMatch(workSection, /sin demo|sin repositorio/i, 'Aevora no debe describirse como si no tuviera repositorio');
 assert.ok(projectsSection, 'El grid de proyectos debe seguir existiendo');
+assert.match(projectsSection, /class="project-card project-card--orunei/i, 'Orunei debe aparecer como proyecto destacado');
+assert.match(projectsSection, /Plataforma social para descubrir anime/i, 'Orunei debe explicar su producto real');
+assert.match(projectsSection, /github\.com\/AndrehhX\/orunei/i, 'Orunei debe enlazar al repositorio real');
+assert.match(projectsSection, /https:\/\/orunei\.fun/i, 'Orunei debe enlazar a su demo publica');
+assert.match(projectsSection, /class="[^"]*orunei-visual/i, 'Orunei debe tener una miniatura propia integrada al sistema visual');
+assert.match(style, /\.orunei-visual\s*\{/i, 'Orunei debe tener una miniatura visual propia');
+assert.match(style, /@keyframes\s+oruneiGlow/i, 'La miniatura de Orunei debe tener una animacion sutil');
 assert.match(style, /\.projects-section\s*\{[^}]*max-width:\s*1200px/i, 'Proyectos debe aprovechar mejor el ancho disponible');
 assert.match(style, /\.projects-grid\s*\{[^}]*gap:\s*1rem/i, 'Las tarjetas de proyectos deben respirar entre sÃ­');
 assert.doesNotMatch(projectsSection, /Aevora/i, 'Aevora no debe verse como un proyecto terminado');
@@ -68,7 +75,7 @@ assert.match(style, /\.tech-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,/i,
 assert.doesNotMatch(style, /\.tech-group:first-child\s*\{\s*grid-row:\s*span 2/i, 'Technologies no debe dejar una caja sobredimensionada');
 assert.doesNotMatch(index, /Colegio Mixto|Bachillerato en Computaci/i, 'El portafolio no debe mostrar educaciÃ³n escolar');
 assert.match(style, /\.education-grid\s*\{[^}]*max-width:\s*760px/i, 'Education debe concentrarse en el contenido relevante');
-assert.equal((projectsSection.match(/class="project-proof"/g) || []).length, 3, 'Cada proyecto terminado debe explicar qué demuestra');
+assert.equal((projectsSection.match(/class="project-proof"/g) || []).length, 4, 'Cada proyecto terminado debe explicar qué demuestra');
 assert.match(index, /id="live-status"/i, 'Debe existir el módulo de estado NYXAND');
 assert.match(index, /id="localTime"/i, 'El estado debe mostrar la hora local');
 assert.match(index, /id="pageTime"/i, 'El estado debe mostrar el tiempo en la página');
