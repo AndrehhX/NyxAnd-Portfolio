@@ -381,6 +381,27 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
     const resetBtn = document.getElementById('vResetBtn');
     const axisSvg = document.querySelector('.v-axis-svg');
     const vectorWindow = document.getElementById('vectorWindow');
+    const dayNameEl = document.getElementById('vDayName');
+    const dateStrEl = document.getElementById('vDateStr');
+    const yearDisplayEl = document.getElementById('vYearDisplay');
+
+    // Real-time dynamic date & year header
+    function updateRealTimeHeaderDate() {
+      const now = new Date();
+      if (dayNameEl) {
+        dayNameEl.textContent = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(now);
+      }
+      if (dateStrEl) {
+        const day = now.getDate();
+        const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(now);
+        dateStrEl.textContent = `${day} ${month}`;
+      }
+      if (yearDisplayEl) {
+        yearDisplayEl.textContent = String(now.getFullYear());
+      }
+    }
+    updateRealTimeHeaderDate();
+    window.setInterval(updateRealTimeHeaderDate, 60000);
 
     let currentForm = 'cube';
     let currentTool = 'rotation';
