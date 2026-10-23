@@ -470,18 +470,22 @@
         <p class="section-label">Vectors / 04</p>
         <h2 class="section-title reveal">NYXAND 3D vector studio</h2>
       </div>
-      <span class="vector-note">isometric vector engine · university lab</span>
+      <span class="vector-note">UVG · Computación Gráfica &amp; Álgebra Lineal · Motor Vectorial 3D</span>
     </div>
 
     <div class="vector-window" id="vectorWindow">
       <!-- Window Top Header Bar -->
       <header class="v-header">
-        <div class="v-date"><span>Sat</span> <span class="v-dash">—</span> <span>19 January</span></div>
+        <div class="v-header-left">
+          <span class="v-status-dot" aria-hidden="true"></span>
+          <div class="v-date"><span>Sat</span> <span class="v-dash">—</span> <span>19 January</span></div>
+          <span class="v-badge">UVG / GRAPHICS LAB</span>
+        </div>
         <div class="v-controls">
           <span class="v-year">2019</span>
           <div class="v-window-actions">
-            <button type="button" class="v-btn-icon" aria-label="Minimize">—</button>
-            <button type="button" class="v-btn-icon" aria-label="Close">✕</button>
+            <button type="button" class="v-btn-icon" id="vMinBtn" aria-label="Minimize">—</button>
+            <button type="button" class="v-btn-icon" id="vResetBtn" aria-label="Reset to default">↺</button>
           </div>
         </div>
       </header>
@@ -489,80 +493,82 @@
       <!-- Main Canvas Stage Layout -->
       <div class="v-stage-layout">
         
-        <!-- Left Toolbar -->
+        <!-- Left Toolbar: Forms & Vector Tools -->
         <aside class="v-sidebar-left">
           <div class="v-group">
             <span class="v-label">Forms</span>
             <div class="v-forms-row">
-              <button type="button" class="v-form-btn is-active" data-form="cube" aria-label="Cube form">
+              <button type="button" class="v-form-btn is-active" data-form="cube" aria-label="Cube form" title="Cube (8 vertices, 12 edges, 6 faces)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>
               </button>
-              <button type="button" class="v-form-btn" data-form="sphere" aria-label="Sphere form">
+              <button type="button" class="v-form-btn" data-form="sphere" aria-label="Sphere form" title="Sphere (Geodesic Rings)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3.5" ry="9"/></svg>
               </button>
-              <button type="button" class="v-form-btn" data-form="pyramid" aria-label="Pyramid form">
+              <button type="button" class="v-form-btn" data-form="pyramid" aria-label="Pyramid form" title="Pyramid (5 vertices, 8 edges)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 19h20L12 3z"/><path d="M12 3v16"/></svg>
               </button>
-              <button type="button" class="v-form-btn" data-form="cylinder" aria-label="Cylinder form">
+              <button type="button" class="v-form-btn" data-form="cylinder" aria-label="Cylinder form" title="Cylinder (32 vertices, 36 edges)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="8" ry="3"/><ellipse cx="12" cy="18" rx="8" ry="3"/><path d="M4 6v12M20 6v12"/></svg>
               </button>
-              <button type="button" class="v-form-btn" data-form="points" aria-label="Points cloud">
+              <button type="button" class="v-form-btn" data-form="points" aria-label="Points cloud" title="Vector Point Matrix 3x3x3">
                 <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>
               </button>
             </div>
           </div>
 
           <div class="v-group">
-            <span class="v-label">Tools</span>
+            <span class="v-label">Vector Tools</span>
             <div class="v-tools-list">
-              <button type="button" class="v-tool-btn" data-tool="render">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>
-                <span>Render</span>
-              </button>
-              <button type="button" class="v-tool-btn is-active" data-tool="rotation">
+              <button type="button" class="v-tool-btn is-active" data-tool="rotation" title="Rotación orbital libre 3D">
                 <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L4 6.5v9L12 20l8-4.5v-9L12 2z"/><path d="M7 11a5 5 0 0 1 10 0"/></svg>
                 <span>Rotation</span>
               </button>
-              <button type="button" class="v-tool-btn" data-tool="texture">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
-                <span>Texture</span>
+              <button type="button" class="v-tool-btn" data-tool="normals" title="Vectores normales perpendiculares n̂ a cada cara">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V5M5 12l7-7 7 7"/><circle cx="12" cy="19" r="2" fill="currentColor"/></svg>
+                <span>Normals n̂</span>
               </button>
-              <button type="button" class="v-tool-btn" data-tool="polygons">
+              <button type="button" class="v-tool-btn" data-tool="shading" title="Sombreado difuso de Lambert (N̂ · L̂)">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>
+                <span>Shading</span>
+              </button>
+              <button type="button" class="v-tool-btn" data-tool="matrix" title="Visualizador de matrices de rotación SO(3)">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8h2v8H8M14 8h2v8h-2"/></svg>
+                <span>Matrix SO(3)</span>
+              </button>
+              <button type="button" class="v-tool-btn" data-tool="inspector" title="Inspector de coordenadas y magnitud de vértices [x,y,z]">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>
+                <span>Inspector</span>
+              </button>
+              <button type="button" class="v-tool-btn" data-tool="polygons" title="Malla de polígonos y wireframe">
                 <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 22 8.5 18 20 6 20 2 8.5 12 2"/></svg>
                 <span>Polygons</span>
-              </button>
-              <button type="button" class="v-tool-btn" data-tool="points">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><path d="M7 5h10M5 7v10M19 7v10M7 19h10"/></svg>
-                <span>Points</span>
-              </button>
-              <button type="button" class="v-tool-btn" data-tool="intrude">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17l6-6 4 4 6-6"/><path d="M14 5h6v6"/></svg>
-                <span>Intrude</span>
               </button>
             </div>
           </div>
 
-          <div class="v-axis-widget">
-            <svg viewBox="0 0 40 40" class="v-axis-svg">
-              <line x1="20" y1="20" x2="20" y2="4" stroke="#111" stroke-width="1.5" />
-              <text x="20" y="2" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="600">Y</text>
-              <line x1="20" y1="20" x2="6" y2="28" stroke="#111" stroke-width="1.5" />
-              <text x="3" y="32" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="600">X</text>
-              <line x1="20" y1="20" x2="34" y2="28" stroke="#111" stroke-width="1.5" />
-              <text x="38" y="32" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="600">Z</text>
+          <!-- Tripod Coordinate Axes -->
+          <div class="v-axis-widget" title="Ejes de coordenadas 3D del espacio cartesiano">
+            <span class="v-axis-label">Cartesian Axes</span>
+            <svg viewBox="0 0 50 50" class="v-axis-svg">
+              <line x1="25" y1="25" x2="25" y2="7" stroke="#0a0a0a" stroke-width="1.8" />
+              <text x="25" y="5" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">Y</text>
+              <line x1="25" y1="25" x2="9" y2="35" stroke="#0a0a0a" stroke-width="1.8" />
+              <text x="6" y="40" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">X</text>
+              <line x1="25" y1="25" x2="41" y2="35" stroke="#0a0a0a" stroke-width="1.8" />
+              <text x="44" y="40" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">Z</text>
             </svg>
           </div>
         </aside>
 
         <!-- Center 3D Stage -->
-        <main class="v-center-stage" id="vStage">
+        <main class="v-center-stage" id="vStage" tabindex="0" role="region" aria-label="3D Vector Canvas - Drag or use arrow keys to rotate">
           <!-- Perspective Floor Grid (SVG) -->
           <svg class="v-floor-grid" viewBox="0 0 600 400" preserveAspectRatio="none">
             <defs>
               <linearGradient id="gridFade" x1="0" y1="1" x2="0" y2="0">
-                <stop offset="0%" stop-color="#7e8590" stop-opacity="0.3"/>
-                <stop offset="70%" stop-color="#7e8590" stop-opacity="0.08"/>
-                <stop offset="100%" stop-color="#7e8590" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#0a0a0a" stop-opacity="0.10"/>
+                <stop offset="70%" stop-color="#0a0a0a" stop-opacity="0.02"/>
+                <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
               </linearGradient>
             </defs>
             <g stroke="url(#gridFade)" stroke-width="1">
@@ -576,54 +582,73 @@
               <line x1="300" y1="60" x2="500" y2="400"/>
               <line x1="300" y1="60" x2="640" y2="400"/>
               <line x1="300" y1="60" x2="800" y2="400"/>
-              <ellipse cx="300" cy="270" rx="270" ry="70" fill="none"/>
-              <ellipse cx="300" cy="255" rx="220" ry="56" fill="none"/>
-              <ellipse cx="300" cy="242" rx="170" ry="44" fill="none"/>
             </g>
           </svg>
 
           <!-- 3D Vector Canvas / Renderer -->
           <div class="v-3d-container">
             <div class="v-contact-shadow" id="vShadow"></div>
-
-            <svg class="v-rotation-ring" viewBox="0 0 360 140">
-              <ellipse cx="180" cy="70" rx="155" ry="52" fill="none" stroke="#7e8590" stroke-width="1.2" stroke-opacity="0.5"/>
-              <path id="vRingArc" d="M 135 120 A 155 52 0 0 0 225 120" fill="none" stroke="#0a0a0a" stroke-width="4.5" stroke-linecap="round"/>
-            </svg>
-
-            <svg class="v-wireframe-svg" id="vSvg" viewBox="0 0 320 320"></svg>
+            <!-- Main Vector Engine Viewport (all 3D vector geometry, floor ring, and normal arrows render here) -->
+            <svg class="v-wireframe-svg" id="vSvg" viewBox="0 0 340 320"></svg>
+            <!-- Vertex HUD coordinates tooltip -->
+            <div class="v-vertex-hud" id="vVertexHud" hidden>
+              <span class="v-hud-id" id="vHudId">v0</span>
+              <span class="v-hud-coords" id="vHudCoords">[0, 0, 0]</span>
+              <span class="v-hud-mag" id="vHudMag">|v|=0</span>
+            </div>
           </div>
 
           <div class="v-rotation-display">
             <span class="v-rot-label">Rotation</span>
             <div class="v-rot-value" id="vRotDeg">35°</div>
+            <span class="v-rot-meta" id="vRotMeta">θ: 35.0° · φ: 28.0°</span>
           </div>
         </main>
 
-        <!-- Right Controls: Lightning & Sliders -->
+        <!-- Right Controls: Vector Math, Lighting, Projection, Sliders -->
         <aside class="v-sidebar-right">
+          <!-- Live SO(3) Transformation Matrix -->
           <div class="v-group">
-            <span class="v-label">Lightning</span>
+            <span class="v-label">Transform Matrix R</span>
+            <div class="v-matrix-card">
+              <div class="v-matrix-header">
+                <span class="v-matrix-tag">SO(3) Euler</span>
+                <span class="v-matrix-det" id="vMatrixDet">det = 1.000</span>
+              </div>
+              <div class="v-matrix-grid" id="vMatrixGrid" aria-label="Rotation Matrix values">
+                <span>+0.819</span><span>+0.000</span><span>+0.574</span>
+                <span>+0.269</span><span>+0.883</span><span>-0.385</span>
+                <span>-0.507</span><span>+0.469</span><span>+0.723</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vector Lighting & Diffuse Dot Product -->
+          <div class="v-group">
+            <div class="v-label-row">
+              <span class="v-label">Lighting Vector L̂</span>
+              <span class="v-dot-badge" id="vDotBadge">N̂·L̂: 0.82</span>
+            </div>
             <div class="v-lighting-grid">
-              <button type="button" class="v-light-card is-active" data-light="spot">
+              <button type="button" class="v-light-card is-active" data-light="spot" title="Luz focal dirigida">
                 <div class="v-light-preview v-light-spot">
                   <div class="v-spot-glow"></div>
                 </div>
                 <span>Spot</span>
               </button>
-              <button type="button" class="v-light-card" data-light="area">
+              <button type="button" class="v-light-card" data-light="area" title="Luz ambiental difusa">
                 <div class="v-light-preview v-light-area">
                   <div class="v-dots-matrix"></div>
                 </div>
                 <span>Area</span>
               </button>
-              <button type="button" class="v-light-card" data-light="target">
+              <button type="button" class="v-light-card" data-light="target" title="Vector de luz diagonal">
                 <div class="v-light-preview v-light-target">
                   <span class="v-arrow-icon">↙</span>
                 </div>
                 <span>Target</span>
               </button>
-              <button type="button" class="v-light-card" data-light="sun">
+              <button type="button" class="v-light-card" data-light="sun" title="Rayos paralelos solares">
                 <div class="v-light-preview v-light-sun">
                   <div class="v-sun-circle"></div>
                 </div>
@@ -632,9 +657,20 @@
             </div>
           </div>
 
+          <!-- Camera Projection Mode Toggle -->
+          <div class="v-group">
+            <span class="v-label">Projection</span>
+            <div class="v-proj-toggle">
+              <button type="button" class="v-proj-btn is-active" data-proj="iso">Isometric</button>
+              <button type="button" class="v-proj-btn" data-proj="persp">Perspective</button>
+            </div>
+          </div>
+
+          <!-- Sliders -->
           <div class="v-slider-group">
             <div class="v-slider-header">
               <span class="v-label">Brightness</span>
+              <span class="v-slider-val" id="vBrightnessVal">72%</span>
             </div>
             <div class="v-slider-track" id="vBrightnessSlider">
               <div class="v-slider-fill" id="vBrightnessFill" style="width: 72%;"></div>
@@ -645,22 +681,35 @@
           <div class="v-slider-group">
             <div class="v-slider-header">
               <span class="v-label">Shadow Density</span>
+              <span class="v-slider-val" id="vShadowVal">65%</span>
             </div>
             <div class="v-slider-track" id="vShadowSlider">
               <div class="v-slider-fill" id="vShadowFill" style="width: 65%;"></div>
               <input type="range" id="vShadowInput" min="0" max="100" value="65" aria-label="Shadow Density" class="v-range-input" />
             </div>
           </div>
+
+          <!-- Vector Data Export Button -->
+          <button type="button" class="v-export-btn" id="vExportBtn" title="Copiar vértices y matriz de rotación en formato JSON para la tarea">
+            <svg class="v-export-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span id="vExportBtnLabel">COPY VECTORS (JSON)</span>
+          </button>
         </aside>
 
       </div>
 
       <!-- Bottom Status Bar -->
       <footer class="v-footer">
-        <div class="v-stamp">
-          <span>END</span>
-          <span>IS</span>
-          <span>UI .</span>
+        <div class="v-footer-info">
+          <div class="v-stamp">
+            <span>END</span>
+            <span>IS</span>
+            <span>UI .</span>
+          </div>
+          <span class="v-academic-tag">UVG · CIENCIAS DE LA COMPUTACIÓN · VECTOR ENGINE</span>
         </div>
         <div class="v-number">013</div>
       </footer>
