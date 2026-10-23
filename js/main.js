@@ -261,12 +261,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const commands = {
-      'help': () => 'Commands: about · projects · stack · status · vectors · contact · clear',
+      'help': () => 'Commands: about · projects · stack · status · vectors · alpine · contact · clear',
       'about': () => 'Andreh Callejas / Computer Science student at UVG / software, automation and clear interfaces.',
       'projects': () => { scrollToSection('projects'); return 'Opening selected work.'; },
       'stack': () => 'Java · JavaScript · TypeScript · React · Git · HTML/CSS · automation',
       'status': () => { scrollToSection('live-status'); return 'Opening live signal.'; },
       'vectors': () => { scrollToSection('vector-studio'); return 'Opening 3D vector studio.'; },
+      'alpine': () => { window.location.href = 'pages/alpine-sim.html'; return 'Launching Alpine Storm Engine 3D...'; },
+      'storm': () => { window.location.href = 'pages/alpine-sim.html'; return 'Launching Alpine Storm Engine 3D...'; },
       'contact': () => { scrollToSection('contact'); return 'Opening contact channel.'; },
       'clear': () => { output.replaceChildren(); return ''; }
     };

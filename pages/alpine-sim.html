@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpine Storm Engine — 3D Procedural Weather Simulation · NYXAND</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <meta name="description" content="Simulación 3D interactiva en tiempo real de paisaje montañoso y motor de tormentas procedurales acelerado por GPU (Three.js, WebGL, Web Audio API)." />
+  <link rel="stylesheet" href="../css/alpine-sim.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body class="alpine-body">
+
+  <!-- Top Navigation & FPS -->
+  <header class="sim-top-nav">
+    <a href="../" class="sim-back-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>Back to NYXAND</span>
+    </a>
+    <span class="sim-fps-tag" id="fpsCounter">60 FPS</span>
+  </header>
+
+  <!-- Tablet Device Frame Container (Reference UI Layout) -->
+  <div class="sim-device-chassis">
+    <main class="sim-screen-container">
+
+      <!-- 3D Canvas Viewport -->
+      <div class="sim-canvas-viewport" id="canvasViewport" title="Arrastra sobre las montañas para orbitar la cámara 3D">
+        <canvas id="alpineCanvas"></canvas>
+      </div>
+
+      <!-- Lightning Screen Flash Overlay -->
+      <div class="sim-lightning-flash" id="lightningFlash"></div>
+
+      <!-- Top Dashboard HUD Overlay -->
+      <header class="sim-screen-header">
+        
+        <!-- Left Telemetry & Donut Charts -->
+        <div class="sim-header-left">
+          <div class="sim-donuts-row">
+            <div class="sim-donut-item" title="Humedad atmosférica">
+              <svg class="sim-donut-svg" viewBox="0 0 36 36">
+                <circle class="sim-donut-bg" cx="18" cy="18" r="14" fill="none" stroke-width="4.5"/>
+                <circle class="sim-donut-fill-1" cx="18" cy="18" r="14" fill="none" stroke-width="4.5"/>
+              </svg>
+              <span class="sim-donut-val">65%</span>
+            </div>
+            <div class="sim-donut-item" title="Gradiente barométrico">
+              <svg class="sim-donut-svg" viewBox="0 0 36 36">
+                <circle class="sim-donut-bg" cx="18" cy="18" r="14" fill="none" stroke-width="4.5"/>
+                <circle class="sim-donut-fill-2" cx="18" cy="18" r="14" fill="none" stroke-width="4.5"/>
+              </svg>
+              <span class="sim-donut-val">55%</span>
+            </div>
+          </div>
+
+          <div class="sim-sparkline-card" title="Registro de precipitación y presión en tiempo real">
+            <svg class="sim-sparkline-svg" viewBox="0 0 120 32">
+              <polyline fill="none" stroke="#df7861" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+                points="0,22 15,24 30,16 45,26 60,18 75,10 90,20 105,14 120,8"/>
+              <polyline fill="none" stroke="#8d94a0" stroke-width="1.2" stroke-dasharray="2 2"
+                points="0,14 20,18 40,12 60,16 80,14 100,20 120,15"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Center Title & Header Metrics -->
+        <div class="sim-header-center">
+          <h1 class="sim-title">Nottion <span>Alpine</span></h1>
+          <div class="sim-metrics-row">
+            <div class="sim-metric">255 <small>YΣ</small></div>
+            <div class="sim-metric">259 <small>%</small></div>
+          </div>
+        </div>
+
+        <!-- Right Controls & Status -->
+        <div class="sim-header-right">
+          <div class="sim-status-chip">
+            <span class="sim-pulse-dot" aria-hidden="true"></span>
+            <span>GPU Engine Active</span>
+          </div>
+          <button type="button" class="sim-audio-btn" id="audioBtn" title="Activar sonido procedural de viento y tormenta">
+            <svg class="sim-audio-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            </svg>
+            <span>AUDIO OFF</span>
+          </button>
+        </div>
+
+      </header>
+
+      <!-- Bottom Dark Panel: Sinuous Wave Separator & Controls -->
+      <footer class="sim-bottom-panel-wrap">
+        
+        <!-- S-Curve Wave SVG divider (Curved organic landscape contour) -->
+        <svg class="sim-wave-divider" viewBox="0 0 1000 50" preserveAspectRatio="none">
+          <path d="M 0,25 C 220,55 380,-10 650,30 C 820,52 930,12 1000,32 L 1000,50 L 0,50 Z" fill="#383d46" />
+        </svg>
+
+        <div class="sim-dark-panel">
+          
+          <!-- Left Slanted Status Levels -->
+          <div class="sim-panel-left">
+            <div class="sim-level-row">
+              <div class="sim-level-header">
+                <span>Storm Intensity</span>
+                <span>65%</span>
+              </div>
+              <div class="sim-level-track">
+                <div class="sim-level-fill" id="levelStormFill" style="width: 65%;"></div>
+              </div>
+            </div>
+
+            <div class="sim-level-row">
+              <div class="sim-level-header">
+                <span>Wind Velocity</span>
+                <span>48 km/h</span>
+              </div>
+              <div class="sim-level-track">
+                <div class="sim-level-fill" style="width: 72%;"></div>
+              </div>
+            </div>
+
+            <div class="sim-level-row">
+              <div class="sim-level-header">
+                <span>Barometric Press.</span>
+                <span>994 hPa</span>
+              </div>
+              <div class="sim-level-track">
+                <div class="sim-level-fill" style="width: 82%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Center: Dual Rotary Dials (Touch / Drag to turn) -->
+          <div class="sim-panel-center">
+            
+            <!-- Dial 1: Camera Orbit Angle -->
+            <div class="sim-dial-box">
+              <div class="sim-dial-element" id="dialCamera" title="Arrastra verticalmente para orbitar la cámara alrededor de las montañas">
+                <div class="sim-dial-disc">
+                  <svg class="sim-dial-sectors" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="48" fill="#353b45"/>
+                    <!-- Multi-color sectors -->
+                    <path d="M 50,50 L 50,2 A 48,48 0 0,1 84,16 Z" fill="#cfab84"/>
+                    <path d="M 50,50 L 84,16 A 48,48 0 0,1 98,50 Z" fill="#b09374"/>
+                    <path d="M 50,50 L 98,50 A 48,48 0 0,1 84,84 Z" fill="#758278"/>
+                    <path d="M 50,50 L 84,84 A 48,48 0 0,1 50,98 Z" fill="#80a89d"/>
+                    <path d="M 50,50 L 50,98 A 48,48 0 0,1 16,84 Z" fill="#58636e"/>
+                    <path d="M 50,50 L 16,84 A 48,48 0 0,1 2,50 Z" fill="#424b54"/>
+                    <path d="M 50,50 L 2,50 A 48,48 0 0,1 16,16 Z" fill="#5c626a"/>
+                    <path d="M 50,50 L 16,16 A 48,48 0 0,1 50,2 Z" fill="#d4bc9f"/>
+                  </svg>
+                  <div class="sim-dial-core">
+                    <span>ORBIT</span>
+                  </div>
+                </div>
+              </div>
+              <span class="sim-dial-label">Camera Angle</span>
+            </div>
+
+            <!-- Dial 2: Storm Intensity & Weather Engine -->
+            <div class="sim-dial-box">
+              <div class="sim-dial-element" id="dialStorm" title="Arrastra verticalmente para intensificar la tormenta, lluvia y relámpagos">
+                <div class="sim-dial-disc">
+                  <svg class="sim-dial-sectors" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="48" fill="#353b45"/>
+                    <path d="M 50,50 L 50,2 A 48,48 0 0,1 84,16 Z" fill="#e8dfd2"/>
+                    <path d="M 50,50 L 84,16 A 48,48 0 0,1 98,50 Z" fill="#c4b8a5"/>
+                    <path d="M 50,50 L 98,50 A 48,48 0 0,1 84,84 Z" fill="#8f8779"/>
+                    <path d="M 50,50 L 84,84 A 48,48 0 0,1 50,98 Z" fill="#4d535b"/>
+                    <path d="M 50,50 L 50,98 A 48,48 0 0,1 16,84 Z" fill="#363a40"/>
+                    <path d="M 50,50 L 16,84 A 48,48 0 0,1 2,50 Z" fill="#69717b"/>
+                    <path d="M 50,50 L 2,50 A 48,48 0 0,1 16,16 Z" fill="#9ba5b1"/>
+                    <path d="M 50,50 L 16,16 A 48,48 0 0,1 50,2 Z" fill="#f0ebe1"/>
+                  </svg>
+                  <div class="sim-dial-core">
+                    <span id="dialStormVal">65</span>
+                  </div>
+                </div>
+              </div>
+              <span class="sim-dial-label">Storm Engine</span>
+            </div>
+
+          </div>
+
+          <!-- Right: Circular Radial Progress Ring & Control Dots -->
+          <div class="sim-panel-right">
+            <div class="sim-gauge-wrap" title="Índice de saturación de tormenta">
+              <svg class="sim-gauge-svg" viewBox="0 0 72 72">
+                <circle class="sim-gauge-track" cx="36" cy="36" r="30" fill="none" stroke-width="4.5"/>
+                <circle class="sim-gauge-arc" id="gaugeArc" cx="36" cy="36" r="30" fill="none" stroke-width="4.5"
+                  stroke-dasharray="188.5" stroke-dashoffset="66"/>
+              </svg>
+              <div class="sim-gauge-val" id="gaugeVal">78</div>
+            </div>
+
+            <div class="sim-dots-control">
+              <span class="sim-dot"></span>
+              <span class="sim-dot"></span>
+              <span class="sim-dot is-active"></span>
+            </div>
+          </div>
+
+        </div>
+
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Simulation JS Logic -->
+  <script src="../js/alpine-sim.js"></script>
+</body>
+</html>
