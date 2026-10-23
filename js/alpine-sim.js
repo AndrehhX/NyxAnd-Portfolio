@@ -169,7 +169,11 @@
   scene.add(rimLight);
 
 
-  // ── 5. PROCEDURAL MOUNTAIN TERRAIN ─────────────────────
+  // ── 5. 3D MOUNTAIN ASSET (REAL GLB MODEL + PROCEDURAL FALLBACK) ──
+  const terrainGroup = new THREE.Group();
+  scene.add(terrainGroup);
+
+  // Procedural Fallback Mesh
   const gridW = 110;
   const gridD = 110;
   const segments = 140;
@@ -180,13 +184,12 @@
   const posAttr = terrainGeom.attributes.position;
   const colors = [];
   const colorSnow = new THREE.Color(0xf6f7f9);
-  const colorRockDark = new THREE.Color(0x2d3036);
+  const colorRockDark = new THREE.Color(0x282b30);
   const colorRockLight = new THREE.Color(0x565c66);
   const colorForest = new THREE.Color(0xb2893d); // Golden amber alpine pines
   const colorForestDark = new THREE.Color(0x6e5628);
-  const colorValley = new THREE.Color(0x737984);
+  const colorValley = new THREE.Color(0x6a707a);
 
-  // Apply heights
   for (let i = 0; i < posAttr.count; i++) {
     const x = posAttr.getX(i);
     const z = posAttr.getZ(i);
@@ -195,33 +198,26 @@
   }
   terrainGeom.computeVertexNormals();
 
-  // Color vertices based on elevation and slope
   const normalAttr = terrainGeom.attributes.normal;
   for (let i = 0; i < posAttr.count; i++) {
     const y = posAttr.getY(i);
-    const ny = normalAttr.getY(i); // Dot product with up vector = steepness (1=flat, 0=sheer vertical)
+    const ny = normalAttr.getY(i);
     const slope = 1.0 - ny;
 
     const c = new THREE.Color();
-
     if (y > 22 && slope < 0.45) {
-      // High mountain snow caps
       c.copy(colorSnow);
       c.lerp(colorRockLight, slope * 0.8);
     } else if (slope > 0.48) {
-      // Sheer cliff face (rock)
       c.copy(colorRockDark);
       c.lerp(colorRockLight, Math.min(1, y / 28));
     } else if (y > 6 && y <= 22) {
-      // Mid slope golden pine forest
       c.copy(colorForest);
       c.lerp(colorForestDark, slope);
     } else {
-      // Valley floor / foothills
       c.copy(colorValley);
       c.lerp(colorForestDark, Math.min(1, y / 8));
     }
-
     colors.push(c.r, c.g, c.b);
   }
 
@@ -230,13 +226,66 @@
   const terrainMat = new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.92,
-    metalness: 0.05,
-    flatShading: false
+    metalness: 0.05
   });
 
-  const terrainMesh = new THREE.Mesh(terrainGeom, terrainMat);
-  terrainMesh.position.set(0, -6, 0);
-  scene.add(terrainMesh);
+  const proceduralMesh = new THREE.Mesh(terrainGeom, terrainMat);
+  proceduralMesh.position.set(0, -6, 0);
+  terrainGroup.add(proceduralMesh);
+
+  // Load Real 3D Photorealistic Mountain Asset (GLTF/GLB)
+  let realMountainModel = null;
+  if (typeof THREE.GLTFLoader !== 'undefined') {
+    const gltfLoader = new THREE.GLTFLoader();
+    gltfLoader.load(
+      '../assets/models/mountain.glb',
+      gltf => {
+        realMountainModel = gltf.scene;
+
+        // Auto-scale and orient to match reference image framing
+        const box = new THREE.Box3().setFromObject(realMountainModel);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+
+        const targetWidth = 115;
+        const scale = targetWidth / Math.max(size.x, size.z);
+        realMountainModel.scale.setScalar(scale);
+
+        // Center mountain peak
+        realMountainModel.position.x = -center.x * scale + 6;
+        realMountainModel.position.y = -center.y * scale - 7;
+        realMountainModel.position.z = -center.z * scale - 10;
+        realMountainModel.rotation.y = -0.55;
+
+        realMountainModel.traverse(child => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.material) {
+              child.material.roughness = 0.88;
+              child.material.metalness = 0.06;
+              if (child.material.map) {
+                child.material.map.encoding = THREE.sRGBEncoding;
+              }
+            }
+          }
+        });
+
+        // Swap procedural fallback with real 3D mountain model
+        terrainGroup.clear();
+        terrainGroup.add(realMountainModel);
+
+        const statusLabel = document.querySelector('.sim-status-chip span:last-child');
+        if (statusLabel) statusLabel.textContent = 'Photoreal 3D Mountain Active';
+      },
+      undefined,
+      err => {
+        console.warn('GLTFLoader loading error, keeping procedural mesh:', err);
+      }
+    );
+  }
 
 
   // ── 6. VOLUMETRIC VALLEY MIST / FOG LAYERS ─────────────
