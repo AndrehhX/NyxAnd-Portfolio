@@ -1320,8 +1320,9 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   padding: 4.25rem 2.5rem;
   border-bottom: var(--border-width) solid var(--black);
 }
-.vector-header { align-items: end; }
-.vector-note { color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.vector-header { align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+.vector-header .section-title { white-space: nowrap; }
+.vector-note { color: var(--gray-dark); font-family: var(--font-mono); font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
 
 .vector-window {
   position: relative;
