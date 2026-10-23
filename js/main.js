@@ -407,6 +407,258 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
     let currentTool = 'rotation';
     let currentLight = 'spot';
     let projectionMode = 'iso'; // 'iso' | 'persp'
+    let activeVMode = '3d-mesh'; // '3d-mesh' | 'line-slope' | 'vector-ops'
+    let lineSubMode = 'points';  // 'points' | 'slope'
+
+    // Mode tabs & panes
+    const modeTabs = document.querySelectorAll('.v-mode-tab');
+    const paneMesh = document.getElementById('vPaneMesh');
+    const paneLine = document.getElementById('vPaneLine');
+    const paneVecs = document.getElementById('vPaneVecs');
+    const rightMesh = document.getElementById('vRightMesh');
+    const rightLine = document.getElementById('vRightLine');
+    const rightVecs = document.getElementById('vRightVecs');
+    const viewBar = document.getElementById('vViewBar');
+    const snapBtns = document.querySelectorAll('.v-snap-btn');
+
+    // Line / Point-Slope Elements
+    const subModePointsBtn = document.getElementById('subModePointsBtn');
+    const subModeSlopeBtn = document.getElementById('subModeSlopeBtn');
+    const p1X = document.getElementById('p1X');
+    const p1Y = document.getElementById('p1Y');
+    const p1Z = document.getElementById('p1Z');
+    const p1ZWrap = document.getElementById('p1ZWrap');
+    const p2X = document.getElementById('p2X');
+    const p2Y = document.getElementById('p2Y');
+    const p2Z = document.getElementById('p2Z');
+    const p2ZWrap = document.getElementById('p2ZWrap');
+    const p2Group = document.getElementById('p2Group');
+    const slopeInput = document.getElementById('slopeInput');
+    const slopeGroup = document.getElementById('slopeGroup');
+
+    const calcLineVec = document.getElementById('calcLineVec');
+    const calcLineMag = document.getElementById('calcLineMag');
+    const calcLineUnit = document.getElementById('calcLineUnit');
+    const calcLineSlope = document.getElementById('calcLineSlope');
+    const calcEqPointSlope = document.getElementById('calcEqPointSlope');
+    const calcEqGeneral = document.getElementById('calcEqGeneral');
+    const calcEqVectorial = document.getElementById('calcEqVectorial');
+    const calcEqParam = document.getElementById('calcEqParam');
+    const calcEqSym = document.getElementById('calcEqSym');
+    const vCopyLineBtn = document.getElementById('vCopyLineBtn');
+    const vCopyLineLabel = document.getElementById('vCopyLineLabel');
+
+    // Vector Ops Elements
+    const vAx = document.getElementById('vAx');
+    const vAy = document.getElementById('vAy');
+    const vAz = document.getElementById('vAz');
+    const vBx = document.getElementById('vBx');
+    const vBy = document.getElementById('vBy');
+    const vBz = document.getElementById('vBz');
+
+    const calcVecNorms = document.getElementById('calcVecNorms');
+    const calcVecDot = document.getElementById('calcVecDot');
+    const calcVecAngle = document.getElementById('calcVecAngle');
+    const calcVecRelBadge = document.getElementById('calcVecRelBadge');
+    const calcVecCross = document.getElementById('calcVecCross');
+    const calcVecArea = document.getElementById('calcVecArea');
+    const calcVecTriArea = document.getElementById('calcVecTriArea');
+    const calcVecProj = document.getElementById('calcVecProj');
+    const vCopyVecBtn = document.getElementById('vCopyVecBtn');
+    const vCopyVecLabel = document.getElementById('vCopyVecLabel');
+
+    // Mathematical utility formatters
+    function parseSlope(str) {
+      if (!str) return 0;
+      str = String(str).trim();
+      if (str.includes('/')) {
+        const parts = str.split('/');
+        const num = parseFloat(parts[0]);
+        const den = parseFloat(parts[1]);
+        if (den !== 0 && !isNaN(num) && !isNaN(den)) return num / den;
+      }
+      const val = parseFloat(str);
+      return isNaN(val) ? 0 : val;
+    }
+
+    function toFraction(val, tolerance = 1e-4) {
+      if (!isFinite(val)) return 'Indefinida (∞)';
+      if (Math.abs(val - Math.round(val)) < tolerance) return String(Math.round(val));
+      const sign = val < 0 ? '-' : '';
+      val = Math.abs(val);
+      let bestNum = 1, bestDen = 1, minErr = Math.abs(val - 1);
+      for (let den = 1; den <= 64; den++) {
+        const num = Math.round(val * den);
+        const err = Math.abs(val - num / den);
+        if (err < minErr) {
+          minErr = err;
+          bestNum = num;
+          bestDen = den;
+          if (err < tolerance) break;
+        }
+      }
+      return `${sign}${bestNum}/${bestDen}`;
+    }
+
+    function formatNumber(num, decimals = 3) {
+      if (!isFinite(num)) return '0';
+      const fixed = num.toFixed(decimals);
+      return parseFloat(fixed).toString();
+    }
+
+    // Compute Line & Point-Slope Data
+    function computeLineData() {
+      const x1 = parseFloat(p1X?.value || 0);
+      const y1 = parseFloat(p1Y?.value || 0);
+      const isSlopeMode = (lineSubMode === 'slope');
+      const z1 = isSlopeMode ? 0 : parseFloat(p1Z?.value || 0);
+
+      let x2, y2, z2, slopeVal;
+      if (isSlopeMode) {
+        slopeVal = parseSlope(slopeInput?.value || '-0.75');
+        const dx = 4;
+        const dy = dx * slopeVal;
+        x2 = x1 + dx;
+        y2 = y1 + dy;
+        z2 = 0;
+      } else {
+        x2 = parseFloat(p2X?.value || 0);
+        y2 = parseFloat(p2Y?.value || 0);
+        z2 = parseFloat(p2Z?.value || 0);
+        slopeVal = (x2 - x1 !== 0) ? (y2 - y1) / (x2 - x1) : Infinity;
+      }
+
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const dz = z2 - z1;
+      const mag = Math.hypot(dx, dy, dz);
+      const unit = mag > 0 ? [dx / mag, dy / mag, dz / mag] : [0, 0, 0];
+
+      const angleRad = Math.atan2(dy, dx);
+      let angleDeg = angleRad * (180 / Math.PI);
+      if (angleDeg < 0) angleDeg += 180;
+
+      const slopeFrac = toFraction(slopeVal);
+      const bVal = isFinite(slopeVal) ? y1 - slopeVal * x1 : 0;
+
+      // Equations
+      const signY1 = y1 >= 0 ? `- ${formatNumber(y1)}` : `+ ${formatNumber(Math.abs(y1))}`;
+      const signX1 = x1 >= 0 ? `- ${formatNumber(x1)}` : `+ ${formatNumber(Math.abs(x1))}`;
+      const eqPointSlope = isFinite(slopeVal)
+        ? `y ${signY1} = ${slopeFrac}(x ${signX1})`
+        : `x = ${formatNumber(x1)} (Recta vertical)`;
+
+      let eqGeneral;
+      if (!isFinite(slopeVal)) {
+        eqGeneral = `x - ${formatNumber(x1)} = 0`;
+      } else {
+        const A = dy;
+        const B = -dx;
+        const C = dx * y1 - dy * x1;
+        eqGeneral = `${formatNumber(A)}x ${B >= 0 ? '+ ' + formatNumber(B) : '- ' + formatNumber(Math.abs(B))}y ${C >= 0 ? '+ ' + formatNumber(C) : '- ' + formatNumber(Math.abs(C))} = 0`;
+      }
+
+      const eqVectorial = `r⃗(t) = ⟨${formatNumber(x1)}, ${formatNumber(y1)}, ${formatNumber(z1)}⟩ + t⟨${formatNumber(dx)}, ${formatNumber(dy)}, ${formatNumber(dz)}⟩`;
+      const signDx = dx >= 0 ? `+ ${formatNumber(dx)}t` : `- ${formatNumber(Math.abs(dx))}t`;
+      const signDy = dy >= 0 ? `+ ${formatNumber(dy)}t` : `- ${formatNumber(Math.abs(dy))}t`;
+      const signDz = dz >= 0 ? `+ ${formatNumber(dz)}t` : `- ${formatNumber(Math.abs(dz))}t`;
+      const eqParam = `x = ${formatNumber(x1)} ${signDx}<br>y = ${formatNumber(y1)} ${signDy}<br>z = ${formatNumber(z1)} ${signDz}`;
+
+      const eqSym = (dx !== 0 && dy !== 0 && dz !== 0)
+        ? `(x ${signX1}) / ${formatNumber(dx)} = (y ${signY1}) / ${formatNumber(dy)} = (z ${z1 >= 0 ? '- ' + formatNumber(z1) : '+ ' + formatNumber(Math.abs(z1))}) / ${formatNumber(dz)}`
+        : (isSlopeMode || dz === 0)
+          ? `(x ${signX1}) / ${formatNumber(dx)} = (y ${signY1}) / ${formatNumber(dy)}, z = ${formatNumber(z1)}`
+          : `Ecuación paramétrica requerida`;
+
+      if (calcLineVec) calcLineVec.textContent = `⟨${formatNumber(dx)}, ${formatNumber(dy)}, ${formatNumber(dz)}⟩`;
+      if (calcLineMag) calcLineMag.textContent = `${formatNumber(mag, 3)} u`;
+      if (calcLineUnit) calcLineUnit.textContent = `⟨${formatNumber(unit[0], 3)}, ${formatNumber(unit[1], 3)}, ${formatNumber(unit[2], 3)}⟩`;
+      if (calcLineSlope) calcLineSlope.textContent = isFinite(slopeVal) ? `m = ${slopeFrac} (${formatNumber(slopeVal, 3)}) · θ ≈ ${formatNumber(angleDeg, 1)}°` : 'm = Indefinida (90°)';
+      if (calcEqPointSlope) calcEqPointSlope.textContent = eqPointSlope;
+      if (calcEqGeneral) calcEqGeneral.textContent = eqGeneral;
+      if (calcEqVectorial) calcEqVectorial.textContent = eqVectorial;
+      if (calcEqParam) calcEqParam.innerHTML = eqParam;
+      if (calcEqSym) calcEqSym.textContent = eqSym;
+
+      return {
+        p1: [x1, y1, z1],
+        p2: [x2, y2, z2],
+        dir: [dx, dy, dz],
+        mag,
+        unit,
+        slope: slopeVal,
+        slopeFrac,
+        angleDeg,
+        bVal,
+        eqPointSlope,
+        eqGeneral,
+        eqVectorial,
+        eqParam,
+        eqSym,
+        isSlopeMode
+      };
+    }
+
+    // Compute Vector Operations Data (A & B)
+    function computeVectorsData() {
+      const ax = parseFloat(vAx?.value || 0);
+      const ay = parseFloat(vAy?.value || 0);
+      const az = parseFloat(vAz?.value || 0);
+      const bx = parseFloat(vBx?.value || 0);
+      const by = parseFloat(vBy?.value || 0);
+      const bz = parseFloat(vBz?.value || 0);
+
+      const a = [ax, ay, az];
+      const b = [bx, by, bz];
+
+      const normA = Math.hypot(...a);
+      const normB = Math.hypot(...b);
+
+      const dot = dotProduct(a, b);
+      const cross = crossProduct(a, b);
+      const normCross = Math.hypot(...cross);
+
+      let angleDeg = 0;
+      if (normA > 0 && normB > 0) {
+        const cosTheta = Math.max(-1, Math.min(1, dot / (normA * normB)));
+        angleDeg = Math.acos(cosTheta) * (180 / Math.PI);
+      }
+
+      let proj = [0, 0, 0];
+      if (normB > 0) {
+        const factor = dot / (normB * normB);
+        proj = [b[0] * factor, b[1] * factor, b[2] * factor];
+      }
+
+      if (calcVecNorms) calcVecNorms.textContent = `‖A⃗‖ = ${formatNumber(normA, 3)} · ‖B⃗‖ = ${formatNumber(normB, 3)}`;
+      if (calcVecDot) calcVecDot.textContent = `A⃗ · B⃗ = ${dot >= 0 ? '+' : ''}${formatNumber(dot, 3)}`;
+      if (calcVecAngle) calcVecAngle.textContent = `θ = ${formatNumber(angleDeg, 2)}° (${formatNumber(angleDeg * Math.PI / 180, 3)} rad)`;
+
+      if (calcVecRelBadge) {
+        if (Math.abs(dot) < 0.001 && normA > 0 && normB > 0) {
+          calcVecRelBadge.textContent = 'ORTOGONALES (A ⊥ B)';
+          calcVecRelBadge.className = 'v-status-badge v-status-ortho';
+        } else if ((angleDeg < 0.2 || Math.abs(angleDeg - 180) < 0.2) && normA > 0 && normB > 0) {
+          calcVecRelBadge.textContent = 'PARALELOS (A ∥ B)';
+          calcVecRelBadge.className = 'v-status-badge v-status-parallel';
+        } else if (dot > 0) {
+          calcVecRelBadge.textContent = 'ÁNGULO AGUDO';
+          calcVecRelBadge.className = 'v-status-badge v-status-neutral';
+        } else {
+          calcVecRelBadge.textContent = 'ÁNGULO OBTUSO';
+          calcVecRelBadge.className = 'v-status-badge v-status-neutral';
+        }
+      }
+
+      if (calcVecCross) calcVecCross.textContent = `⟨${formatNumber(cross[0])}, ${formatNumber(cross[1])}, ${formatNumber(cross[2])}⟩`;
+      if (calcVecArea) calcVecArea.textContent = `Área = ${formatNumber(normCross, 3)} u²`;
+      if (calcVecTriArea) calcVecTriArea.textContent = `Área = ${formatNumber(normCross * 0.5, 3)} u²`;
+      if (calcVecProj) calcVecProj.textContent = `⟨${formatNumber(proj[0], 3)}, ${formatNumber(proj[1], 3)}, ${formatNumber(proj[2], 3)}⟩`;
+
+      return {
+        a, b, normA, normB, dot, cross, normCross, angleDeg, proj
+      };
+    }
 
     // Angles: yaw (horizontal) and pitch (vertical)
     let yaw = 35 * (Math.PI / 180);
@@ -689,6 +941,185 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       updateTripod(rotM);
       updateMatrixHUD(rotM);
 
+      // ── ANALYTICAL MODES RENDERING (LINE-SLOPE & VECTOR-OPS) ──
+      if (activeVMode === 'line-slope') {
+        const line = computeLineData();
+        const cx = 170;
+        const cy = 146;
+
+        // Auto-scale to fit comfortably in viewport
+        const maxCoord = Math.max(4, Math.abs(line.p1[0]), Math.abs(line.p1[1]), Math.abs(line.p1[2]), Math.abs(line.p2[0]), Math.abs(line.p2[1]), Math.abs(line.p2[2]));
+        const scale = Math.min(26, 115 / maxCoord);
+
+        // Project coordinate axes (-L to +L)
+        const L = Math.ceil(maxCoord * 1.35);
+        const o2d = projectPoint([0, 0, 0], rotM, cx, cy);
+        const xPos2d = projectPoint([L * scale, 0, 0], rotM, cx, cy);
+        const xNeg2d = projectPoint([-L * scale, 0, 0], rotM, cx, cy);
+        const yPos2d = projectPoint([0, L * scale, 0], rotM, cx, cy);
+        const yNeg2d = projectPoint([0, -L * scale, 0], rotM, cx, cy);
+        const zPos2d = projectPoint([0, 0, L * scale], rotM, cx, cy);
+        const zNeg2d = projectPoint([0, 0, -L * scale], rotM, cx, cy);
+
+        let svgContent = '';
+
+        // Axes grid lines
+        svgContent += `<line x1="${xNeg2d.x.toFixed(1)}" y1="${xNeg2d.y.toFixed(1)}" x2="${xPos2d.x.toFixed(1)}" y2="${xPos2d.y.toFixed(1)}" stroke="#c2410c" stroke-width="1.6" stroke-opacity="0.85" />`;
+        svgContent += `<text x="${(xPos2d.x + 6).toFixed(1)}" y="${(xPos2d.y + 3).toFixed(1)}" font-family="'Space Mono', monospace" font-size="10" font-weight="700" fill="#c2410c">+X</text>`;
+
+        svgContent += `<line x1="${yNeg2d.x.toFixed(1)}" y1="${yNeg2d.y.toFixed(1)}" x2="${yPos2d.x.toFixed(1)}" y2="${yPos2d.y.toFixed(1)}" stroke="#15803d" stroke-width="1.6" stroke-opacity="0.85" />`;
+        svgContent += `<text x="${(yPos2d.x - 3).toFixed(1)}" y="${(yPos2d.y - 6).toFixed(1)}" font-family="'Space Mono', monospace" font-size="10" font-weight="700" fill="#15803d">+Y</text>`;
+
+        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+          svgContent += `<line x1="${zNeg2d.x.toFixed(1)}" y1="${zNeg2d.y.toFixed(1)}" x2="${zPos2d.x.toFixed(1)}" y2="${zPos2d.y.toFixed(1)}" stroke="#1d4ed8" stroke-width="1.6" stroke-opacity="0.85" />`;
+          svgContent += `<text x="${(zPos2d.x + 6).toFixed(1)}" y="${(zPos2d.y + 4).toFixed(1)}" font-family="'Space Mono', monospace" font-size="10" font-weight="700" fill="#1d4ed8">+Z</text>`;
+        }
+
+        // Infinite dashed line
+        const tRange = 4.0;
+        const lineStart3D = [
+          (line.p1[0] - line.dir[0] * tRange) * scale,
+          (line.p1[1] - line.dir[1] * tRange) * scale,
+          (line.p1[2] - line.dir[2] * tRange) * scale
+        ];
+        const lineEnd3D = [
+          (line.p1[0] + line.dir[0] * tRange) * scale,
+          (line.p1[1] + line.dir[1] * tRange) * scale,
+          (line.p1[2] + line.dir[2] * tRange) * scale
+        ];
+        const pInf1 = projectPoint(lineStart3D, rotM, cx, cy);
+        const pInf2 = projectPoint(lineEnd3D, rotM, cx, cy);
+        svgContent += `<line x1="${pInf1.x.toFixed(1)}" y1="${pInf1.y.toFixed(1)}" x2="${pInf2.x.toFixed(1)}" y2="${pInf2.y.toFixed(1)}" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="4 4" />`;
+
+        // Points P1 and P2
+        const pt1 = projectPoint([line.p1[0] * scale, line.p1[1] * scale, line.p1[2] * scale], rotM, cx, cy);
+        const pt2 = projectPoint([line.p2[0] * scale, line.p2[1] * scale, line.p2[2] * scale], rotM, cx, cy);
+
+        // Run & rise slope triangle
+        if (line.isSlopeMode || (line.p1[2] === 0 && line.p2[2] === 0)) {
+          const corner3D = [line.p2[0] * scale, line.p1[1] * scale, 0];
+          const ptCorner = projectPoint(corner3D, rotM, cx, cy);
+          svgContent += `<line x1="${pt1.x.toFixed(1)}" y1="${pt1.y.toFixed(1)}" x2="${ptCorner.x.toFixed(1)}" y2="${ptCorner.y.toFixed(1)}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="2.5 2.5" />`;
+          svgContent += `<line x1="${ptCorner.x.toFixed(1)}" y1="${ptCorner.y.toFixed(1)}" x2="${pt2.x.toFixed(1)}" y2="${pt2.y.toFixed(1)}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="2.5 2.5" />`;
+          const midX = (pt1.x + pt2.x) / 2;
+          const midY = (pt1.y + pt2.y) / 2;
+          svgContent += `<text x="${(midX + 8).toFixed(1)}" y="${(midY - 4).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#2563eb">m=${line.slopeFrac}</text>`;
+        }
+
+        // Directed Vector line P1 -> P2
+        svgContent += `<line x1="${pt1.x.toFixed(1)}" y1="${pt1.y.toFixed(1)}" x2="${pt2.x.toFixed(1)}" y2="${pt2.y.toFixed(1)}" stroke="#2563eb" stroke-width="2.6" stroke-linecap="round" />`;
+
+        // Arrow head at P2
+        const vDx = pt2.x - pt1.x;
+        const vDy = pt2.y - pt1.y;
+        const vLen = Math.hypot(vDx, vDy) || 1;
+        const ux = vDx / vLen;
+        const uy = vDy / vLen;
+        const arrowLen = 10;
+        const arrowWidth = 5;
+        const a1x = pt2.x - ux * arrowLen - uy * arrowWidth;
+        const a1y = pt2.y - uy * arrowLen + ux * arrowWidth;
+        const a2x = pt2.x - ux * arrowLen + uy * arrowWidth;
+        const a2y = pt2.y - uy * arrowLen - ux * arrowWidth;
+        svgContent += `<polygon points="${pt2.x.toFixed(1)},${pt2.y.toFixed(1)} ${a1x.toFixed(1)},${a1y.toFixed(1)} ${a2x.toFixed(1)},${a2y.toFixed(1)}" fill="#2563eb" />`;
+
+        // Draw Point P1
+        svgContent += `<circle cx="${pt1.x.toFixed(1)}" cy="${pt1.y.toFixed(1)}" r="4.5" fill="#ffffff" stroke="#2563eb" stroke-width="2" />`;
+        svgContent += `<text x="${(pt1.x + 6).toFixed(1)}" y="${(pt1.y - 6).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#0a0a0a">P₁(${formatNumber(line.p1[0])}, ${formatNumber(line.p1[1])}${line.p1[2] ? ', ' + formatNumber(line.p1[2]) : ''})</text>`;
+
+        // Draw Point P2
+        svgContent += `<circle cx="${pt2.x.toFixed(1)}" cy="${pt2.y.toFixed(1)}" r="4.5" fill="#2563eb" stroke="#ffffff" stroke-width="1.5" />`;
+        svgContent += `<text x="${(pt2.x + 6).toFixed(1)}" y="${(pt2.y + 12).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#2563eb">P₂(${formatNumber(line.p2[0])}, ${formatNumber(line.p2[1])}${line.p2[2] ? ', ' + formatNumber(line.p2[2]) : ''})</text>`;
+
+        // Origin
+        svgContent += `<circle cx="${o2d.x.toFixed(1)}" cy="${o2d.y.toFixed(1)}" r="3" fill="#0a0a0a" />`;
+        svgContent += `<text x="${(o2d.x - 12).toFixed(1)}" y="${(o2d.y - 5).toFixed(1)}" font-family="'Space Mono', monospace" font-size="8" font-weight="700" fill="#6b7280">(0,0)</text>`;
+
+        svg.innerHTML = svgContent;
+        return;
+      }
+
+      if (activeVMode === 'vector-ops') {
+        const vData = computeVectorsData();
+        const cx = 170;
+        const cy = 146;
+
+        const maxCoord = Math.max(4, Math.abs(vData.a[0]), Math.abs(vData.a[1]), Math.abs(vData.a[2]), Math.abs(vData.b[0]), Math.abs(vData.b[1]), Math.abs(vData.b[2]), Math.abs(vData.cross[0]), Math.abs(vData.cross[1]), Math.abs(vData.cross[2]));
+        const scale = Math.min(28, 115 / maxCoord);
+
+        const o2d = projectPoint([0, 0, 0], rotM, cx, cy);
+        const ptA = projectPoint([vData.a[0] * scale, vData.a[1] * scale, vData.a[2] * scale], rotM, cx, cy);
+        const ptB = projectPoint([vData.b[0] * scale, vData.b[1] * scale, vData.b[2] * scale], rotM, cx, cy);
+        const ptSum = projectPoint([(vData.a[0] + vData.b[0]) * scale, (vData.a[1] + vData.b[1]) * scale, (vData.a[2] + vData.b[2]) * scale], rotM, cx, cy);
+        const ptCross = projectPoint([vData.cross[0] * scale, vData.cross[1] * scale, vData.cross[2] * scale], rotM, cx, cy);
+        const ptProj = projectPoint([vData.proj[0] * scale, vData.proj[1] * scale, vData.proj[2] * scale], rotM, cx, cy);
+
+        let svgContent = '';
+
+        // Axes
+        const L = Math.ceil(maxCoord * 1.25);
+        const xPos2d = projectPoint([L * scale, 0, 0], rotM, cx, cy);
+        const xNeg2d = projectPoint([-L * scale, 0, 0], rotM, cx, cy);
+        const yPos2d = projectPoint([0, L * scale, 0], rotM, cx, cy);
+        const yNeg2d = projectPoint([0, -L * scale, 0], rotM, cx, cy);
+        const zPos2d = projectPoint([0, 0, L * scale], rotM, cx, cy);
+        const zNeg2d = projectPoint([0, 0, -L * scale], rotM, cx, cy);
+
+        svgContent += `<line x1="${xNeg2d.x.toFixed(1)}" y1="${xNeg2d.y.toFixed(1)}" x2="${xPos2d.x.toFixed(1)}" y2="${xPos2d.y.toFixed(1)}" stroke="#c2410c" stroke-width="1.4" stroke-opacity="0.8" />`;
+        svgContent += `<text x="${(xPos2d.x + 5).toFixed(1)}" y="${(xPos2d.y + 3).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#c2410c">+X</text>`;
+
+        svgContent += `<line x1="${yNeg2d.x.toFixed(1)}" y1="${yNeg2d.y.toFixed(1)}" x2="${yPos2d.x.toFixed(1)}" y2="${yPos2d.y.toFixed(1)}" stroke="#15803d" stroke-width="1.4" stroke-opacity="0.8" />`;
+        svgContent += `<text x="${(yPos2d.x - 3).toFixed(1)}" y="${(yPos2d.y - 5).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#15803d">+Y</text>`;
+
+        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+          svgContent += `<line x1="${zNeg2d.x.toFixed(1)}" y1="${zNeg2d.y.toFixed(1)}" x2="${zPos2d.x.toFixed(1)}" y2="${zPos2d.y.toFixed(1)}" stroke="#1d4ed8" stroke-width="1.4" stroke-opacity="0.8" />`;
+          svgContent += `<text x="${(zPos2d.x + 5).toFixed(1)}" y="${(zPos2d.y + 4).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#1d4ed8">+Z</text>`;
+        }
+
+        // Parallelogram spanned by A and B
+        svgContent += `<polygon points="${o2d.x.toFixed(1)},${o2d.y.toFixed(1)} ${ptA.x.toFixed(1)},${ptA.y.toFixed(1)} ${ptSum.x.toFixed(1)},${ptSum.y.toFixed(1)} ${ptB.x.toFixed(1)},${ptB.y.toFixed(1)}" fill="rgba(37, 99, 235, 0.08)" stroke="#93c5fd" stroke-width="1.2" stroke-dasharray="3 3" />`;
+
+        // Arrow drawing helper
+        function drawVectorArrow(pStart, pEnd, color, label, width = 2.4) {
+          const dx = pEnd.x - pStart.x;
+          const dy = pEnd.y - pStart.y;
+          const len = Math.hypot(dx, dy) || 1;
+          const ux = dx / len;
+          const uy = dy / len;
+          const aLen = 9;
+          const aW = 4.5;
+          const a1x = pEnd.x - ux * aLen - uy * aW;
+          const a1y = pEnd.y - uy * aLen + ux * aW;
+          const a2x = pEnd.x - ux * aLen + uy * aW;
+          const a2y = pEnd.y - uy * aLen - ux * aW;
+
+          return `<line x1="${pStart.x.toFixed(1)}" y1="${pStart.y.toFixed(1)}" x2="${pEnd.x.toFixed(1)}" y2="${pEnd.y.toFixed(1)}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" />
+            <polygon points="${pEnd.x.toFixed(1)},${pEnd.y.toFixed(1)} ${a1x.toFixed(1)},${a1y.toFixed(1)} ${a2x.toFixed(1)},${a2y.toFixed(1)}" fill="${color}" />
+            <text x="${(pEnd.x + ux * 6).toFixed(1)}" y="${(pEnd.y + uy * 6 + 3).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9.5" font-weight="700" fill="${color}">${label}</text>`;
+        }
+
+        // Vector A (Blue)
+        svgContent += drawVectorArrow(o2d, ptA, '#2563eb', 'A⃗', 2.8);
+
+        // Vector B (Amber)
+        svgContent += drawVectorArrow(o2d, ptB, '#d97706', 'B⃗', 2.8);
+
+        // Cross Product Vector A x B (Green)
+        if (vData.normCross > 0.01) {
+          svgContent += drawVectorArrow(o2d, ptCross, '#16a34a', 'A⃗×B⃗', 2.2);
+        }
+
+        // Projection of A onto B
+        svgContent += `<line x1="${ptA.x.toFixed(1)}" y1="${ptA.y.toFixed(1)}" x2="${ptProj.x.toFixed(1)}" y2="${ptProj.y.toFixed(1)}" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="2 2" />`;
+        svgContent += `<circle cx="${ptProj.x.toFixed(1)}" cy="${ptProj.y.toFixed(1)}" r="3" fill="#d97706" />`;
+
+        // Origin
+        svgContent += `<circle cx="${o2d.x.toFixed(1)}" cy="${o2d.y.toFixed(1)}" r="3.5" fill="#0a0a0a" />`;
+
+        svg.innerHTML = svgContent;
+        return;
+      }
+
       const model = getModel();
       const cx = 170;
       const cy = 146;
@@ -930,7 +1361,7 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       yaw = startYaw + dx * 0.012;
-      pitch = Math.max(0.10, Math.min(1.35, startPitch - dy * 0.008));
+      pitch = Math.max(0, Math.min(1.45, startPitch - dy * 0.008));
       render();
     });
 
@@ -960,11 +1391,11 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         render();
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        pitch = Math.min(1.35, pitch + 0.05);
+        pitch = Math.min(1.45, pitch + 0.05);
         render();
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        pitch = Math.max(0.10, pitch - 0.05);
+        pitch = Math.max(0, pitch - 0.05);
         render();
       }
     });
@@ -1119,6 +1550,303 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
           if (shadow) shadow.style.opacity = '';
         }
         render();
+      });
+    }
+
+    // ── Analytical Modes: Switcher Tabs ──
+    modeTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetMode = tab.dataset.mode;
+        if (!targetMode || targetMode === activeVMode) return;
+        activeVMode = targetMode;
+
+        modeTabs.forEach(t => t.classList.toggle('is-active', t.dataset.mode === activeVMode));
+
+        if (paneMesh) paneMesh.hidden = (activeVMode !== '3d-mesh');
+        if (paneLine) paneLine.hidden = (activeVMode !== 'line-slope');
+        if (paneVecs) paneVecs.hidden = (activeVMode !== 'vector-ops');
+
+        if (rightMesh) rightMesh.hidden = (activeVMode !== '3d-mesh');
+        if (rightLine) rightLine.hidden = (activeVMode !== 'line-slope');
+        if (rightVecs) rightVecs.hidden = (activeVMode !== 'vector-ops');
+
+        if (viewBar) {
+          viewBar.style.display = (activeVMode === '3d-mesh') ? 'none' : 'flex';
+        }
+
+        // Camera default angles per mode
+        if (activeVMode === 'line-slope') {
+          if (lineSubMode === 'slope') {
+            yaw = 0;
+            pitch = 0;
+            snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === 'xy'));
+          } else {
+            yaw = 30 * (Math.PI / 180);
+            pitch = 24 * (Math.PI / 180);
+            snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
+          }
+        } else if (activeVMode === 'vector-ops') {
+          yaw = 38 * (Math.PI / 180);
+          pitch = 26 * (Math.PI / 180);
+          snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
+        } else {
+          yaw = 35 * (Math.PI / 180);
+          pitch = 28 * (Math.PI / 180);
+        }
+
+        render();
+      });
+    });
+
+    // ── Line Submode Toggles (2 Points vs Point-Slope) ──
+    if (subModePointsBtn && subModeSlopeBtn) {
+      subModePointsBtn.addEventListener('click', () => {
+        lineSubMode = 'points';
+        subModePointsBtn.classList.add('is-active');
+        subModeSlopeBtn.classList.remove('is-active');
+        if (p1ZWrap) p1ZWrap.style.display = '';
+        if (p2Group) p2Group.style.display = '';
+        if (slopeGroup) slopeGroup.style.display = 'none';
+        render();
+      });
+
+      subModeSlopeBtn.addEventListener('click', () => {
+        lineSubMode = 'slope';
+        subModeSlopeBtn.classList.add('is-active');
+        subModePointsBtn.classList.remove('is-active');
+        if (p1ZWrap) p1ZWrap.style.display = 'none';
+        if (p2Group) p2Group.style.display = 'none';
+        if (slopeGroup) slopeGroup.style.display = '';
+        // Orthogonal 2D projection on XY plane
+        yaw = 0;
+        pitch = 0;
+        snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === 'xy'));
+        render();
+      });
+    }
+
+    // ── Quick Camera Snap Views (3D Orbit, Plano 2D XY, Plano XZ, Reset) ──
+    snapBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const snap = btn.dataset.snap;
+        snapBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+        if (snap === '3d') {
+          yaw = 35 * (Math.PI / 180);
+          pitch = 26 * (Math.PI / 180);
+        } else if (snap === 'xy') {
+          yaw = 0;
+          pitch = 0;
+        } else if (snap === 'xz') {
+          yaw = 0;
+          pitch = 89.9 * (Math.PI / 180);
+        } else if (snap === 'reset') {
+          yaw = 35 * (Math.PI / 180);
+          pitch = 28 * (Math.PI / 180);
+        }
+        render();
+      });
+    });
+
+    // ── Live Calculation Triggers on Input ──
+    const lineInputs = [p1X, p1Y, p1Z, p2X, p2Y, p2Z, slopeInput];
+    lineInputs.forEach(inp => {
+      if (inp) inp.addEventListener('input', () => render());
+    });
+
+    const vecInputs = [vAx, vAy, vAz, vBx, vBy, vBz];
+    vecInputs.forEach(inp => {
+      if (inp) inp.addEventListener('input', () => render());
+    });
+
+    // ── Exercise Presets: Line & Point-Slope ──
+    const linePresetBtns = document.querySelectorAll('[data-linepreset]');
+    linePresetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = btn.dataset.linepreset;
+        if (preset === '1') {
+          if (subModePointsBtn) subModePointsBtn.click();
+          if (p1X) p1X.value = 2;
+          if (p1Y) p1Y.value = -1;
+          if (p1Z) p1Z.value = 3;
+          if (p2X) p2X.value = 5;
+          if (p2Y) p2Y.value = 4;
+          if (p2Z) p2Z.value = 1;
+        } else if (preset === '2') {
+          if (subModeSlopeBtn) subModeSlopeBtn.click();
+          if (p1X) p1X.value = 3;
+          if (p1Y) p1Y.value = 4;
+          if (slopeInput) slopeInput.value = '-3/4';
+        } else if (preset === '3') {
+          if (subModeSlopeBtn) subModeSlopeBtn.click();
+          if (p1X) p1X.value = 0;
+          if (p1Y) p1Y.value = 3;
+          if (slopeInput) slopeInput.value = '1.5';
+        } else if (preset === '4') {
+          if (subModePointsBtn) subModePointsBtn.click();
+          if (p1X) p1X.value = -3;
+          if (p1Y) p1Y.value = 2;
+          if (p1Z) p1Z.value = 0;
+          if (p2X) p2X.value = 3;
+          if (p2Y) p2Y.value = -2;
+          if (p2Z) p2Z.value = 0;
+        }
+        render();
+      });
+    });
+
+    // ── Exercise Presets: Vector Algebra ──
+    const vecPresetBtns = document.querySelectorAll('[data-vecpreset]');
+    vecPresetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = btn.dataset.vecpreset;
+        if (preset === 'ortho') {
+          if (vAx) vAx.value = 3;
+          if (vAy) vAy.value = -2;
+          if (vAz) vAz.value = 2;
+          if (vBx) vBx.value = 2;
+          if (vBy) vBy.value = 1;
+          if (vBz) vBz.value = -2;
+        } else if (preset === 'cross') {
+          if (vAx) vAx.value = 3;
+          if (vAy) vAy.value = 0;
+          if (vAz) vAz.value = 0;
+          if (vBx) vBx.value = 0;
+          if (vBy) vBy.value = 4;
+          if (vBz) vBz.value = 0;
+        } else if (preset === 'angle') {
+          if (vAx) vAx.value = 2;
+          if (vAy) vAy.value = 2;
+          if (vAz) vAz.value = 0;
+          if (vBx) vBx.value = 4;
+          if (vBy) vBy.value = 0;
+          if (vBz) vBz.value = 0;
+        } else if (preset === 'parallel') {
+          if (vAx) vAx.value = 2;
+          if (vAy) vAy.value = -3;
+          if (vAz) vAz.value = 4;
+          if (vBx) vBx.value = 4;
+          if (vBy) vBy.value = -6;
+          if (vBz) vBz.value = 8;
+        }
+        render();
+      });
+    });
+
+    // ── Copy Line Procedure to Clipboard ──
+    if (vCopyLineBtn) {
+      vCopyLineBtn.addEventListener('click', async () => {
+        const line = computeLineData();
+        const textReport = [
+          '==================================================',
+          'RESOLUCIÓN ANALÍTICA DE RECTA Y PUNTO-PENDIENTE',
+          'Curso: Álgebra Lineal y Geometría Analítica (UVG)',
+          '==================================================',
+          '',
+          '1. DATOS INICIALES:',
+          `   Punto P₁: (${line.p1[0]}, ${line.p1[1]}${line.p1[2] ? ', ' + line.p1[2] : ''})`,
+          line.isSlopeMode
+            ? `   Pendiente dada: m = ${line.slopeFrac} (${formatNumber(line.slope, 4)})`
+            : `   Punto P₂: (${line.p2[0]}, ${line.p2[1]}${line.p2[2] ? ', ' + line.p2[2] : ''})`,
+          '',
+          '2. VECTOR DIRECTOR (v⃗ = P₂ - P₁):',
+          `   v⃗ = ⟨${formatNumber(line.dir[0])}, ${formatNumber(line.dir[1])}, ${formatNumber(line.dir[2])}⟩`,
+          '',
+          '3. DISTANCIA / NORMA EUCLIDIANA:',
+          `   ‖v⃗‖ = √(${formatNumber(line.dir[0])}² + ${formatNumber(line.dir[1])}² + ${formatNumber(line.dir[2])}²) = ${formatNumber(line.mag, 4)} u`,
+          '',
+          '4. VECTOR UNITARIO DIRECCIONAL:',
+          `   û = v⃗ / ‖v⃗‖ = ⟨${formatNumber(line.unit[0], 4)}, ${formatNumber(line.unit[1], 4)}, ${formatNumber(line.unit[2], 4)}⟩`,
+          '',
+          '5. PENDIENTE 2D E INCLINACIÓN:',
+          `   m = Δy / Δx = ${line.slopeFrac} (${formatNumber(line.slope, 4)})`,
+          `   Ángulo de inclinación: θ = arctan(m) = ${formatNumber(line.angleDeg, 2)}°`,
+          '',
+          '6. FORMA PUNTO-PENDIENTE (2D):',
+          `   ${line.eqPointSlope}`,
+          '',
+          '7. FORMA GENERAL DE LA RECTA (Ax + By + C = 0):',
+          `   ${line.eqGeneral}`,
+          '',
+          '8. ECUACIÓN VECTORIAL DE LA RECTA (3D):',
+          `   ${line.eqVectorial}`,
+          '',
+          '9. ECUACIONES PARAMÉTRICAS (3D):',
+          `   ${line.eqParam.replace(/<br>/g, '\n   ')}`,
+          '',
+          '10. ECUACIONES SIMÉTRICAS (3D):',
+          `   ${line.eqSym}`,
+          '==================================================',
+          'Generado con NyxAnd Vector Studio · Verificación Universitaria'
+        ].join('\n');
+
+        try {
+          await navigator.clipboard.writeText(textReport);
+          vCopyLineBtn.classList.add('is-copied');
+          if (vCopyLineLabel) vCopyLineLabel.textContent = '¡COPIADO AL PORTAPAPELES!';
+          setTimeout(() => {
+            vCopyLineBtn.classList.remove('is-copied');
+            if (vCopyLineLabel) vCopyLineLabel.textContent = 'COPIAR PROCEDIMIENTO';
+          }, 2000);
+        } catch (_) {
+          if (vCopyLineLabel) vCopyLineLabel.textContent = 'ERROR AL COPIAR';
+        }
+      });
+    }
+
+    // ── Copy Vector Ops Procedure to Clipboard ──
+    if (vCopyVecBtn) {
+      vCopyVecBtn.addEventListener('click', async () => {
+        const vData = computeVectorsData();
+        const textReport = [
+          '==================================================',
+          'VERIFICACIÓN DE ÁLGEBRA VECTORIAL Y OPERACIONES',
+          'Curso: Álgebra Lineal y Geometría Analítica (UVG)',
+          '==================================================',
+          '',
+          '1. VECTORES DADOS:',
+          `   A⃗ = ⟨${vData.a.join(', ')}⟩`,
+          `   B⃗ = ⟨${vData.b.join(', ')}⟩`,
+          '',
+          '2. NORMAS (MAGNITUDES):',
+          `   ‖A⃗‖ = √(${vData.a[0]}² + ${vData.a[1]}² + ${vData.a[2]}²) = ${formatNumber(vData.normA, 4)} u`,
+          `   ‖B⃗‖ = √(${vData.b[0]}² + ${vData.b[1]}² + ${vData.b[2]}²) = ${formatNumber(vData.normB, 4)} u`,
+          '',
+          '3. PRODUCTO ESCALAR (DOT PRODUCT):',
+          `   A⃗ · B⃗ = (${vData.a[0]})(${vData.b[0]}) + (${vData.a[1]})(${vData.b[1]}) + (${vData.a[2]})(${vData.b[2]}) = ${formatNumber(vData.dot, 4)}`,
+          '',
+          '4. ÁNGULO ENTRE VECTORES:',
+          `   cos(θ) = (A⃗ · B⃗) / (‖A⃗‖ · ‖B⃗‖) = ${formatNumber(vData.normA * vData.normB > 0 ? vData.dot / (vData.normA * vData.normB) : 0, 4)}`,
+          `   θ = ${formatNumber(vData.angleDeg, 2)}° (${formatNumber(vData.angleDeg * Math.PI / 180, 4)} rad)`,
+          `   Diagnóstico: ${calcVecRelBadge?.textContent || ''}`,
+          '',
+          '5. PRODUCTO VECTORIAL (CROSS PRODUCT / VECTOR NORMAL):',
+          `   A⃗ × B⃗ = |  i   j   k  |`,
+          `            | ${vData.a[0]}  ${vData.a[1]}  ${vData.a[2]} |`,
+          `            | ${vData.b[0]}  ${vData.b[1]}  ${vData.b[2]} |`,
+          `   A⃗ × B⃗ = ⟨${vData.cross[0]}, ${vData.cross[1]}, ${vData.cross[2]}⟩`,
+          '',
+          '6. ÁREAS GEOMÉTRICAS:',
+          `   Área del Paralelogramo = ‖A⃗ × B⃗‖ = ${formatNumber(vData.normCross, 4)} u²`,
+          `   Área del Triángulo = ½ ‖A⃗ × B⃗‖ = ${formatNumber(vData.normCross * 0.5, 4)} u²`,
+          '',
+          '7. PROYECCIÓN ORTOGONAL DE A⃗ SOBRE B⃗:',
+          `   proy_B(A) = [(A⃗ · B⃗) / ‖B⃗‖²] · B⃗`,
+          `   proy_B(A) = ⟨${formatNumber(vData.proj[0], 4)}, ${formatNumber(vData.proj[1], 4)}, ${formatNumber(vData.proj[2], 4)}⟩`,
+          '==================================================',
+          'Generado con NyxAnd Vector Studio · Verificación Universitaria'
+        ].join('\n');
+
+        try {
+          await navigator.clipboard.writeText(textReport);
+          vCopyVecBtn.classList.add('is-copied');
+          if (vCopyVecLabel) vCopyVecLabel.textContent = '¡COPIADO AL PORTAPAPELES!';
+          setTimeout(() => {
+            vCopyVecBtn.classList.remove('is-copied');
+            if (vCopyVecLabel) vCopyVecLabel.textContent = 'COPIAR PROCEDIMIENTO';
+          }, 2000);
+        } catch (_) {
+          if (vCopyVecLabel) vCopyVecLabel.textContent = 'ERROR AL COPIAR';
+        }
       });
     }
 

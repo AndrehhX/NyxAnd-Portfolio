@@ -479,7 +479,11 @@
         <div class="v-header-left">
           <span class="v-status-dot" aria-hidden="true"></span>
           <div class="v-date" id="vDateDisplay"><span id="vDayName">Fri</span> <span class="v-dash">—</span> <span id="vDateStr">23 October</span></div>
-          <span class="v-badge">UVG / GRAPHICS LAB</span>
+          <div class="v-mode-tabs" role="tablist" aria-label="Modos Vector Studio">
+            <button type="button" class="v-mode-tab is-active" data-vmode="3d-mesh" role="tab" aria-selected="true">3D Mesh</button>
+            <button type="button" class="v-mode-tab" data-vmode="line-slope" role="tab" aria-selected="false">Punto-Pendiente</button>
+            <button type="button" class="v-mode-tab" data-vmode="vector-ops" role="tab" aria-selected="false">Álgebra Vectorial</button>
+          </div>
         </div>
         <div class="v-controls">
           <span class="v-year" id="vYearDisplay">2026</span>
@@ -495,73 +499,168 @@
         
         <!-- Left Toolbar: Forms & Vector Tools -->
         <aside class="v-sidebar-left">
-          <div class="v-group">
-            <span class="v-label">Forms</span>
-            <div class="v-forms-row">
-              <button type="button" class="v-form-btn is-active" data-form="cube" aria-label="Cube form" title="Cube (8 vertices, 12 edges, 6 faces)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>
-              </button>
-              <button type="button" class="v-form-btn" data-form="sphere" aria-label="Sphere form" title="Sphere (Geodesic Rings)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3.5" ry="9"/></svg>
-              </button>
-              <button type="button" class="v-form-btn" data-form="pyramid" aria-label="Pyramid form" title="Pyramid (5 vertices, 8 edges)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 19h20L12 3z"/><path d="M12 3v16"/></svg>
-              </button>
-              <button type="button" class="v-form-btn" data-form="cylinder" aria-label="Cylinder form" title="Cylinder (32 vertices, 36 edges)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="8" ry="3"/><ellipse cx="12" cy="18" rx="8" ry="3"/><path d="M4 6v12M20 6v12"/></svg>
-              </button>
-              <button type="button" class="v-form-btn" data-form="points" aria-label="Points cloud" title="Vector Point Matrix 3x3x3">
-                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>
-              </button>
+          <!-- Pane 1: 3D Mesh Mode -->
+          <div class="v-pane v-pane-mesh" id="vPaneMesh">
+            <div class="v-group">
+              <span class="v-label">Forms</span>
+              <div class="v-forms-row">
+                <button type="button" class="v-form-btn is-active" data-form="cube" aria-label="Cube form" title="Cube (8 vertices, 12 edges, 6 faces)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>
+                </button>
+                <button type="button" class="v-form-btn" data-form="sphere" aria-label="Sphere form" title="Sphere (Geodesic Rings)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3.5" ry="9"/></svg>
+                </button>
+                <button type="button" class="v-form-btn" data-form="pyramid" aria-label="Pyramid form" title="Pyramid (5 vertices, 8 edges)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 19h20L12 3z"/><path d="M12 3v16"/></svg>
+                </button>
+                <button type="button" class="v-form-btn" data-form="cylinder" aria-label="Cylinder form" title="Cylinder (32 vertices, 36 edges)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="8" ry="3"/><ellipse cx="12" cy="18" rx="8" ry="3"/><path d="M4 6v12M20 6v12"/></svg>
+                </button>
+                <button type="button" class="v-form-btn" data-form="points" aria-label="Points cloud" title="Vector Point Matrix 3x3x3">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Vector Tools</span>
+              <div class="v-tools-list">
+                <button type="button" class="v-tool-btn is-active" data-tool="rotation" title="Rotación orbital libre 3D">
+                  <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L4 6.5v9L12 20l8-4.5v-9L12 2z"/><path d="M7 11a5 5 0 0 1 10 0"/></svg>
+                  <span>Rotation</span>
+                </button>
+                <button type="button" class="v-tool-btn" data-tool="normals" title="Vectores normales perpendiculares n̂ a cada cara">
+                  <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V5M5 12l7-7 7 7"/><circle cx="12" cy="19" r="2" fill="currentColor"/></svg>
+                  <span>Normals n̂</span>
+                </button>
+                <button type="button" class="v-tool-btn" data-tool="shading" title="Sombreado difuso de Lambert (N̂ · L̂)">
+                  <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>
+                  <span>Shading</span>
+                </button>
+                <button type="button" class="v-tool-btn" data-tool="matrix" title="Visualizador de matrices de rotación SO(3)">
+                  <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8h2v8H8M14 8h2v8h-2"/></svg>
+                  <span>Matrix SO(3)</span>
+                </button>
+                <button type="button" class="v-tool-btn" data-tool="inspector" title="Inspector de coordenadas y magnitud de vértices [x,y,z]">
+                  <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>
+                  <span>Inspector</span>
+                </button>
+                <button type="button" class="v-tool-btn" data-tool="polygons" title="Malla de polígonos y wireframe">
+                  <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 22 8.5 18 20 6 20 2 8.5 12 2"/></svg>
+                  <span>Polygons</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tripod Coordinate Axes -->
+            <div class="v-axis-widget" title="Ejes de coordenadas 3D del espacio cartesiano">
+              <span class="v-axis-label">Cartesian Axes</span>
+              <svg viewBox="0 0 50 50" class="v-axis-svg">
+                <line x1="25" y1="25" x2="25" y2="7" stroke="#0a0a0a" stroke-width="1.8" />
+                <text x="25" y="5" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">Y</text>
+                <line x1="25" y1="25" x2="9" y2="35" stroke="#0a0a0a" stroke-width="1.8" />
+                <text x="6" y="40" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">X</text>
+                <line x1="25" y1="25" x2="41" y2="35" stroke="#0a0a0a" stroke-width="1.8" />
+                <text x="44" y="40" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">Z</text>
+              </svg>
             </div>
           </div>
 
-          <div class="v-group">
-            <span class="v-label">Vector Tools</span>
-            <div class="v-tools-list">
-              <button type="button" class="v-tool-btn is-active" data-tool="rotation" title="Rotación orbital libre 3D">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L4 6.5v9L12 20l8-4.5v-9L12 2z"/><path d="M7 11a5 5 0 0 1 10 0"/></svg>
-                <span>Rotation</span>
-              </button>
-              <button type="button" class="v-tool-btn" data-tool="normals" title="Vectores normales perpendiculares n̂ a cada cara">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V5M5 12l7-7 7 7"/><circle cx="12" cy="19" r="2" fill="currentColor"/></svg>
-                <span>Normals n̂</span>
-              </button>
-              <button type="button" class="v-tool-btn" data-tool="shading" title="Sombreado difuso de Lambert (N̂ · L̂)">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>
-                <span>Shading</span>
-              </button>
-              <button type="button" class="v-tool-btn" data-tool="matrix" title="Visualizador de matrices de rotación SO(3)">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8h2v8H8M14 8h2v8h-2"/></svg>
-                <span>Matrix SO(3)</span>
-              </button>
-              <button type="button" class="v-tool-btn" data-tool="inspector" title="Inspector de coordenadas y magnitud de vértices [x,y,z]">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>
-                <span>Inspector</span>
-              </button>
-              <button type="button" class="v-tool-btn" data-tool="polygons" title="Malla de polígonos y wireframe">
-                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 22 8.5 18 20 6 20 2 8.5 12 2"/></svg>
-                <span>Polygons</span>
-              </button>
+          <!-- Pane 2: Punto-Pendiente & Ecuación Recta Mode -->
+          <div class="v-pane v-pane-line" id="vPaneLine" hidden>
+            <div class="v-group">
+              <span class="v-label">Modo Recta</span>
+              <div class="v-submode-toggle">
+                <button type="button" class="v-submode-btn is-active" id="subModePointsBtn" data-linemode="points" title="Recta por 2 puntos">2 Puntos</button>
+                <button type="button" class="v-submode-btn" id="subModeSlopeBtn" data-linemode="slope" title="Punto y Pendiente m (2D)">Pto-Pendiente</button>
+              </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Punto P₁ (x, y, z)</span>
+              <div class="v-coord-row">
+                <div class="v-coord-field"><label>X₁</label><input type="number" step="any" id="p1X" value="2" class="v-input-coord" /></div>
+                <div class="v-coord-field"><label>Y₁</label><input type="number" step="any" id="p1Y" value="-1" class="v-input-coord" /></div>
+                <div class="v-coord-field" id="p1ZWrap"><label>Z₁</label><input type="number" step="any" id="p1Z" value="3" class="v-input-coord" /></div>
+              </div>
+            </div>
+
+            <div class="v-group" id="p2Group">
+              <span class="v-label">Punto P₂ (x, y, z)</span>
+              <div class="v-coord-row">
+                <div class="v-coord-field"><label>X₂</label><input type="number" step="any" id="p2X" value="5" class="v-input-coord" /></div>
+                <div class="v-coord-field"><label>Y₂</label><input type="number" step="any" id="p2Y" value="4" class="v-input-coord" /></div>
+                <div class="v-coord-field" id="p2ZWrap"><label>Z₂</label><input type="number" step="any" id="p2Z" value="1" class="v-input-coord" /></div>
+              </div>
+            </div>
+
+            <div class="v-group" id="slopeGroup" hidden>
+              <span class="v-label">Pendiente m (Δy / Δx)</span>
+              <div class="v-coord-row">
+                <input type="text" id="slopeInput" value="-3/4" class="v-input-coord v-input-full" placeholder="-3/4 o -0.75" />
+              </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Ejercicios Típicos</span>
+              <div class="v-presets-list">
+                <button type="button" class="v-preset-btn" data-linepreset="1">P₁(2, -1, 3) a P₂(5, 4, 1)</button>
+                <button type="button" class="v-preset-btn" data-linepreset="2">P(3, 4) con m = -3/4</button>
+                <button type="button" class="v-preset-btn" data-linepreset="3">P(0, 3) con m = 1.5</button>
+                <button type="button" class="v-preset-btn" data-linepreset="4">P₁(-3, 2, 0) a P₂(3, -2, 0)</button>
+              </div>
             </div>
           </div>
 
-          <!-- Tripod Coordinate Axes -->
-          <div class="v-axis-widget" title="Ejes de coordenadas 3D del espacio cartesiano">
-            <span class="v-axis-label">Cartesian Axes</span>
-            <svg viewBox="0 0 50 50" class="v-axis-svg">
-              <line x1="25" y1="25" x2="25" y2="7" stroke="#0a0a0a" stroke-width="1.8" />
-              <text x="25" y="5" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">Y</text>
-              <line x1="25" y1="25" x2="9" y2="35" stroke="#0a0a0a" stroke-width="1.8" />
-              <text x="6" y="40" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">X</text>
-              <line x1="25" y1="25" x2="41" y2="35" stroke="#0a0a0a" stroke-width="1.8" />
-              <text x="44" y="40" font-size="8" text-anchor="middle" font-family="'Space Mono', monospace" font-weight="700">Z</text>
-            </svg>
+          <!-- Pane 3: Álgebra Vectorial Mode (A y B) -->
+          <div class="v-pane v-pane-vecs" id="vPaneVecs" hidden>
+            <div class="v-group">
+              <div class="v-label-row">
+                <span class="v-label">Vector A ⟨x, y, z⟩</span>
+                <span class="v-color-dot dot-a" title="Vector A (Azul)"></span>
+              </div>
+              <div class="v-coord-row">
+                <div class="v-coord-field"><label>Aₓ</label><input type="number" step="any" id="vAx" value="3" class="v-input-coord" /></div>
+                <div class="v-coord-field"><label>Aᵧ</label><input type="number" step="any" id="vAy" value="-2" class="v-input-coord" /></div>
+                <div class="v-coord-field"><label>A_z</label><input type="number" step="any" id="vAz" value="2" class="v-input-coord" /></div>
+              </div>
+            </div>
+
+            <div class="v-group">
+              <div class="v-label-row">
+                <span class="v-label">Vector B ⟨x, y, z⟩</span>
+                <span class="v-color-dot dot-b" title="Vector B (Ámbar)"></span>
+              </div>
+              <div class="v-coord-row">
+                <div class="v-coord-field"><label>Bₓ</label><input type="number" step="any" id="vBx" value="2" class="v-input-coord" /></div>
+                <div class="v-coord-field"><label>Bᵧ</label><input type="number" step="any" id="vBy" value="0" class="v-input-coord" /></div>
+                <div class="v-coord-field"><label>B_z</label><input type="number" step="any" id="vBz" value="-1" class="v-input-coord" /></div>
+              </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Ejercicios Típicos</span>
+              <div class="v-presets-list">
+                <button type="button" class="v-preset-btn" data-vecpreset="ortho">Ortogonales (A·B = 0)</button>
+                <button type="button" class="v-preset-btn" data-vecpreset="cross">Producto Cruz & Área</button>
+                <button type="button" class="v-preset-btn" data-vecpreset="angle">Ángulo 45° entre A y B</button>
+                <button type="button" class="v-preset-btn" data-vecpreset="parallel">Paralelos (A × B = 0)</button>
+              </div>
+            </div>
           </div>
         </aside>
 
-        <!-- Center 3D Stage -->
+        <!-- Center 3D / 2D Stage -->
         <main class="v-center-stage" id="vStage" tabindex="0" role="region" aria-label="3D Vector Canvas - Drag or use arrow keys to rotate">
+          
+          <!-- Floating Snap Toolbar for Analytic Modes -->
+          <div class="v-stage-view-bar" id="vViewBar" hidden>
+            <button type="button" class="v-snap-btn is-active" data-snap="3d" title="Órbita isométrica 3D">3D Orbit</button>
+            <button type="button" class="v-snap-btn" data-snap="xy" title="Plano 2D (XY) de frente">Plano 2D (XY)</button>
+            <button type="button" class="v-snap-btn" data-snap="xz" title="Plano horizontal (XZ)">Plano (XZ)</button>
+            <button type="button" class="v-snap-btn" data-snap="reset" title="Restaurar ángulo inicial">↺ Reset</button>
+          </div>
+
           <!-- Perspective Floor Grid (SVG) -->
           <svg class="v-floor-grid" viewBox="0 0 600 400" preserveAspectRatio="none">
             <defs>
@@ -607,96 +706,202 @@
 
         <!-- Right Controls: Vector Math, Lighting, Projection, Sliders -->
         <aside class="v-sidebar-right">
-          <!-- Live SO(3) Transformation Matrix -->
-          <div class="v-group">
-            <span class="v-label">Transform Matrix R</span>
-            <div class="v-matrix-card">
-              <div class="v-matrix-header">
-                <span class="v-matrix-tag">SO(3) Euler</span>
-                <span class="v-matrix-det" id="vMatrixDet">det = 1.000</span>
+          
+          <!-- Right Pane 1: 3D Mesh Controls -->
+          <div class="v-right-pane v-right-mesh" id="vRightMesh">
+            <!-- Live SO(3) Transformation Matrix -->
+            <div class="v-group">
+              <span class="v-label">Transform Matrix R</span>
+              <div class="v-matrix-card">
+                <div class="v-matrix-header">
+                  <span class="v-matrix-tag">SO(3) Euler</span>
+                  <span class="v-matrix-det" id="vMatrixDet">det = 1.000</span>
+                </div>
+                <div class="v-matrix-grid" id="vMatrixGrid" aria-label="Rotation Matrix values">
+                  <span>+0.819</span><span>+0.000</span><span>+0.574</span>
+                  <span>+0.269</span><span>+0.883</span><span>-0.385</span>
+                  <span>-0.507</span><span>+0.469</span><span>+0.723</span>
+                </div>
               </div>
-              <div class="v-matrix-grid" id="vMatrixGrid" aria-label="Rotation Matrix values">
-                <span>+0.819</span><span>+0.000</span><span>+0.574</span>
-                <span>+0.269</span><span>+0.883</span><span>-0.385</span>
-                <span>-0.507</span><span>+0.469</span><span>+0.723</span>
+            </div>
+
+            <!-- Vector Lighting & Diffuse Dot Product -->
+            <div class="v-group">
+              <div class="v-label-row">
+                <span class="v-label">Lighting Vector L̂</span>
+                <span class="v-dot-badge" id="vDotBadge">N̂·L̂: 0.82</span>
+              </div>
+              <div class="v-lighting-grid">
+                <button type="button" class="v-light-card is-active" data-light="spot" title="Luz focal dirigida">
+                  <div class="v-light-preview v-light-spot">
+                    <div class="v-spot-glow"></div>
+                  </div>
+                  <span>Spot</span>
+                </button>
+                <button type="button" class="v-light-card" data-light="area" title="Luz ambiental difusa">
+                  <div class="v-light-preview v-light-area">
+                    <div class="v-dots-matrix"></div>
+                  </div>
+                  <span>Area</span>
+                </button>
+                <button type="button" class="v-light-card" data-light="target" title="Vector de luz diagonal">
+                  <div class="v-light-preview v-light-target">
+                    <span class="v-arrow-icon">↙</span>
+                  </div>
+                  <span>Target</span>
+                </button>
+                <button type="button" class="v-light-card" data-light="sun" title="Rayos paralelos solares">
+                  <div class="v-light-preview v-light-sun">
+                    <div class="v-sun-circle"></div>
+                  </div>
+                  <span>Sun</span>
+                </button>
               </div>
             </div>
+
+            <!-- Camera Projection Mode Toggle -->
+            <div class="v-group">
+              <span class="v-label">Projection</span>
+              <div class="v-proj-toggle">
+                <button type="button" class="v-proj-btn is-active" data-proj="iso">Isometric</button>
+                <button type="button" class="v-proj-btn" data-proj="persp">Perspective</button>
+              </div>
+            </div>
+
+            <!-- Sliders -->
+            <div class="v-slider-group">
+              <div class="v-slider-header">
+                <span class="v-label">Brightness</span>
+                <span class="v-slider-val" id="vBrightnessVal">72%</span>
+              </div>
+              <div class="v-slider-track" id="vBrightnessSlider">
+                <div class="v-slider-fill" id="vBrightnessFill" style="width: 72%;"></div>
+                <input type="range" id="vBrightnessInput" min="20" max="100" value="72" aria-label="Brightness" class="v-range-input" />
+              </div>
+            </div>
+
+            <div class="v-slider-group">
+              <div class="v-slider-header">
+                <span class="v-label">Shadow Density</span>
+                <span class="v-slider-val" id="vShadowVal">65%</span>
+              </div>
+              <div class="v-slider-track" id="vShadowSlider">
+                <div class="v-slider-fill" id="vShadowFill" style="width: 65%;"></div>
+                <input type="range" id="vShadowInput" min="0" max="100" value="65" aria-label="Shadow Density" class="v-range-input" />
+              </div>
+            </div>
+
+            <!-- Vector Data Export Button -->
+            <button type="button" class="v-export-btn" id="vExportBtn" title="Copiar vértices y matriz de rotación en formato JSON para la tarea">
+              <svg class="v-export-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="vExportBtnLabel">COPY VECTORS (JSON)</span>
+            </button>
           </div>
 
-          <!-- Vector Lighting & Diffuse Dot Product -->
-          <div class="v-group">
-            <div class="v-label-row">
-              <span class="v-label">Lighting Vector L̂</span>
-              <span class="v-dot-badge" id="vDotBadge">N̂·L̂: 0.82</span>
-            </div>
-            <div class="v-lighting-grid">
-              <button type="button" class="v-light-card is-active" data-light="spot" title="Luz focal dirigida">
-                <div class="v-light-preview v-light-spot">
-                  <div class="v-spot-glow"></div>
+          <!-- Right Pane 2: Punto-Pendiente & Recta Verification -->
+          <div class="v-right-pane v-right-line" id="vRightLine" hidden>
+            <div class="v-group">
+              <span class="v-label">Verificación de Ejercicio</span>
+              <div class="v-calc-card">
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Vector Director v⃗</span>
+                  <span class="v-calc-val" id="calcLineVec">⟨3, 5, -2⟩</span>
                 </div>
-                <span>Spot</span>
-              </button>
-              <button type="button" class="v-light-card" data-light="area" title="Luz ambiental difusa">
-                <div class="v-light-preview v-light-area">
-                  <div class="v-dots-matrix"></div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Norma / Distancia ‖v⃗‖</span>
+                  <span class="v-calc-val" id="calcLineMag">6.164 u</span>
                 </div>
-                <span>Area</span>
-              </button>
-              <button type="button" class="v-light-card" data-light="target" title="Vector de luz diagonal">
-                <div class="v-light-preview v-light-target">
-                  <span class="v-arrow-icon">↙</span>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Vector Unitario û</span>
+                  <span class="v-calc-val" id="calcLineUnit">⟨0.487, 0.811, -0.324⟩</span>
                 </div>
-                <span>Target</span>
-              </button>
-              <button type="button" class="v-light-card" data-light="sun" title="Rayos paralelos solares">
-                <div class="v-light-preview v-light-sun">
-                  <div class="v-sun-circle"></div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Pendiente 2D (m) & Inclinación</span>
+                  <span class="v-calc-val" id="calcLineSlope">m = 1.667 (θ ≈ 59.04°)</span>
                 </div>
-                <span>Sun</span>
-              </button>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Ecuación Punto-Pendiente</span>
+                  <div class="v-calc-eq" id="calcEqPointSlope">y - (-1) = (5/3)(x - 2)</div>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Ecuación General (2D)</span>
+                  <div class="v-calc-eq" id="calcEqGeneral">5x - 3y - 13 = 0</div>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Ecuación Vectorial (3D)</span>
+                  <div class="v-calc-eq" id="calcEqVectorial">r⃗(t) = ⟨2, -1, 3⟩ + t⟨3, 5, -2⟩</div>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Ecuaciones Paramétricas</span>
+                  <div class="v-calc-eq" id="calcEqParam">x = 2 + 3t<br>y = -1 + 5t<br>z = 3 - 2t</div>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Ecuaciones Simétricas</span>
+                  <div class="v-calc-eq" id="calcEqSym">(x - 2)/3 = (y + 1)/5 = (z - 3)/-2</div>
+                </div>
+              </div>
             </div>
+
+            <button type="button" class="v-export-btn v-copy-solution" id="vCopyLineBtn" title="Copiar procedimiento completo formateado para la tarea">
+              <svg class="v-export-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="vCopyLineLabel">COPIAR PROCEDIMIENTO</span>
+            </button>
           </div>
 
-          <!-- Camera Projection Mode Toggle -->
-          <div class="v-group">
-            <span class="v-label">Projection</span>
-            <div class="v-proj-toggle">
-              <button type="button" class="v-proj-btn is-active" data-proj="iso">Isometric</button>
-              <button type="button" class="v-proj-btn" data-proj="persp">Perspective</button>
+          <!-- Right Pane 3: Álgebra Vectorial Verification -->
+          <div class="v-right-pane v-right-vecs" id="vRightVecs" hidden>
+            <div class="v-group">
+              <span class="v-label">Operaciones Vectoriales</span>
+              <div class="v-calc-card">
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Normas ‖A⃗‖ y ‖B⃗‖</span>
+                  <span class="v-calc-val" id="calcVecNorms">‖A⃗‖: 4.123 · ‖B⃗‖: 2.236</span>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Producto Punto A⃗ · B⃗</span>
+                  <span class="v-calc-val" id="calcVecDot">A⃗ · B⃗ = +4.000</span>
+                </div>
+                <div class="v-calc-item">
+                  <div class="v-label-row">
+                    <span class="v-calc-title">Ángulo θ entre A⃗ y B⃗</span>
+                    <span class="v-status-badge v-status-neutral" id="calcVecRelBadge">Ángulo Agudo</span>
+                  </div>
+                  <span class="v-calc-val" id="calcVecAngle">θ = 64.34° (1.123 rad)</span>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Producto Cruz A⃗ × B⃗ (Normal)</span>
+                  <div class="v-calc-eq" id="calcVecCross">⟨2, 7, 4⟩</div>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Área Paralelogramo ‖A⃗ × B⃗‖</span>
+                  <span class="v-calc-val" id="calcVecArea">Área = 8.307 u²</span>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Área Triángulo (½ ‖A⃗ × B⃗‖)</span>
+                  <span class="v-calc-val" id="calcVecTriArea">Área = 4.153 u²</span>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Proyección Ortogonal proy_B⃗(A⃗)</span>
+                  <div class="v-calc-eq" id="calcVecProj">⟨1.600, 0.000, -0.800⟩</div>
+                </div>
+              </div>
             </div>
+
+            <button type="button" class="v-export-btn v-copy-solution" id="vCopyVecBtn" title="Copiar procedimiento completo formateado para la tarea">
+              <svg class="v-export-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="vCopyVecLabel">COPIAR PROCEDIMIENTO</span>
+            </button>
           </div>
 
-          <!-- Sliders -->
-          <div class="v-slider-group">
-            <div class="v-slider-header">
-              <span class="v-label">Brightness</span>
-              <span class="v-slider-val" id="vBrightnessVal">72%</span>
-            </div>
-            <div class="v-slider-track" id="vBrightnessSlider">
-              <div class="v-slider-fill" id="vBrightnessFill" style="width: 72%;"></div>
-              <input type="range" id="vBrightnessInput" min="20" max="100" value="72" aria-label="Brightness" class="v-range-input" />
-            </div>
-          </div>
-
-          <div class="v-slider-group">
-            <div class="v-slider-header">
-              <span class="v-label">Shadow Density</span>
-              <span class="v-slider-val" id="vShadowVal">65%</span>
-            </div>
-            <div class="v-slider-track" id="vShadowSlider">
-              <div class="v-slider-fill" id="vShadowFill" style="width: 65%;"></div>
-              <input type="range" id="vShadowInput" min="0" max="100" value="65" aria-label="Shadow Density" class="v-range-input" />
-            </div>
-          </div>
-
-          <!-- Vector Data Export Button -->
-          <button type="button" class="v-export-btn" id="vExportBtn" title="Copiar vértices y matriz de rotación en formato JSON para la tarea">
-            <svg class="v-export-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2"/>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            <span id="vExportBtnLabel">COPY VECTORS (JSON)</span>
-          </button>
         </aside>
 
       </div>

@@ -1889,6 +1889,306 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 0.3; }
   color: #0a0a0a;
 }
 
+/* ── Vector Studio Mode Tabs & Analytical Geometry Controls ── */
+.v-mode-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--white);
+  padding: 2px;
+  border-radius: 4px;
+  border: 1px solid var(--border-light);
+  margin-left: 0.4rem;
+}
+
+.v-mode-tab {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  color: var(--gray-dark);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.v-mode-tab:hover {
+  color: var(--black);
+}
+
+.v-mode-tab.is-active {
+  background: var(--black);
+  color: var(--white);
+}
+
+/* Panes inside sidebar */
+.v-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 100%;
+}
+.v-pane[hidden], .v-right-pane[hidden] {
+  display: none !important;
+}
+
+.v-right-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 100%;
+}
+
+/* Submode switcher (2 Puntos vs Punto-Pendiente) */
+.v-submode-toggle {
+  display: flex;
+  gap: 0.3rem;
+  width: 100%;
+}
+
+.v-submode-btn {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 4px 6px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--gray-dark);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.v-submode-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+
+.v-submode-btn.is-active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+/* Coordinate input rows */
+.v-coord-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.v-coord-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.v-coord-field label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--gray-dark);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.v-input-coord {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 5px 6px;
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  background: #fbfbfb;
+  color: var(--black);
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.v-input-coord:focus {
+  outline: none;
+  border-color: var(--black);
+  background: var(--white);
+  box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.1);
+}
+
+.v-input-full {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* Presets list */
+.v-presets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.v-preset-btn {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  padding: 5px 7px;
+  background: #f7f8fa;
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  color: var(--gray-dark);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v-preset-btn:hover {
+  background: var(--white);
+  border-color: var(--black);
+  color: var(--black);
+}
+
+/* Color indicator dots */
+.v-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-a { background: #2563eb; }
+.dot-b { background: #d97706; }
+.dot-c { background: #16a34a; }
+
+/* Floating Snap Toolbar on Stage */
+.v-stage-view-bar {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 3px 4px;
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  z-index: 15;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.v-snap-btn {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  color: var(--gray-dark);
+  cursor: pointer;
+  border-radius: 14px;
+  transition: all 0.15s ease;
+}
+
+.v-snap-btn:hover {
+  color: var(--black);
+}
+
+.v-snap-btn.is-active {
+  background: var(--black);
+  color: var(--white);
+}
+
+/* Analytical results verification card */
+.v-calc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: #fbfbfb;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.v-calc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+  padding-bottom: 0.35rem;
+}
+
+.v-calc-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.v-calc-title {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  color: var(--gray-dark);
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.v-calc-val {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--black);
+  word-break: break-all;
+}
+
+.v-calc-eq {
+  font-family: var(--font-mono);
+  font-size: 0.70rem;
+  color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.05);
+  padding: 3px 6px;
+  border-radius: 2px;
+  border-left: 2px solid #2563eb;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.v-status-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.v-status-ortho {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.3);
+}
+
+.v-status-parallel {
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+.v-status-neutral {
+  background: rgba(0, 0, 0, 0.06);
+  color: #374151;
+}
+
+.v-copy-solution.is-copied {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  border-color: #16a34a !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .v-stage-layout {
