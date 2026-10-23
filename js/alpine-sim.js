@@ -86,34 +86,33 @@
   function mountainFBM(x, y) {
     let elevation = 0;
     let amplitude = 1.0;
-    let frequency = 0.025;
+    let frequency = 0.024;
 
-    // Octave 1: Main peak structure
+    // Octave 1: Main peak structure (Towering Matterhorn-style horn)
     let n = simplex2(x * frequency, y * frequency);
-    // Billowy / ridged transformation: sharp arêtes like the Matterhorn
     n = 1.0 - Math.abs(n);
-    elevation += n * n * amplitude * 18.0;
+    elevation += n * n * amplitude * 26.0;
 
     // Octave 2: Mid ridges
-    amplitude *= 0.5;
+    amplitude *= 0.52;
     frequency *= 2.1;
     n = simplex2((x + 40) * frequency, (y + 40) * frequency);
     n = 1.0 - Math.abs(n);
-    elevation += n * amplitude * 12.0;
+    elevation += n * amplitude * 16.0;
 
     // Octave 3: Craggy rocky details
     amplitude *= 0.45;
     frequency *= 2.2;
-    elevation += simplex2(x * frequency, y * frequency) * amplitude * 8.0;
+    elevation += simplex2(x * frequency, y * frequency) * amplitude * 9.0;
 
     // Octave 4: Micro rocks
     amplitude *= 0.4;
     frequency *= 2.4;
-    elevation += simplex2(x * frequency, y * frequency) * amplitude * 3.5;
+    elevation += simplex2(x * frequency, y * frequency) * amplitude * 4.0;
 
-    // Shift high peak towards the right like the reference image
-    const biasX = (x + 10) * 0.035;
-    const peakBias = Math.exp(-biasX * biasX) * 10.0;
+    // Shift high towering peak towards the right like the reference image
+    const biasX = (x + 8) * 0.035;
+    const peakBias = Math.exp(-biasX * biasX) * 16.0;
     elevation += peakBias;
 
     return Math.max(0, elevation);
@@ -122,11 +121,11 @@
 
   // ── 2. STATE & SIMULATION CONTROLS ─────────────────────
   const simState = {
-    stormIntensity: 0.65, // 0 (calm) -> 1 (heavy storm)
-    cameraOrbit: 0.45,    // Orbit angle around mountains
-    cameraPitch: 0.35,    // Elevation
-    windSpeed: 0.70,      // Fog & rain wind velocity
-    fogDensity: 0.65,
+    stormIntensity: 0.65, // Reference image telemetry level (calibrated to preserve crisp alpine visibility)
+    cameraOrbit: 0.32,    // Best angle showing dramatic mountain face
+    cameraPitch: 0.28,    // Low angle looking upward at towering summit
+    windSpeed: 0.65,      // Fog & rain wind velocity
+    fogDensity: 0.45,
     isAudioActive: false,
     lightningTimer: 0,
     fps: 60
@@ -139,11 +138,11 @@
   if (!canvas || !container || typeof THREE === 'undefined') return;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xdde3ea);
-  scene.fog = new THREE.FogExp2(0xdde3ea, 0.012);
+  scene.background = new THREE.Color(0xedf2f7);
+  scene.fog = new THREE.FogExp2(0xedf2f7, 0.005);
 
   const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.5, 400);
-  camera.position.set(0, 18, 55);
+  camera.position.set(0, 16, 40);
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -157,15 +156,15 @@
 
 
   // ── 4. LIGHTING ────────────────────────────────────────
-  const ambientLight = new THREE.AmbientLight(0xcfd7e3, 0.9);
+  const ambientLight = new THREE.AmbientLight(0xdde6f2, 1.15);
   scene.add(ambientLight);
 
-  const sunLight = new THREE.DirectionalLight(0xfff5ea, 1.35);
-  sunLight.position.set(-35, 45, 30);
+  const sunLight = new THREE.DirectionalLight(0xfff8ee, 1.65);
+  sunLight.position.set(-35, 48, 30);
   scene.add(sunLight);
 
-  const rimLight = new THREE.DirectionalLight(0xadc4db, 0.65);
-  rimLight.position.set(40, 20, -30);
+  const rimLight = new THREE.DirectionalLight(0xb4d0eb, 0.85);
+  rimLight.position.set(40, 22, -28);
   scene.add(rimLight);
 
 
@@ -205,18 +204,18 @@
     const slope = 1.0 - ny;
 
     const c = new THREE.Color();
-    if (y > 22 && slope < 0.45) {
+    if (y > 28 && slope < 0.45) {
       c.copy(colorSnow);
-      c.lerp(colorRockLight, slope * 0.8);
-    } else if (slope > 0.48) {
+      c.lerp(colorRockLight, slope * 0.7);
+    } else if (slope > 0.46) {
       c.copy(colorRockDark);
-      c.lerp(colorRockLight, Math.min(1, y / 28));
-    } else if (y > 6 && y <= 22) {
+      c.lerp(colorRockLight, Math.min(1, y / 34));
+    } else if (y > 8 && y <= 28) {
       c.copy(colorForest);
       c.lerp(colorForestDark, slope);
     } else {
       c.copy(colorValley);
-      c.lerp(colorForestDark, Math.min(1, y / 8));
+      c.lerp(colorForestDark, Math.min(1, y / 10));
     }
     colors.push(c.r, c.g, c.b);
   }
@@ -225,12 +224,12 @@
 
   const terrainMat = new THREE.MeshStandardMaterial({
     vertexColors: true,
-    roughness: 0.92,
-    metalness: 0.05
+    roughness: 0.90,
+    metalness: 0.06
   });
 
   const proceduralMesh = new THREE.Mesh(terrainGeom, terrainMat);
-  proceduralMesh.position.set(0, -6, 0);
+  proceduralMesh.position.set(2, -6, -2);
   terrainGroup.add(proceduralMesh);
 
   // Load Real 3D Photorealistic Mountain Asset (GLTF/GLB)
@@ -242,30 +241,32 @@
       gltf => {
         realMountainModel = gltf.scene;
 
-        // Auto-scale and orient to match reference image framing
+        // Auto-scale and orient with dramatic Matterhorn-style vertical exaggeration
         const box = new THREE.Box3().setFromObject(realMountainModel);
         const size = new THREE.Vector3();
         box.getSize(size);
         const center = new THREE.Vector3();
         box.getCenter(center);
 
-        const targetWidth = 115;
-        const scale = targetWidth / Math.max(size.x, size.z);
-        realMountainModel.scale.setScalar(scale);
+        // Apply non-uniform scale: horizontal 142 units, vertical 3.7x exaggeration so peak towers into upper frame
+        const targetWidth = 142;
+        const scaleXZ = targetWidth / Math.max(size.x, size.z);
+        const scaleY = scaleXZ * 3.7;
+        realMountainModel.scale.set(scaleXZ, scaleY, scaleXZ);
 
-        // Center mountain peak
-        realMountainModel.position.x = -center.x * scale + 6;
-        realMountainModel.position.y = -center.y * scale - 7;
-        realMountainModel.position.z = -center.z * scale - 10;
-        realMountainModel.rotation.y = -0.55;
+        // Position mountain so the sharp alpine peak rises into center-right behind header
+        realMountainModel.position.x = -center.x * scaleXZ + 4.5;
+        realMountainModel.position.y = -box.min.y * scaleY - 7.5;
+        realMountainModel.position.z = -center.z * scaleXZ - 7.0;
+        realMountainModel.rotation.y = -0.42;
 
         realMountainModel.traverse(child => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
             if (child.material) {
-              child.material.roughness = 0.88;
-              child.material.metalness = 0.06;
+              child.material.roughness = 0.82;
+              child.material.metalness = 0.08;
               if (child.material.map) {
                 child.material.map.encoding = THREE.sRGBEncoding;
               }
@@ -277,8 +278,8 @@
         terrainGroup.clear();
         terrainGroup.add(realMountainModel);
 
-        const statusLabel = document.querySelector('.sim-status-chip span:last-child');
-        if (statusLabel) statusLabel.textContent = 'Photoreal 3D Mountain Active';
+        const statusLabel = document.getElementById('simStatusText');
+        if (statusLabel) statusLabel.textContent = 'Photoreal 3D Alpine Peak Active';
       },
       undefined,
       err => {
@@ -289,15 +290,15 @@
 
 
   // ── 6. VOLUMETRIC VALLEY MIST / FOG LAYERS ─────────────
-  // Create 4 layered mist sheets that drift with wind
+  // Create layered mist sheets that drift with wind through the lower valleys
   const mistGroup = new THREE.Group();
   const mistCanvas = document.createElement('canvas');
   mistCanvas.width = 256;
   mistCanvas.height = 256;
   const mCtx = mistCanvas.getContext('2d');
   const mGrad = mCtx.createRadialGradient(128, 128, 10, 128, 128, 128);
-  mGrad.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
-  mGrad.addColorStop(0.5, 'rgba(240, 245, 250, 0.2)');
+  mGrad.addColorStop(0, 'rgba(255, 255, 255, 0.55)');
+  mGrad.addColorStop(0.5, 'rgba(240, 245, 250, 0.25)');
   mGrad.addColorStop(1, 'rgba(240, 245, 250, 0)');
   mCtx.fillStyle = mGrad;
   mCtx.fillRect(0, 0, 256, 256);
@@ -307,17 +308,17 @@
   mistTex.wrapT = THREE.RepeatWrapping;
 
   const mistPlanes = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 5; i++) {
     const mistMat = new THREE.MeshBasicMaterial({
       map: mistTex,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.45,
       depthWrite: false,
       blending: THREE.NormalBlending
     });
-    const mistPlane = new THREE.Mesh(new THREE.PlaneGeometry(80, 50), mistMat);
-    mistPlane.rotation.x = -Math.PI * 0.42;
-    mistPlane.position.set((i - 2.5) * 14, 2 + i * 1.8, 4 + i * 4);
+    const mistPlane = new THREE.Mesh(new THREE.PlaneGeometry(85, 38), mistMat);
+    mistPlane.rotation.x = -Math.PI * 0.45;
+    mistPlane.position.set((i - 2) * 15, 2.5 + i * 1.0, -2 + i * 5);
     mistGroup.add(mistPlane);
     mistPlanes.push(mistPlane);
   }
@@ -615,13 +616,13 @@
       fpsTimer = now;
     }
 
-    // 1. Update Camera Position based on orbit and pitch
-    const dist = 52;
-    const camX = Math.sin(simState.cameraOrbit) * dist * Math.cos(simState.cameraPitch);
-    const camZ = Math.cos(simState.cameraOrbit) * dist * Math.cos(simState.cameraPitch);
-    const camY = Math.sin(simState.cameraPitch) * dist + 4;
+    // 1. Update Camera Position: dramatic low heroic perspective looking up at towering summit
+    const dist = 38;
+    const camX = Math.sin(simState.cameraOrbit) * dist * Math.cos(simState.cameraPitch) - 1.5;
+    const camZ = Math.cos(simState.cameraOrbit) * dist * Math.cos(simState.cameraPitch) + 3.0;
+    const camY = Math.sin(simState.cameraPitch) * dist + 8.5;
     camera.position.set(camX, camY, camZ);
-    camera.lookAt(2, 8, 0);
+    camera.lookAt(4.5, 17, -6.5);
 
     // 2. Animate Mist Layers
     const windSpeed = 1.2 + simState.windSpeed * 4.0;
@@ -630,24 +631,25 @@
       if (plane.position.x > 45) plane.position.x = -45;
     });
 
-    // 3. Dynamic Weather Adjustments (Sunny <-> Storm)
+    // 3. Dynamic Weather Adjustments (Crisp Alpine <-> Mountain Storm)
     const storm = simState.stormIntensity;
 
-    // Sky and fog darkening
-    const clearSky = new THREE.Color(0xdce3ea);
-    const stormSky = new THREE.Color(0x38414d);
-    scene.background.copy(clearSky).lerp(stormSky, storm);
+    // Atmospheric sky and fog transition: ensures mountains stay razor-sharp and towering at all intensities
+    const clearSky = new THREE.Color(0xedf2f7);
+    const stormSky = new THREE.Color(0x8694a4);
+    scene.background.copy(clearSky).lerp(stormSky, storm * 0.65);
     scene.fog.color.copy(scene.background);
-    scene.fog.density = 0.010 + storm * 0.018;
+    scene.fog.density = 0.005 + storm * 0.007;
 
-    // Sunlight intensity drops during storm
-    sunLight.intensity = (1.35 * (1 - storm * 0.75));
-    sunLight.color.setHex(storm > 0.5 ? 0xaec0d4 : 0xfff5ea);
-    ambientLight.intensity = (0.9 * (1 - storm * 0.45));
+    // Sunlight and ambient light balance
+    sunLight.intensity = Math.max(0.65, 1.65 * (1 - storm * 0.32));
+    sunLight.color.setHex(storm > 0.4 ? 0xbcd0e2 : 0xfff8ee);
+    ambientLight.intensity = Math.max(0.55, 1.15 * (1 - storm * 0.22));
+    rimLight.intensity = 0.85 + storm * 0.35;
 
     // 4. Animate Rain Particles
     const rainSlant = 0.28 + storm * 0.35;
-    rainMat.opacity = THREE.MathUtils.lerp(0.0, 0.45, Math.max(0, (storm - 0.15) * 1.2));
+    rainMat.opacity = storm < 0.15 ? 0 : THREE.MathUtils.lerp(0.0, 0.38, (storm - 0.15) / 0.85);
 
     if (rainMat.opacity > 0.01) {
       for (let i = 0; i < rainCount; i++) {
@@ -709,5 +711,22 @@
     camera.updateProjectionMatrix();
     renderer.setSize(container.clientWidth, container.clientHeight);
   });
+
+  // ── 12. REAL-TIME SYSTEM CLOCK (CURRENT YEAR & TIME) ───
+  const liveDateEl = document.getElementById('simLiveDate');
+  function updateLiveClock() {
+    if (!liveDateEl) return;
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const year = now.getFullYear();
+    const month = pad(now.getMonth() + 1);
+    const day = pad(now.getDate());
+    const hours = pad(now.getHours());
+    const mins = pad(now.getMinutes());
+    const secs = pad(now.getSeconds());
+    liveDateEl.textContent = `${year}-${month}-${day} ${hours}:${mins}:${secs}`;
+  }
+  updateLiveClock();
+  setInterval(updateLiveClock, 1000);
 
 })();

@@ -82,8 +82,9 @@
         <div class="sim-header-right">
           <div class="sim-status-chip">
             <span class="sim-pulse-dot" aria-hidden="true"></span>
-            <span>GPU Engine Active</span>
+            <span id="simStatusText">GPU Engine Active</span>
           </div>
+          <div class="sim-live-time" id="simLiveDate" title="Tiempo real sincronizado con el sistema">--:--:--</div>
           <button type="button" class="sim-audio-btn" id="audioBtn" title="Activar sonido procedural de viento y tormenta">
             <svg class="sim-audio-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
@@ -99,8 +100,8 @@
       <footer class="sim-bottom-panel-wrap">
         
         <!-- S-Curve Wave SVG divider (Curved organic landscape contour) -->
-        <svg class="sim-wave-divider" viewBox="0 0 1000 50" preserveAspectRatio="none">
-          <path d="M 0,25 C 220,55 380,-10 650,30 C 820,52 930,12 1000,32 L 1000,50 L 0,50 Z" fill="#383d46" />
+        <svg class="sim-wave-divider" viewBox="0 0 1000 65" preserveAspectRatio="none">
+          <path d="M 0,34 C 180,58 340,64 500,48 C 680,30 800,14 900,22 C 945,26 978,30 1000,32 L 1000,65 L 0,65 Z" fill="#383d46" />
         </svg>
 
         <div class="sim-dark-panel">
