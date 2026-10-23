@@ -467,6 +467,22 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
     const vCopyVecBtn = document.getElementById('vCopyVecBtn');
     const vCopyVecLabel = document.getElementById('vCopyVecLabel');
 
+    // Additional Vector Operations & Toggles Elements
+    const vLinePresetSelect = document.getElementById('vLinePresetSelect');
+    const vVecPresetSelect = document.getElementById('vVecPresetSelect');
+    const vKa = document.getElementById('vKa');
+    const vKb = document.getElementById('vKb');
+    const layerSum = document.getElementById('layerSum');
+    const layerDiff = document.getElementById('layerDiff');
+    const layerCross = document.getElementById('layerCross');
+    const layerGramSchmidt = document.getElementById('layerGramSchmidt');
+
+    const calcVecSumNorm = document.getElementById('calcVecSumNorm');
+    const calcVecDiffNorm = document.getElementById('calcVecDiffNorm');
+    const calcVecSum = document.getElementById('calcVecSum');
+    const calcVecDiff = document.getElementById('calcVecDiff');
+    const calcVecOrthoComp = document.getElementById('calcVecOrthoComp');
+
     // Mathematical utility formatters
     function parseSlope(str) {
       if (!str) return 0;
@@ -608,8 +624,11 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       const by = parseFloat(vBy?.value || 0);
       const bz = parseFloat(vBz?.value || 0);
 
-      const a = [ax, ay, az];
-      const b = [bx, by, bz];
+      const kA = parseFloat(vKa?.value || 1);
+      const kB = parseFloat(vKb?.value || 1);
+
+      const a = [ax * kA, ay * kA, az * kA];
+      const b = [bx * kB, by * kB, bz * kB];
 
       const normA = Math.hypot(...a);
       const normB = Math.hypot(...b);
@@ -624,11 +643,22 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         angleDeg = Math.acos(cosTheta) * (180 / Math.PI);
       }
 
+      // Sum and Difference vectors
+      const sum = [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+      const normSum = Math.hypot(...sum);
+
+      const diff = [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+      const normDiff = Math.hypot(...diff);
+
+      // Orthogonal Projection and Gram-Schmidt decomposition
       let proj = [0, 0, 0];
       if (normB > 0) {
         const factor = dot / (normB * normB);
         proj = [b[0] * factor, b[1] * factor, b[2] * factor];
       }
+      const orthoComp = [a[0] - proj[0], a[1] - proj[1], a[2] - proj[2]];
+      const normOrthoComp = Math.hypot(...orthoComp);
+      const compB_A = normB > 0 ? dot / normB : 0;
 
       if (calcVecNorms) calcVecNorms.textContent = `‖A⃗‖ = ${formatNumber(normA, 3)} · ‖B⃗‖ = ${formatNumber(normB, 3)}`;
       if (calcVecDot) calcVecDot.textContent = `A⃗ · B⃗ = ${dot >= 0 ? '+' : ''}${formatNumber(dot, 3)}`;
@@ -650,13 +680,20 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         }
       }
 
+      if (calcVecSumNorm) calcVecSumNorm.textContent = `${formatNumber(normSum, 3)} u`;
+      if (calcVecDiffNorm) calcVecDiffNorm.textContent = `${formatNumber(normDiff, 3)} u`;
+      if (calcVecSum) calcVecSum.textContent = `⟨${formatNumber(sum[0])}, ${formatNumber(sum[1])}, ${formatNumber(sum[2])}⟩`;
+      if (calcVecDiff) calcVecDiff.textContent = `⟨${formatNumber(diff[0])}, ${formatNumber(diff[1])}, ${formatNumber(diff[2])}⟩`;
       if (calcVecCross) calcVecCross.textContent = `⟨${formatNumber(cross[0])}, ${formatNumber(cross[1])}, ${formatNumber(cross[2])}⟩`;
-      if (calcVecArea) calcVecArea.textContent = `Área = ${formatNumber(normCross, 3)} u²`;
+      if (calcVecArea) calcVecArea.textContent = `Paralelogramo: ${formatNumber(normCross, 3)} u² · Triángulo: ${formatNumber(normCross * 0.5, 3)} u²`;
       if (calcVecTriArea) calcVecTriArea.textContent = `Área = ${formatNumber(normCross * 0.5, 3)} u²`;
-      if (calcVecProj) calcVecProj.textContent = `⟨${formatNumber(proj[0], 3)}, ${formatNumber(proj[1], 3)}, ${formatNumber(proj[2], 3)}⟩`;
+      if (calcVecProj) calcVecProj.textContent = `⟨${formatNumber(proj[0], 3)}, ${formatNumber(proj[1], 3)}, ${formatNumber(proj[2], 3)}⟩ (comp = ${formatNumber(compB_A, 3)})`;
+      if (calcVecOrthoComp) calcVecOrthoComp.textContent = `⟨${formatNumber(orthoComp[0], 3)}, ${formatNumber(orthoComp[1], 3)}, ${formatNumber(orthoComp[2], 3)}⟩ (‖A_⊥‖ = ${formatNumber(normOrthoComp, 3)})`;
 
       return {
-        a, b, normA, normB, dot, cross, normCross, angleDeg, proj
+        a, b, normA, normB, dot, cross, normCross, angleDeg, proj,
+        sum, normSum, diff, normDiff, orthoComp, normOrthoComp, compB_A,
+        kA, kB
       };
     }
 
@@ -935,8 +972,19 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       if (degYaw < 0) degYaw += 360;
       let degPitch = Math.round(pitch * 180 / Math.PI);
 
-      rotDeg.textContent = `${degYaw}°`;
-      if (rotMeta) rotMeta.textContent = `θ: ${degYaw.toFixed(1)}° · φ: ${degPitch.toFixed(1)}°`;
+      const is2DFlat = (Math.abs(yaw) < 0.02 && Math.abs(pitch) < 0.02);
+      if (rotDeg) rotDeg.textContent = is2DFlat ? '2D' : `${degYaw}°`;
+      if (rotMeta) rotMeta.textContent = is2DFlat ? 'Plano Cartesiano (XY)' : `θ: ${degYaw.toFixed(1)}° · φ: ${degPitch.toFixed(1)}°`;
+
+      const floorGridEl = document.querySelector('.v-floor-grid');
+      if (floorGridEl) {
+        floorGridEl.style.display = (activeVMode !== '3d-mesh' && is2DFlat) ? 'none' : '';
+      }
+
+      // Hide or show contact shadow
+      if (shadow) {
+        shadow.style.display = (activeVMode === '3d-mesh') ? '' : 'none';
+      }
 
       updateTripod(rotM);
       updateMatrixHUD(rotM);
@@ -975,6 +1023,24 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
           svgContent += `<text x="${(zPos2d.x + 6).toFixed(1)}" y="${(zPos2d.y + 4).toFixed(1)}" font-family="'Space Mono', monospace" font-size="10" font-weight="700" fill="#1d4ed8">+Z</text>`;
         }
 
+        // ── Mathematical Orthogonal Shadows (Y = 0 Ground Projection) ──
+        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+          const pt1Floor = projectPoint([line.p1[0] * scale, 0, line.p1[2] * scale], rotM, cx, cy);
+          const pt2Floor = projectPoint([line.p2[0] * scale, 0, line.p2[2] * scale], rotM, cx, cy);
+
+          // Vertical drop lines
+          if (Math.abs(line.p1[1]) > 0.01) {
+            svgContent += `<line x1="${pt1.x.toFixed(1)}" y1="${pt1.y.toFixed(1)}" x2="${pt1Floor.x.toFixed(1)}" y2="${pt1Floor.y.toFixed(1)}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2 2" stroke-opacity="0.85" />`;
+            svgContent += `<ellipse cx="${pt1Floor.x.toFixed(1)}" cy="${pt1Floor.y.toFixed(1)}" rx="3.5" ry="1.8" fill="rgba(15, 23, 42, 0.25)" />`;
+          }
+          if (Math.abs(line.p2[1]) > 0.01) {
+            svgContent += `<line x1="${pt2.x.toFixed(1)}" y1="${pt2.y.toFixed(1)}" x2="${pt2Floor.x.toFixed(1)}" y2="${pt2Floor.y.toFixed(1)}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2 2" stroke-opacity="0.85" />`;
+            svgContent += `<ellipse cx="${pt2Floor.x.toFixed(1)}" cy="${pt2Floor.y.toFixed(1)}" rx="3.5" ry="1.8" fill="rgba(15, 23, 42, 0.25)" />`;
+          }
+          // Floor shadow line
+          svgContent += `<line x1="${pt1Floor.x.toFixed(1)}" y1="${pt1Floor.y.toFixed(1)}" x2="${pt2Floor.x.toFixed(1)}" y2="${pt2Floor.y.toFixed(1)}" stroke="#64748b" stroke-width="1.4" stroke-dasharray="3 3" stroke-opacity="0.5" />`;
+        }
+
         // Infinite dashed line
         const tRange = 4.0;
         const lineStart3D = [
@@ -999,6 +1065,7 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         if (line.isSlopeMode || (line.p1[2] === 0 && line.p2[2] === 0)) {
           const corner3D = [line.p2[0] * scale, line.p1[1] * scale, 0];
           const ptCorner = projectPoint(corner3D, rotM, cx, cy);
+          svgContent += `<polygon points="${pt1.x.toFixed(1)},${pt1.y.toFixed(1)} ${ptCorner.x.toFixed(1)},${ptCorner.y.toFixed(1)} ${pt2.x.toFixed(1)},${pt2.y.toFixed(1)}" fill="rgba(37, 99, 235, 0.08)" />`;
           svgContent += `<line x1="${pt1.x.toFixed(1)}" y1="${pt1.y.toFixed(1)}" x2="${ptCorner.x.toFixed(1)}" y2="${ptCorner.y.toFixed(1)}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="2.5 2.5" />`;
           svgContent += `<line x1="${ptCorner.x.toFixed(1)}" y1="${ptCorner.y.toFixed(1)}" x2="${pt2.x.toFixed(1)}" y2="${pt2.y.toFixed(1)}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="2.5 2.5" />`;
           const midX = (pt1.x + pt2.x) / 2;
@@ -1076,8 +1143,34 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
           svgContent += `<text x="${(zPos2d.x + 5).toFixed(1)}" y="${(zPos2d.y + 4).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#1d4ed8">+Z</text>`;
         }
 
+        // ── Mathematical Orthogonal Shadows (Y = 0 Ground Projection) ──
+        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+          const ptAFloor = projectPoint([vData.a[0] * scale, 0, vData.a[2] * scale], rotM, cx, cy);
+          const ptBFloor = projectPoint([vData.b[0] * scale, 0, vData.b[2] * scale], rotM, cx, cy);
+          const ptSumFloor = projectPoint([(vData.a[0] + vData.b[0]) * scale, 0, (vData.a[2] + vData.b[2]) * scale], rotM, cx, cy);
+
+          // Floor shadow parallelogram
+          svgContent += `<polygon points="${o2d.x.toFixed(1)},${o2d.y.toFixed(1)} ${ptAFloor.x.toFixed(1)},${ptAFloor.y.toFixed(1)} ${ptSumFloor.x.toFixed(1)},${ptSumFloor.y.toFixed(1)} ${ptBFloor.x.toFixed(1)},${ptBFloor.y.toFixed(1)}" fill="rgba(0, 0, 0, 0.035)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" stroke-dasharray="2 2" />`;
+
+          // Drop lines from vector tips to floor
+          if (Math.abs(vData.a[1]) > 0.01) {
+            svgContent += `<line x1="${ptA.x.toFixed(1)}" y1="${ptA.y.toFixed(1)}" x2="${ptAFloor.x.toFixed(1)}" y2="${ptAFloor.y.toFixed(1)}" stroke="rgba(37, 99, 235, 0.4)" stroke-width="1.2" stroke-dasharray="2 2" />`;
+            svgContent += `<ellipse cx="${ptAFloor.x.toFixed(1)}" cy="${ptAFloor.y.toFixed(1)}" rx="3.5" ry="1.8" fill="rgba(37, 99, 235, 0.25)" />`;
+          }
+          if (Math.abs(vData.b[1]) > 0.01) {
+            svgContent += `<line x1="${ptB.x.toFixed(1)}" y1="${ptB.y.toFixed(1)}" x2="${ptBFloor.x.toFixed(1)}" y2="${ptBFloor.y.toFixed(1)}" stroke="rgba(217, 119, 6, 0.4)" stroke-width="1.2" stroke-dasharray="2 2" />`;
+            svgContent += `<ellipse cx="${ptBFloor.x.toFixed(1)}" cy="${ptBFloor.y.toFixed(1)}" rx="3.5" ry="1.8" fill="rgba(217, 119, 6, 0.25)" />`;
+          }
+
+          // Floor shadow vector rays
+          svgContent += `<line x1="${o2d.x.toFixed(1)}" y1="${o2d.y.toFixed(1)}" x2="${ptAFloor.x.toFixed(1)}" y2="${ptAFloor.y.toFixed(1)}" stroke="rgba(37, 99, 235, 0.28)" stroke-width="1.4" stroke-dasharray="3 2" />`;
+          svgContent += `<line x1="${o2d.x.toFixed(1)}" y1="${o2d.y.toFixed(1)}" x2="${ptBFloor.x.toFixed(1)}" y2="${ptBFloor.y.toFixed(1)}" stroke="rgba(217, 119, 6, 0.28)" stroke-width="1.4" stroke-dasharray="3 2" />`;
+        }
+
         // Parallelogram spanned by A and B
-        svgContent += `<polygon points="${o2d.x.toFixed(1)},${o2d.y.toFixed(1)} ${ptA.x.toFixed(1)},${ptA.y.toFixed(1)} ${ptSum.x.toFixed(1)},${ptSum.y.toFixed(1)} ${ptB.x.toFixed(1)},${ptB.y.toFixed(1)}" fill="rgba(37, 99, 235, 0.08)" stroke="#93c5fd" stroke-width="1.2" stroke-dasharray="3 3" />`;
+        if (!layerPlane || layerPlane.checked) {
+          svgContent += `<polygon points="${o2d.x.toFixed(1)},${o2d.y.toFixed(1)} ${ptA.x.toFixed(1)},${ptA.y.toFixed(1)} ${ptSum.x.toFixed(1)},${ptSum.y.toFixed(1)} ${ptB.x.toFixed(1)},${ptB.y.toFixed(1)}" fill="rgba(37, 99, 235, 0.08)" stroke="#93c5fd" stroke-width="1.2" stroke-dasharray="3 3" />`;
+        }
 
         // Arrow drawing helper
         function drawVectorArrow(pStart, pEnd, color, label, width = 2.4) {
@@ -1104,14 +1197,29 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         // Vector B (Amber)
         svgContent += drawVectorArrow(o2d, ptB, '#d97706', 'B⃗', 2.8);
 
+        // Vector Resultant A + B (Purple)
+        if (!layerSum || layerSum.checked) {
+          svgContent += drawVectorArrow(o2d, ptSum, '#8b5cf6', 'A⃗+B⃗', 2.4);
+        }
+
+        // Vector Difference A - B (Cyan)
+        if (layerDiff && layerDiff.checked) {
+          const ptDiff = projectPoint([vData.diff[0] * scale, vData.diff[1] * scale, vData.diff[2] * scale], rotM, cx, cy);
+          svgContent += drawVectorArrow(o2d, ptDiff, '#0891b2', 'A⃗-B⃗', 2.2);
+          svgContent += `<line x1="${ptB.x.toFixed(1)}" y1="${ptB.y.toFixed(1)}" x2="${ptA.x.toFixed(1)}" y2="${ptA.y.toFixed(1)}" stroke="#0891b2" stroke-width="1.4" stroke-dasharray="3 2" />`;
+        }
+
         // Cross Product Vector A x B (Green)
-        if (vData.normCross > 0.01) {
+        if ((!layerCross || layerCross.checked) && vData.normCross > 0.01) {
           svgContent += drawVectorArrow(o2d, ptCross, '#16a34a', 'A⃗×B⃗', 2.2);
         }
 
-        // Projection of A onto B
-        svgContent += `<line x1="${ptA.x.toFixed(1)}" y1="${ptA.y.toFixed(1)}" x2="${ptProj.x.toFixed(1)}" y2="${ptProj.y.toFixed(1)}" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="2 2" />`;
-        svgContent += `<circle cx="${ptProj.x.toFixed(1)}" cy="${ptProj.y.toFixed(1)}" r="3" fill="#d97706" />`;
+        // Projection of A onto B and Orthogonal Component (Gram-Schmidt)
+        if (!layerGramSchmidt || layerGramSchmidt.checked) {
+          svgContent += `<line x1="${ptA.x.toFixed(1)}" y1="${ptA.y.toFixed(1)}" x2="${ptProj.x.toFixed(1)}" y2="${ptProj.y.toFixed(1)}" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="2 2" />`;
+          svgContent += `<circle cx="${ptProj.x.toFixed(1)}" cy="${ptProj.y.toFixed(1)}" r="3" fill="#d97706" />`;
+          svgContent += drawVectorArrow(ptProj, ptA, '#ec4899', 'A⃗_⊥', 1.8);
+        }
 
         // Origin
         svgContent += `<circle cx="${o2d.x.toFixed(1)}" cy="${o2d.y.toFixed(1)}" r="3.5" fill="#0a0a0a" />`;
@@ -1309,6 +1417,10 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
 
     // Interactive Dragging on Stage
     stage.addEventListener('pointerdown', e => {
+      // Never capture drag if clicking view buttons, controls or inputs
+      if (e.target.closest('.v-stage-view-bar') || e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) {
+        return;
+      }
       isDragging = true;
       startX = e.clientX;
       startY = e.clientY;
@@ -1318,43 +1430,50 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
     });
 
     stage.addEventListener('pointermove', e => {
-      // Check vertex hover for Inspector
-      const rect = stage.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      // Check vertex hover for Inspector ONLY in 3D Mesh mode
+      if (activeVMode === '3d-mesh' && (currentTool === 'inspector' || currentForm === 'points')) {
+        const rect = stage.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
 
-      const rotM = computeRotationMatrix(yaw, pitch);
-      const model = getModel();
-      const cx = 170;
-      const cy = 146;
+        const rotM = computeRotationMatrix(yaw, pitch);
+        const model = getModel();
+        const cx = 170;
+        const cy = 146;
 
-      let foundIdx = -1;
-      let minDist = 18;
+        let foundIdx = -1;
+        let minDist = 18;
 
-      model.vertices.forEach((v, idx) => {
-        const p = projectPoint(v, rotM, cx, cy);
-        const dist = Math.hypot(p.x - mouseX, p.y - mouseY);
-        if (dist < minDist) {
-          minDist = dist;
-          foundIdx = idx;
-        }
-      });
-
-      if (foundIdx !== hoveredVertexIdx) {
-        hoveredVertexIdx = foundIdx;
-        if (hoveredVertexIdx >= 0 && vertexHud) {
-          const v = model.vertices[hoveredVertexIdx];
+        model.vertices.forEach((v, idx) => {
           const p = projectPoint(v, rotM, cx, cy);
-          vertexHud.hidden = false;
-          vertexHud.style.left = `${p.x}px`;
-          vertexHud.style.top = `${p.y}px`;
-          if (hudId) hudId.textContent = `v${hoveredVertexIdx}`;
-          if (hudCoords) hudCoords.textContent = `[${v[0].toFixed(0)}, ${v[1].toFixed(0)}, ${v[2].toFixed(0)}]`;
-          if (hudMag) hudMag.textContent = `|v|=${Math.hypot(...v).toFixed(1)}`;
-        } else if (vertexHud) {
-          vertexHud.hidden = true;
+          const dist = Math.hypot(p.x - mouseX, p.y - mouseY);
+          if (dist < minDist) {
+            minDist = dist;
+            foundIdx = idx;
+          }
+        });
+
+        if (foundIdx !== hoveredVertexIdx) {
+          hoveredVertexIdx = foundIdx;
+          if (hoveredVertexIdx >= 0 && vertexHud) {
+            const v = model.vertices[hoveredVertexIdx];
+            const p = projectPoint(v, rotM, cx, cy);
+            vertexHud.hidden = false;
+            vertexHud.style.left = `${p.x}px`;
+            vertexHud.style.top = `${p.y}px`;
+            if (hudId) hudId.textContent = `v${hoveredVertexIdx}`;
+            if (hudCoords) hudCoords.textContent = `[${v[0].toFixed(0)}, ${v[1].toFixed(0)}, ${v[2].toFixed(0)}]`;
+            if (hudMag) hudMag.textContent = `|v|=${Math.hypot(...v).toFixed(1)}`;
+          } else if (vertexHud) {
+            vertexHud.hidden = true;
+          }
+          if (!isDragging) render();
         }
-        if (!isDragging) render();
+      } else {
+        if (vertexHud && !vertexHud.hidden) {
+          vertexHud.hidden = true;
+          hoveredVertexIdx = -1;
+        }
       }
 
       if (!isDragging) return;
@@ -1699,22 +1818,38 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
     }
 
     // ── Quick Camera Snap Views (3D Orbit, Plano 2D XY, Plano XZ, Reset) ──
+    if (viewBar) {
+      viewBar.addEventListener('pointerdown', e => e.stopPropagation());
+    }
+
     snapBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
         const snap = btn.dataset.snap;
-        snapBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+
         if (snap === '3d') {
           yaw = 35 * (Math.PI / 180);
           pitch = 26 * (Math.PI / 180);
+          snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
         } else if (snap === 'xy') {
           yaw = 0;
           pitch = 0;
+          snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === 'xy'));
         } else if (snap === 'xz') {
           yaw = 0;
-          pitch = 89.9 * (Math.PI / 180);
+          pitch = 85 * (Math.PI / 180);
+          snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === 'xz'));
         } else if (snap === 'reset') {
-          yaw = 35 * (Math.PI / 180);
-          pitch = 28 * (Math.PI / 180);
+          if (activeVMode === 'line-slope' && lineSubMode === 'slope') {
+            yaw = 0;
+            pitch = 0;
+            snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === 'xy'));
+          } else {
+            yaw = 35 * (Math.PI / 180);
+            pitch = 26 * (Math.PI / 180);
+            snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
+          }
         }
         render();
       });
@@ -1726,82 +1861,92 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       if (inp) inp.addEventListener('input', () => render());
     });
 
-    const vecInputs = [vAx, vAy, vAz, vBx, vBy, vBz];
+    const vecInputs = [vAx, vAy, vAz, vBx, vBy, vBz, vKa, vKb];
     vecInputs.forEach(inp => {
       if (inp) inp.addEventListener('input', () => render());
     });
 
-    // ── Exercise Presets: Line & Point-Slope ──
+    const layerToggles = [layerSum, layerDiff, layerCross, layerGramSchmidt];
+    layerToggles.forEach(cb => {
+      if (cb) cb.addEventListener('change', () => render());
+    });
+
+    // ── Presets Select: Line & Point-Slope ──
+    function applyLinePreset(preset) {
+      if (preset === '1') {
+        if (subModePointsBtn) subModePointsBtn.click();
+        if (p1X) p1X.value = 2;
+        if (p1Y) p1Y.value = -1;
+        if (p1Z) p1Z.value = 3;
+        if (p2X) p2X.value = 5;
+        if (p2Y) p2Y.value = 4;
+        if (p2Z) p2Z.value = 1;
+      } else if (preset === '2') {
+        if (subModeSlopeBtn) subModeSlopeBtn.click();
+        if (p1X) p1X.value = 3;
+        if (p1Y) p1Y.value = 4;
+        if (slopeInput) slopeInput.value = '-3/4';
+      } else if (preset === '3') {
+        if (subModeSlopeBtn) subModeSlopeBtn.click();
+        if (p1X) p1X.value = 0;
+        if (p1Y) p1Y.value = 3;
+        if (slopeInput) slopeInput.value = '1.5';
+      } else if (preset === '4') {
+        if (subModePointsBtn) subModePointsBtn.click();
+        if (p1X) p1X.value = -3;
+        if (p1Y) p1Y.value = 2;
+        if (p1Z) p1Z.value = 0;
+        if (p2X) p2X.value = 3;
+        if (p2Y) p2Y.value = -2;
+        if (p2Z) p2Z.value = 0;
+      }
+      render();
+    }
+
+    if (vLinePresetSelect) {
+      vLinePresetSelect.addEventListener('change', () => {
+        applyLinePreset(vLinePresetSelect.value);
+      });
+    }
+
     const linePresetBtns = document.querySelectorAll('[data-linepreset]');
     linePresetBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const preset = btn.dataset.linepreset;
-        if (preset === '1') {
-          if (subModePointsBtn) subModePointsBtn.click();
-          if (p1X) p1X.value = 2;
-          if (p1Y) p1Y.value = -1;
-          if (p1Z) p1Z.value = 3;
-          if (p2X) p2X.value = 5;
-          if (p2Y) p2Y.value = 4;
-          if (p2Z) p2Z.value = 1;
-        } else if (preset === '2') {
-          if (subModeSlopeBtn) subModeSlopeBtn.click();
-          if (p1X) p1X.value = 3;
-          if (p1Y) p1Y.value = 4;
-          if (slopeInput) slopeInput.value = '-3/4';
-        } else if (preset === '3') {
-          if (subModeSlopeBtn) subModeSlopeBtn.click();
-          if (p1X) p1X.value = 0;
-          if (p1Y) p1Y.value = 3;
-          if (slopeInput) slopeInput.value = '1.5';
-        } else if (preset === '4') {
-          if (subModePointsBtn) subModePointsBtn.click();
-          if (p1X) p1X.value = -3;
-          if (p1Y) p1Y.value = 2;
-          if (p1Z) p1Z.value = 0;
-          if (p2X) p2X.value = 3;
-          if (p2Y) p2Y.value = -2;
-          if (p2Z) p2Z.value = 0;
-        }
-        render();
+        applyLinePreset(btn.dataset.linepreset);
       });
     });
 
-    // ── Exercise Presets: Vector Algebra ──
+    // ── Presets Select: Vector Algebra ──
+    function applyVecPreset(preset) {
+      if (preset === 'ortho') {
+        if (vAx) vAx.value = 3; if (vAy) vAy.value = -2; if (vAz) vAz.value = 2;
+        if (vBx) vBx.value = 2; if (vBy) vBy.value = 1; if (vBz) vBz.value = -2;
+      } else if (preset === 'cross') {
+        if (vAx) vAx.value = 3; if (vAy) vAy.value = 0; if (vAz) vAz.value = 0;
+        if (vBx) vBx.value = 0; if (vBy) vBy.value = 4; if (vBz) vBz.value = 0;
+      } else if (preset === 'angle') {
+        if (vAx) vAx.value = 2; if (vAy) vAy.value = 2; if (vAz) vAz.value = 0;
+        if (vBx) vBx.value = 4; if (vBy) vBy.value = 0; if (vBz) vBz.value = 0;
+      } else if (preset === 'parallel') {
+        if (vAx) vAx.value = 2; if (vAy) vAy.value = -3; if (vAz) vAz.value = 4;
+        if (vBx) vBx.value = 4; if (vBy) vBy.value = -6; if (vBz) vBz.value = 8;
+      } else if (preset === 'pythagoras') {
+        if (vAx) vAx.value = 3; if (vAy) vAy.value = 0; if (vAz) vAz.value = 0;
+        if (vBx) vBx.value = 0; if (vBy) vBy.value = 4; if (vBz) vBz.value = 0;
+      }
+      render();
+    }
+
+    if (vVecPresetSelect) {
+      vVecPresetSelect.addEventListener('change', () => {
+        applyVecPreset(vVecPresetSelect.value);
+      });
+    }
+
     const vecPresetBtns = document.querySelectorAll('[data-vecpreset]');
     vecPresetBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const preset = btn.dataset.vecpreset;
-        if (preset === 'ortho') {
-          if (vAx) vAx.value = 3;
-          if (vAy) vAy.value = -2;
-          if (vAz) vAz.value = 2;
-          if (vBx) vBx.value = 2;
-          if (vBy) vBy.value = 1;
-          if (vBz) vBz.value = -2;
-        } else if (preset === 'cross') {
-          if (vAx) vAx.value = 3;
-          if (vAy) vAy.value = 0;
-          if (vAz) vAz.value = 0;
-          if (vBx) vBx.value = 0;
-          if (vBy) vBy.value = 4;
-          if (vBz) vBz.value = 0;
-        } else if (preset === 'angle') {
-          if (vAx) vAx.value = 2;
-          if (vAy) vAy.value = 2;
-          if (vAz) vAz.value = 0;
-          if (vBx) vBx.value = 4;
-          if (vBy) vBy.value = 0;
-          if (vBz) vBz.value = 0;
-        } else if (preset === 'parallel') {
-          if (vAx) vAx.value = 2;
-          if (vAy) vAy.value = -3;
-          if (vAz) vAz.value = 4;
-          if (vBx) vBx.value = 4;
-          if (vBy) vBy.value = -6;
-          if (vBz) vBz.value = 8;
-        }
-        render();
+        applyVecPreset(btn.dataset.vecpreset);
       });
     });
 
@@ -1877,34 +2022,44 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
           '==================================================',
           '',
           '1. VECTORES DADOS:',
-          `   A⃗ = ⟨${vData.a.join(', ')}⟩`,
-          `   B⃗ = ⟨${vData.b.join(', ')}⟩`,
+          `   A⃗ = ⟨${vData.a.join(', ')}⟩ (escalar kA = ${vData.kA})`,
+          `   B⃗ = ⟨${vData.b.join(', ')}⟩ (escalar kB = ${vData.kB})`,
           '',
           '2. NORMAS (MAGNITUDES):',
           `   ‖A⃗‖ = √(${vData.a[0]}² + ${vData.a[1]}² + ${vData.a[2]}²) = ${formatNumber(vData.normA, 4)} u`,
           `   ‖B⃗‖ = √(${vData.b[0]}² + ${vData.b[1]}² + ${vData.b[2]}²) = ${formatNumber(vData.normB, 4)} u`,
           '',
-          '3. PRODUCTO ESCALAR (DOT PRODUCT):',
-          `   A⃗ · B⃗ = (${vData.a[0]})(${vData.b[0]}) + (${vData.a[1]})(${vData.b[1]}) + (${vData.a[2]})(${vData.b[2]}) = ${formatNumber(vData.dot, 4)}`,
+          '3. OPERACIONES LINEALES (SUMA Y DIFERENCIA):',
+          `   Vector Suma (A⃗ + B⃗) = ⟨${formatNumber(vData.sum[0], 4)}, ${formatNumber(vData.sum[1], 4)}, ${formatNumber(vData.sum[2], 4)}⟩`,
+          `   ‖A⃗ + B⃗‖ = ${formatNumber(vData.normSum, 4)} u`,
+          `   Vector Diferencia (A⃗ - B⃗) = ⟨${formatNumber(vData.diff[0], 4)}, ${formatNumber(vData.diff[1], 4)}, ${formatNumber(vData.diff[2], 4)}⟩`,
+          `   ‖A⃗ - B⃗‖ = ${formatNumber(vData.normDiff, 4)} u`,
           '',
-          '4. ÁNGULO ENTRE VECTORES:',
+          '4. PRODUCTO ESCALAR (DOT PRODUCT):',
+          `   A⃗ · B⃗ = (${vData.a[0]})(${vData.b[0]}) + (${vData.a[1]})(${vData.b[1]}) + (${vData.a[2]})(${vData.b[2]}) = ${formatNumber(vData.dot, 4)}`,
+          `   Componente Escalar comp_B(A) = (A⃗ · B⃗) / ‖B⃗‖ = ${formatNumber(vData.compB_A, 4)} u`,
+          '',
+          '5. ÁNGULO ENTRE VECTORES:',
           `   cos(θ) = (A⃗ · B⃗) / (‖A⃗‖ · ‖B⃗‖) = ${formatNumber(vData.normA * vData.normB > 0 ? vData.dot / (vData.normA * vData.normB) : 0, 4)}`,
           `   θ = ${formatNumber(vData.angleDeg, 2)}° (${formatNumber(vData.angleDeg * Math.PI / 180, 4)} rad)`,
           `   Diagnóstico: ${calcVecRelBadge?.textContent || ''}`,
           '',
-          '5. PRODUCTO VECTORIAL (CROSS PRODUCT / VECTOR NORMAL):',
+          '6. PRODUCTO VECTORIAL (CROSS PRODUCT / VECTOR NORMAL):',
           `   A⃗ × B⃗ = |  i   j   k  |`,
           `            | ${vData.a[0]}  ${vData.a[1]}  ${vData.a[2]} |`,
           `            | ${vData.b[0]}  ${vData.b[1]}  ${vData.b[2]} |`,
           `   A⃗ × B⃗ = ⟨${vData.cross[0]}, ${vData.cross[1]}, ${vData.cross[2]}⟩`,
+          `   ‖A⃗ × B⃗‖ = ${formatNumber(vData.normCross, 4)} u`,
           '',
-          '6. ÁREAS GEOMÉTRICAS:',
+          '7. ÁREAS GEOMÉTRICAS:',
           `   Área del Paralelogramo = ‖A⃗ × B⃗‖ = ${formatNumber(vData.normCross, 4)} u²`,
           `   Área del Triángulo = ½ ‖A⃗ × B⃗‖ = ${formatNumber(vData.normCross * 0.5, 4)} u²`,
           '',
-          '7. PROYECCIÓN ORTOGONAL DE A⃗ SOBRE B⃗:',
+          '8. DESCOMPOSICIÓN DE GRAM-SCHMIDT (PROYECCIÓN Y COMPONENTE ORTOGONAL):',
           `   proy_B(A) = [(A⃗ · B⃗) / ‖B⃗‖²] · B⃗`,
-          `   proy_B(A) = ⟨${formatNumber(vData.proj[0], 4)}, ${formatNumber(vData.proj[1], 4)}, ${formatNumber(vData.proj[2], 4)}⟩`,
+          `   proy_B(A) (Componente Paralela A_∥) = ⟨${formatNumber(vData.proj[0], 4)}, ${formatNumber(vData.proj[1], 4)}, ${formatNumber(vData.proj[2], 4)}⟩`,
+          `   Componente Ortogonal (A_⊥ = A⃗ - proy_B(A)) = ⟨${formatNumber(vData.orthoComp[0], 4)}, ${formatNumber(vData.orthoComp[1], 4)}, ${formatNumber(vData.orthoComp[2], 4)}⟩`,
+          `   ‖A_⊥‖ = ${formatNumber(vData.normOrthoComp, 4)} u`,
           '==================================================',
           'Generado con NyxAnd Vector Studio · Verificación Universitaria'
         ].join('\n');

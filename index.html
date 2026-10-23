@@ -594,7 +594,7 @@
               </div>
             </div>
 
-            <div class="v-group" id="slopeGroup" hidden>
+            <div class="v-group" id="slopeGroup" hidden style="display: none;">
               <span class="v-label">Pendiente m (Δy / Δx)</span>
               <div class="v-coord-row">
                 <input type="text" id="slopeInput" value="-3/4" class="v-input-coord v-input-full" placeholder="-3/4 o -0.75" />
@@ -602,13 +602,14 @@
             </div>
 
             <div class="v-group">
-              <span class="v-label">Ejercicios Típicos</span>
-              <div class="v-presets-list">
-                <button type="button" class="v-preset-btn" data-linepreset="1">P₁(2, -1, 3) a P₂(5, 4, 1)</button>
-                <button type="button" class="v-preset-btn" data-linepreset="2">P(3, 4) con m = -3/4</button>
-                <button type="button" class="v-preset-btn" data-linepreset="3">P(0, 3) con m = 1.5</button>
-                <button type="button" class="v-preset-btn" data-linepreset="4">P₁(-3, 2, 0) a P₂(3, -2, 0)</button>
-              </div>
+              <span class="v-label">Cargar Ejercicio Típico</span>
+              <select id="vLinePresetSelect" class="v-preset-select" aria-label="Seleccionar ejercicio típico de recta">
+                <option value="" disabled selected>— Cargar ejercicio —</option>
+                <option value="1">1. Recta 3D: P₁(2,-1,3) a P₂(5,4,1)</option>
+                <option value="2">2. Punto-Pendiente: P(3,4) con m = -3/4</option>
+                <option value="3">3. Recta Intersección: P(0,3) con m = 1.5</option>
+                <option value="4">4. Recta Simétrica: P₁(-3,2) a P₂(3,-2)</option>
+              </select>
             </div>
           </div>
 
@@ -639,13 +640,33 @@
             </div>
 
             <div class="v-group">
-              <span class="v-label">Ejercicios Típicos</span>
-              <div class="v-presets-list">
-                <button type="button" class="v-preset-btn" data-vecpreset="ortho">Ortogonales (A·B = 0)</button>
-                <button type="button" class="v-preset-btn" data-vecpreset="cross">Producto Cruz & Área</button>
-                <button type="button" class="v-preset-btn" data-vecpreset="angle">Ángulo 45° entre A y B</button>
-                <button type="button" class="v-preset-btn" data-vecpreset="parallel">Paralelos (A × B = 0)</button>
+              <span class="v-label">Multiplicadores Escalares</span>
+              <div class="v-coord-row">
+                <div class="v-coord-field"><label>Escalar k_A</label><input type="number" step="any" id="vKa" value="1" class="v-input-coord" /></div>
+                <div class="v-coord-field"><label>Escalar k_B</label><input type="number" step="any" id="vKb" value="1" class="v-input-coord" /></div>
               </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Capas en Canvas</span>
+              <div class="v-layer-toggles">
+                <label class="v-layer-chip"><input type="checkbox" id="layerSum" checked /><span>Suma A⃗+B⃗</span></label>
+                <label class="v-layer-chip"><input type="checkbox" id="layerDiff" /><span>Resta A⃗-B⃗</span></label>
+                <label class="v-layer-chip"><input type="checkbox" id="layerCross" checked /><span>Cruz A⃗×B⃗</span></label>
+                <label class="v-layer-chip"><input type="checkbox" id="layerGramSchmidt" checked /><span>Gram-Schmidt</span></label>
+              </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Cargar Ejercicio Típico</span>
+              <select id="vVecPresetSelect" class="v-preset-select" aria-label="Seleccionar ejercicio típico de vectores">
+                <option value="" disabled selected>— Cargar ejercicio —</option>
+                <option value="ortho">1. Ortogonales: A · B = 0 (θ = 90°)</option>
+                <option value="cross">2. Producto Cruz & Área (A × B)</option>
+                <option value="angle">3. Ángulo de 45° entre A y B</option>
+                <option value="parallel">4. Paralelos: A × B = 0 (θ = 0°)</option>
+                <option value="pythagoras">5. Teorema de Pitágoras Vectorial</option>
+              </select>
             </div>
           </div>
         </aside>
@@ -804,14 +825,14 @@
           <!-- Right Pane 2: Punto-Pendiente & Recta Verification -->
           <div class="v-right-pane v-right-line" id="vRightLine" hidden>
             <div class="v-group">
-              <span class="v-label">Verificación de Ejercicio</span>
-              <div class="v-calc-card">
+              <span class="v-label">Métricas Principales</span>
+              <div class="v-calc-card v-calc-grid-2col">
                 <div class="v-calc-item">
                   <span class="v-calc-title">Vector Director v⃗</span>
                   <span class="v-calc-val" id="calcLineVec">⟨3, 5, -2⟩</span>
                 </div>
                 <div class="v-calc-item">
-                  <span class="v-calc-title">Norma / Distancia ‖v⃗‖</span>
+                  <span class="v-calc-title">Norma ‖v⃗‖</span>
                   <span class="v-calc-val" id="calcLineMag">6.164 u</span>
                 </div>
                 <div class="v-calc-item">
@@ -819,9 +840,15 @@
                   <span class="v-calc-val" id="calcLineUnit">⟨0.487, 0.811, -0.324⟩</span>
                 </div>
                 <div class="v-calc-item">
-                  <span class="v-calc-title">Pendiente 2D (m) & Inclinación</span>
-                  <span class="v-calc-val" id="calcLineSlope">m = 1.667 (θ ≈ 59.04°)</span>
+                  <span class="v-calc-title">Pendiente (m) & Inclinación</span>
+                  <span class="v-calc-val" id="calcLineSlope">m = 5/3 (θ ≈ 59.04°)</span>
                 </div>
+              </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Ecuaciones de la Recta</span>
+              <div class="v-calc-card">
                 <div class="v-calc-item">
                   <span class="v-calc-title">Ecuación Punto-Pendiente</span>
                   <div class="v-calc-eq" id="calcEqPointSlope">y - (-1) = (5/3)(x - 2)</div>
@@ -857,10 +884,10 @@
           <!-- Right Pane 3: Álgebra Vectorial Verification -->
           <div class="v-right-pane v-right-vecs" id="vRightVecs" hidden>
             <div class="v-group">
-              <span class="v-label">Operaciones Vectoriales</span>
-              <div class="v-calc-card">
+              <span class="v-label">Métricas y Álgebra Escalar</span>
+              <div class="v-calc-card v-calc-grid-2col">
                 <div class="v-calc-item">
-                  <span class="v-calc-title">Normas ‖A⃗‖ y ‖B⃗‖</span>
+                  <span class="v-calc-title">Normas ‖A⃗‖ / ‖B⃗‖</span>
                   <span class="v-calc-val" id="calcVecNorms">‖A⃗‖: 4.123 · ‖B⃗‖: 2.236</span>
                 </div>
                 <div class="v-calc-item">
@@ -868,27 +895,50 @@
                   <span class="v-calc-val" id="calcVecDot">A⃗ · B⃗ = +4.000</span>
                 </div>
                 <div class="v-calc-item">
-                  <div class="v-label-row">
-                    <span class="v-calc-title">Ángulo θ entre A⃗ y B⃗</span>
-                    <span class="v-status-badge v-status-neutral" id="calcVecRelBadge">Ángulo Agudo</span>
-                  </div>
-                  <span class="v-calc-val" id="calcVecAngle">θ = 64.34° (1.123 rad)</span>
+                  <span class="v-calc-title">Ángulo θ</span>
+                  <span class="v-calc-val" id="calcVecAngle">θ = 64.34°</span>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Diagnóstico</span>
+                  <span class="v-status-badge v-status-neutral" id="calcVecRelBadge">Ángulo Agudo</span>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Norma Suma ‖A⃗ + B⃗‖</span>
+                  <span class="v-calc-val" id="calcVecSumNorm">5.000 u</span>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Distancia ‖A⃗ - B⃗‖</span>
+                  <span class="v-calc-val" id="calcVecDiffNorm">3.742 u</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="v-group">
+              <span class="v-label">Operaciones y Descomposición</span>
+              <div class="v-calc-card">
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Vector Resultante A⃗ + B⃗</span>
+                  <div class="v-calc-eq" id="calcVecSum">⟨5, -2, 1⟩</div>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Vector Diferencia A⃗ - B⃗</span>
+                  <div class="v-calc-eq" id="calcVecDiff">⟨1, -2, 3⟩</div>
                 </div>
                 <div class="v-calc-item">
                   <span class="v-calc-title">Producto Cruz A⃗ × B⃗ (Normal)</span>
                   <div class="v-calc-eq" id="calcVecCross">⟨2, 7, 4⟩</div>
                 </div>
                 <div class="v-calc-item">
-                  <span class="v-calc-title">Área Paralelogramo ‖A⃗ × B⃗‖</span>
-                  <span class="v-calc-val" id="calcVecArea">Área = 8.307 u²</span>
+                  <span class="v-calc-title">Área Paralelogramo & Triángulo</span>
+                  <span class="v-calc-val" id="calcVecArea">Paralelogramo: 8.307 u² · Triángulo: 4.153 u²</span>
                 </div>
                 <div class="v-calc-item">
-                  <span class="v-calc-title">Área Triángulo (½ ‖A⃗ × B⃗‖)</span>
-                  <span class="v-calc-val" id="calcVecTriArea">Área = 4.153 u²</span>
-                </div>
-                <div class="v-calc-item">
-                  <span class="v-calc-title">Proyección Ortogonal proy_B⃗(A⃗)</span>
+                  <span class="v-calc-title">Proyección Paralela proy_B⃗(A⃗)</span>
                   <div class="v-calc-eq" id="calcVecProj">⟨1.600, 0.000, -0.800⟩</div>
+                </div>
+                <div class="v-calc-item">
+                  <span class="v-calc-title">Componente Ortogonal A⃗_⊥ (Gram-Schmidt)</span>
+                  <div class="v-calc-eq" id="calcVecOrthoComp">⟨1.400, -2.000, 2.800⟩</div>
                 </div>
               </div>
             </div>
