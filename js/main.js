@@ -1480,6 +1480,32 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       });
     }
 
+    // Robust clipboard copy fallback helper
+    async function copyTextToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (_) {}
+      }
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        ta.style.left = '-9999px';
+        ta.style.top = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const success = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return Boolean(success);
+      } catch (_) {
+        return false;
+      }
+    }
+
     // Copy Vectors (JSON Export for University Assignments)
     if (exportBtn) {
       exportBtn.addEventListener('click', async () => {
@@ -1500,15 +1526,15 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         };
 
         const jsonStr = JSON.stringify(exportData, null, 2);
-        try {
-          await navigator.clipboard.writeText(jsonStr);
+        const copied = await copyTextToClipboard(jsonStr);
+        if (copied) {
           exportBtn.classList.add('is-copied');
           if (exportBtnLabel) exportBtnLabel.textContent = 'COPIED TO CLIPBOARD!';
           setTimeout(() => {
             exportBtn.classList.remove('is-copied');
             if (exportBtnLabel) exportBtnLabel.textContent = 'COPY VECTORS (JSON)';
           }, 2000);
-        } catch (_) {
+        } else {
           if (exportBtnLabel) exportBtnLabel.textContent = 'READY TO COPY';
         }
       });
@@ -1554,47 +1580,76 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
     }
 
     // ── Analytical Modes: Switcher Tabs ──
+    function switchMode(targetMode) {
+      if (!targetMode) return;
+      activeVMode = targetMode;
+
+      modeTabs.forEach(t => {
+        const m = t.dataset.mode || t.dataset.vmode;
+        const isMatch = (m === activeVMode);
+        t.classList.toggle('is-active', isMatch);
+        t.setAttribute('aria-selected', String(isMatch));
+      });
+
+      if (paneMesh) {
+        paneMesh.hidden = (activeVMode !== '3d-mesh');
+        paneMesh.style.display = (activeVMode === '3d-mesh') ? 'flex' : 'none';
+      }
+      if (paneLine) {
+        paneLine.hidden = (activeVMode !== 'line-slope');
+        paneLine.style.display = (activeVMode === 'line-slope') ? 'flex' : 'none';
+      }
+      if (paneVecs) {
+        paneVecs.hidden = (activeVMode !== 'vector-ops');
+        paneVecs.style.display = (activeVMode === 'vector-ops') ? 'flex' : 'none';
+      }
+
+      if (rightMesh) {
+        rightMesh.hidden = (activeVMode !== '3d-mesh');
+        rightMesh.style.display = (activeVMode === '3d-mesh') ? 'flex' : 'none';
+      }
+      if (rightLine) {
+        rightLine.hidden = (activeVMode !== 'line-slope');
+        rightLine.style.display = (activeVMode === 'line-slope') ? 'flex' : 'none';
+      }
+      if (rightVecs) {
+        rightVecs.hidden = (activeVMode !== 'vector-ops');
+        rightVecs.style.display = (activeVMode === 'vector-ops') ? 'flex' : 'none';
+      }
+
+      if (viewBar) {
+        const showViewBar = (activeVMode !== '3d-mesh');
+        viewBar.hidden = !showViewBar;
+        viewBar.style.display = showViewBar ? 'flex' : 'none';
+      }
+
+      // Camera default angles per mode
+      if (activeVMode === 'line-slope') {
+        if (lineSubMode === 'slope') {
+          yaw = 0;
+          pitch = 0;
+          snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === 'xy'));
+        } else {
+          yaw = 30 * (Math.PI / 180);
+          pitch = 24 * (Math.PI / 180);
+          snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
+        }
+      } else if (activeVMode === 'vector-ops') {
+        yaw = 38 * (Math.PI / 180);
+        pitch = 26 * (Math.PI / 180);
+        snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
+      } else {
+        yaw = 35 * (Math.PI / 180);
+        pitch = 28 * (Math.PI / 180);
+      }
+
+      render();
+    }
+
     modeTabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        const targetMode = tab.dataset.mode;
-        if (!targetMode || targetMode === activeVMode) return;
-        activeVMode = targetMode;
-
-        modeTabs.forEach(t => t.classList.toggle('is-active', t.dataset.mode === activeVMode));
-
-        if (paneMesh) paneMesh.hidden = (activeVMode !== '3d-mesh');
-        if (paneLine) paneLine.hidden = (activeVMode !== 'line-slope');
-        if (paneVecs) paneVecs.hidden = (activeVMode !== 'vector-ops');
-
-        if (rightMesh) rightMesh.hidden = (activeVMode !== '3d-mesh');
-        if (rightLine) rightLine.hidden = (activeVMode !== 'line-slope');
-        if (rightVecs) rightVecs.hidden = (activeVMode !== 'vector-ops');
-
-        if (viewBar) {
-          viewBar.style.display = (activeVMode === '3d-mesh') ? 'none' : 'flex';
-        }
-
-        // Camera default angles per mode
-        if (activeVMode === 'line-slope') {
-          if (lineSubMode === 'slope') {
-            yaw = 0;
-            pitch = 0;
-            snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === 'xy'));
-          } else {
-            yaw = 30 * (Math.PI / 180);
-            pitch = 24 * (Math.PI / 180);
-            snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
-          }
-        } else if (activeVMode === 'vector-ops') {
-          yaw = 38 * (Math.PI / 180);
-          pitch = 26 * (Math.PI / 180);
-          snapBtns.forEach(b => b.classList.toggle('is-active', b.dataset.snap === '3d'));
-        } else {
-          yaw = 35 * (Math.PI / 180);
-          pitch = 28 * (Math.PI / 180);
-        }
-
-        render();
+        const targetMode = tab.dataset.mode || tab.dataset.vmode;
+        switchMode(targetMode);
       });
     });
 
@@ -1604,9 +1659,18 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         lineSubMode = 'points';
         subModePointsBtn.classList.add('is-active');
         subModeSlopeBtn.classList.remove('is-active');
-        if (p1ZWrap) p1ZWrap.style.display = '';
-        if (p2Group) p2Group.style.display = '';
-        if (slopeGroup) slopeGroup.style.display = 'none';
+        if (p1ZWrap) {
+          p1ZWrap.hidden = false;
+          p1ZWrap.style.display = '';
+        }
+        if (p2Group) {
+          p2Group.hidden = false;
+          p2Group.style.display = '';
+        }
+        if (slopeGroup) {
+          slopeGroup.hidden = true;
+          slopeGroup.style.display = 'none';
+        }
         render();
       });
 
@@ -1614,9 +1678,18 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         lineSubMode = 'slope';
         subModeSlopeBtn.classList.add('is-active');
         subModePointsBtn.classList.remove('is-active');
-        if (p1ZWrap) p1ZWrap.style.display = 'none';
-        if (p2Group) p2Group.style.display = 'none';
-        if (slopeGroup) slopeGroup.style.display = '';
+        if (p1ZWrap) {
+          p1ZWrap.hidden = true;
+          p1ZWrap.style.display = 'none';
+        }
+        if (p2Group) {
+          p2Group.hidden = true;
+          p2Group.style.display = 'none';
+        }
+        if (slopeGroup) {
+          slopeGroup.hidden = false;
+          slopeGroup.style.display = '';
+        }
         // Orthogonal 2D projection on XY plane
         yaw = 0;
         pitch = 0;
@@ -1779,15 +1852,15 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
           'Generado con NyxAnd Vector Studio · Verificación Universitaria'
         ].join('\n');
 
-        try {
-          await navigator.clipboard.writeText(textReport);
+        const copied = await copyTextToClipboard(textReport);
+        if (copied) {
           vCopyLineBtn.classList.add('is-copied');
           if (vCopyLineLabel) vCopyLineLabel.textContent = '¡COPIADO AL PORTAPAPELES!';
           setTimeout(() => {
             vCopyLineBtn.classList.remove('is-copied');
             if (vCopyLineLabel) vCopyLineLabel.textContent = 'COPIAR PROCEDIMIENTO';
           }, 2000);
-        } catch (_) {
+        } else {
           if (vCopyLineLabel) vCopyLineLabel.textContent = 'ERROR AL COPIAR';
         }
       });
@@ -1836,15 +1909,15 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
           'Generado con NyxAnd Vector Studio · Verificación Universitaria'
         ].join('\n');
 
-        try {
-          await navigator.clipboard.writeText(textReport);
+        const copied = await copyTextToClipboard(textReport);
+        if (copied) {
           vCopyVecBtn.classList.add('is-copied');
           if (vCopyVecLabel) vCopyVecLabel.textContent = '¡COPIADO AL PORTAPAPELES!';
           setTimeout(() => {
             vCopyVecBtn.classList.remove('is-copied');
             if (vCopyVecLabel) vCopyVecLabel.textContent = 'COPIAR PROCEDIMIENTO';
           }, 2000);
-        } catch (_) {
+        } else {
           if (vCopyVecLabel) vCopyVecLabel.textContent = 'ERROR AL COPIAR';
         }
       });
