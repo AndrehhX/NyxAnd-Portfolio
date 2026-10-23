@@ -472,6 +472,7 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
     const vVecPresetSelect = document.getElementById('vVecPresetSelect');
     const vKa = document.getElementById('vKa');
     const vKb = document.getElementById('vKb');
+    const layerPlane = document.getElementById('layerPlane');
     const layerSum = document.getElementById('layerSum');
     const layerDiff = document.getElementById('layerDiff');
     const layerCross = document.getElementById('layerCross');
@@ -978,7 +979,7 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
 
       const floorGridEl = document.querySelector('.v-floor-grid');
       if (floorGridEl) {
-        floorGridEl.style.display = (activeVMode !== '3d-mesh' && is2DFlat) ? 'none' : '';
+        floorGridEl.style.display = (activeVMode === '3d-mesh') ? '' : 'none';
       }
 
       // Hide or show contact shadow
@@ -1009,7 +1010,26 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         const zPos2d = projectPoint([0, 0, L * scale], rotM, cx, cy);
         const zNeg2d = projectPoint([0, 0, -L * scale], rotM, cx, cy);
 
+        // Precompute Projected Points P1 and P2 in 3D
+        const pt1 = projectPoint([line.p1[0] * scale, line.p1[1] * scale, line.p1[2] * scale], rotM, cx, cy);
+        const pt2 = projectPoint([line.p2[0] * scale, line.p2[1] * scale, line.p2[2] * scale], rotM, cx, cy);
+
         let svgContent = '';
+
+        // In 3D: render dynamic rotating ground grid on floor XZ plane (Y = 0)
+        const is3D = (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05);
+        if (is3D) {
+          const gridStep = Math.max(1, Math.round(L / 3));
+          for (let g = -L; g <= L; g += gridStep) {
+            if (g === 0) continue;
+            const pX1 = projectPoint([-L * scale, 0, g * scale], rotM, cx, cy);
+            const pX2 = projectPoint([L * scale, 0, g * scale], rotM, cx, cy);
+            const pZ1 = projectPoint([g * scale, 0, -L * scale], rotM, cx, cy);
+            const pZ2 = projectPoint([g * scale, 0, L * scale], rotM, cx, cy);
+            svgContent += `<line x1="${pX1.x.toFixed(1)}" y1="${pX1.y.toFixed(1)}" x2="${pX2.x.toFixed(1)}" y2="${pX2.y.toFixed(1)}" stroke="rgba(148, 163, 184, 0.22)" stroke-width="0.8" />`;
+            svgContent += `<line x1="${pZ1.x.toFixed(1)}" y1="${pZ1.y.toFixed(1)}" x2="${pZ2.x.toFixed(1)}" y2="${pZ2.y.toFixed(1)}" stroke="rgba(148, 163, 184, 0.22)" stroke-width="0.8" />`;
+          }
+        }
 
         // Axes grid lines
         svgContent += `<line x1="${xNeg2d.x.toFixed(1)}" y1="${xNeg2d.y.toFixed(1)}" x2="${xPos2d.x.toFixed(1)}" y2="${xPos2d.y.toFixed(1)}" stroke="#c2410c" stroke-width="1.6" stroke-opacity="0.85" />`;
@@ -1018,13 +1038,13 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         svgContent += `<line x1="${yNeg2d.x.toFixed(1)}" y1="${yNeg2d.y.toFixed(1)}" x2="${yPos2d.x.toFixed(1)}" y2="${yPos2d.y.toFixed(1)}" stroke="#15803d" stroke-width="1.6" stroke-opacity="0.85" />`;
         svgContent += `<text x="${(yPos2d.x - 3).toFixed(1)}" y="${(yPos2d.y - 6).toFixed(1)}" font-family="'Space Mono', monospace" font-size="10" font-weight="700" fill="#15803d">+Y</text>`;
 
-        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+        if (is3D) {
           svgContent += `<line x1="${zNeg2d.x.toFixed(1)}" y1="${zNeg2d.y.toFixed(1)}" x2="${zPos2d.x.toFixed(1)}" y2="${zPos2d.y.toFixed(1)}" stroke="#1d4ed8" stroke-width="1.6" stroke-opacity="0.85" />`;
           svgContent += `<text x="${(zPos2d.x + 6).toFixed(1)}" y="${(zPos2d.y + 4).toFixed(1)}" font-family="'Space Mono', monospace" font-size="10" font-weight="700" fill="#1d4ed8">+Z</text>`;
         }
 
         // ── Mathematical Orthogonal Shadows (Y = 0 Ground Projection) ──
-        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+        if (is3D) {
           const pt1Floor = projectPoint([line.p1[0] * scale, 0, line.p1[2] * scale], rotM, cx, cy);
           const pt2Floor = projectPoint([line.p2[0] * scale, 0, line.p2[2] * scale], rotM, cx, cy);
 
@@ -1056,10 +1076,6 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         const pInf1 = projectPoint(lineStart3D, rotM, cx, cy);
         const pInf2 = projectPoint(lineEnd3D, rotM, cx, cy);
         svgContent += `<line x1="${pInf1.x.toFixed(1)}" y1="${pInf1.y.toFixed(1)}" x2="${pInf2.x.toFixed(1)}" y2="${pInf2.y.toFixed(1)}" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="4 4" />`;
-
-        // Points P1 and P2
-        const pt1 = projectPoint([line.p1[0] * scale, line.p1[1] * scale, line.p1[2] * scale], rotM, cx, cy);
-        const pt2 = projectPoint([line.p2[0] * scale, line.p2[1] * scale, line.p2[2] * scale], rotM, cx, cy);
 
         // Run & rise slope triangle
         if (line.isSlopeMode || (line.p1[2] === 0 && line.p2[2] === 0)) {
@@ -1125,6 +1141,22 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
 
         // Axes
         const L = Math.ceil(maxCoord * 1.25);
+        const is3D = (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05);
+
+        // In 3D: render dynamic rotating ground grid on floor XZ plane (Y = 0)
+        if (is3D) {
+          const gridStep = Math.max(1, Math.round(L / 3));
+          for (let g = -L; g <= L; g += gridStep) {
+            if (g === 0) continue;
+            const pX1 = projectPoint([-L * scale, 0, g * scale], rotM, cx, cy);
+            const pX2 = projectPoint([L * scale, 0, g * scale], rotM, cx, cy);
+            const pZ1 = projectPoint([g * scale, 0, -L * scale], rotM, cx, cy);
+            const pZ2 = projectPoint([g * scale, 0, L * scale], rotM, cx, cy);
+            svgContent += `<line x1="${pX1.x.toFixed(1)}" y1="${pX1.y.toFixed(1)}" x2="${pX2.x.toFixed(1)}" y2="${pX2.y.toFixed(1)}" stroke="rgba(148, 163, 184, 0.22)" stroke-width="0.8" />`;
+            svgContent += `<line x1="${pZ1.x.toFixed(1)}" y1="${pZ1.y.toFixed(1)}" x2="${pZ2.x.toFixed(1)}" y2="${pZ2.y.toFixed(1)}" stroke="rgba(148, 163, 184, 0.22)" stroke-width="0.8" />`;
+          }
+        }
+
         const xPos2d = projectPoint([L * scale, 0, 0], rotM, cx, cy);
         const xNeg2d = projectPoint([-L * scale, 0, 0], rotM, cx, cy);
         const yPos2d = projectPoint([0, L * scale, 0], rotM, cx, cy);
@@ -1138,13 +1170,13 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
         svgContent += `<line x1="${yNeg2d.x.toFixed(1)}" y1="${yNeg2d.y.toFixed(1)}" x2="${yPos2d.x.toFixed(1)}" y2="${yPos2d.y.toFixed(1)}" stroke="#15803d" stroke-width="1.4" stroke-opacity="0.8" />`;
         svgContent += `<text x="${(yPos2d.x - 3).toFixed(1)}" y="${(yPos2d.y - 5).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#15803d">+Y</text>`;
 
-        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+        if (is3D) {
           svgContent += `<line x1="${zNeg2d.x.toFixed(1)}" y1="${zNeg2d.y.toFixed(1)}" x2="${zPos2d.x.toFixed(1)}" y2="${zPos2d.y.toFixed(1)}" stroke="#1d4ed8" stroke-width="1.4" stroke-opacity="0.8" />`;
           svgContent += `<text x="${(zPos2d.x + 5).toFixed(1)}" y="${(zPos2d.y + 4).toFixed(1)}" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#1d4ed8">+Z</text>`;
         }
 
         // ── Mathematical Orthogonal Shadows (Y = 0 Ground Projection) ──
-        if (Math.abs(yaw) > 0.05 || Math.abs(pitch) > 0.05) {
+        if (is3D) {
           const ptAFloor = projectPoint([vData.a[0] * scale, 0, vData.a[2] * scale], rotM, cx, cy);
           const ptBFloor = projectPoint([vData.b[0] * scale, 0, vData.b[2] * scale], rotM, cx, cy);
           const ptSumFloor = projectPoint([(vData.a[0] + vData.b[0]) * scale, 0, (vData.a[2] + vData.b[2]) * scale], rotM, cx, cy);
@@ -1866,7 +1898,7 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       if (inp) inp.addEventListener('input', () => render());
     });
 
-    const layerToggles = [layerSum, layerDiff, layerCross, layerGramSchmidt];
+    const layerToggles = [layerPlane, layerSum, layerDiff, layerCross, layerGramSchmidt];
     layerToggles.forEach(cb => {
       if (cb) cb.addEventListener('change', () => render());
     });
