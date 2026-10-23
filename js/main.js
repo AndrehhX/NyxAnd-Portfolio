@@ -484,18 +484,54 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
   }
 
 
+  // ── CLEAN URL (Remove index.html and sanitize address bar) ──
+  if (window.location.pathname.endsWith('/index.html') || window.location.pathname.endsWith('index.html')) {
+    const cleanPath = window.location.pathname.replace(/\/index\.html$/, '/') || '/';
+    const cleanUrl = cleanPath + window.location.search + window.location.hash;
+    try {
+      window.history.replaceState(null, '', cleanUrl);
+    } catch (_) {}
+  }
+
   // ── SMOOTH ANCHOR SCROLL ─────────────────
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', e => {
-      const target = document.querySelector(anchor.getAttribute('href'));
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#' || href === '#top') {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        try {
+          window.history.replaceState(null, '', window.location.pathname);
+        } catch (_) {}
+        return;
+      }
+      const target = document.querySelector(href);
       if (target) {
         e.preventDefault();
         const offset = 70;
         const top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
+        window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        try {
+          window.history.replaceState(null, '', window.location.pathname);
+        } catch (_) {}
       }
     });
   });
+
+  // If page loaded with hash, scroll smoothly and keep address bar clean
+  if (window.location.hash) {
+    const initialTarget = document.querySelector(window.location.hash);
+    if (initialTarget) {
+      setTimeout(() => {
+        const offset = 70;
+        const top = initialTarget.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        try {
+          window.history.replaceState(null, '', window.location.pathname);
+        } catch (_) {}
+      }, 350);
+    }
+  }
 
 
   // ── SCROLL REVEAL ────────────────────────
