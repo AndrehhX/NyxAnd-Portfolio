@@ -261,11 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const commands = {
-      'help': () => 'Commands: about · projects · stack · status · contact · clear',
+      'help': () => 'Commands: about · projects · stack · status · vectors · contact · clear',
       'about': () => 'Andreh Callejas / Computer Science student at UVG / software, automation and clear interfaces.',
       'projects': () => { scrollToSection('projects'); return 'Opening selected work.'; },
       'stack': () => 'Java · JavaScript · TypeScript · React · Git · HTML/CSS · automation',
       'status': () => { scrollToSection('live-status'); return 'Opening live signal.'; },
+      'vectors': () => { scrollToSection('vector-studio'); return 'Opening 3D vector studio.'; },
       'contact': () => { scrollToSection('contact'); return 'Opening contact channel.'; },
       'clear': () => { output.replaceChildren(); return ''; }
     };
@@ -347,6 +348,534 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
   }
 
   initLaboratory();
+
+  // ── 3D VECTOR STUDIO (ISOMETRIC ENGINE) ──
+  function initVectorStudio() {
+    const stage = document.getElementById('vStage');
+    const svg = document.getElementById('vSvg');
+    const rotDeg = document.getElementById('vRotDeg');
+    const ringArc = document.getElementById('vRingArc');
+    const shadow = document.getElementById('vShadow');
+    if (!stage || !svg || !rotDeg) return;
+
+    const formBtns = document.querySelectorAll('.v-form-btn');
+    const toolBtns = document.querySelectorAll('.v-tool-btn');
+    const lightCards = document.querySelectorAll('.v-light-card');
+    const brightnessInput = document.getElementById('vBrightnessInput');
+    const brightnessFill = document.getElementById('vBrightnessFill');
+    const shadowInput = document.getElementById('vShadowInput');
+    const shadowFill = document.getElementById('vShadowFill');
+    const axisSvg = document.querySelector('.v-axis-svg');
+    const vectorWindow = document.getElementById('vectorWindow');
+    const minBtn = vectorWindow?.querySelector('.v-window-actions .v-btn-icon:first-child');
+    const closeBtn = vectorWindow?.querySelector('.v-window-actions .v-btn-icon:last-child');
+
+    let currentForm = 'cube';
+    let currentTool = 'rotation';
+    let currentLight = 'spot';
+
+    // 35° yaw matching initial screenshot
+    let yaw = 35 * (Math.PI / 180);
+    let pitch = 28 * (Math.PI / 180);
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startYaw = yaw;
+    let startPitch = pitch;
+
+    // Geometries
+    function getCube() {
+      const s = 65;
+      const vertices = [
+        [-s, -s, -s], // 0
+        [ s, -s, -s], // 1
+        [ s,  s, -s], // 2
+        [-s,  s, -s], // 3
+        [-s, -s,  s], // 4
+        [ s, -s,  s], // 5
+        [ s,  s,  s], // 6
+        [-s,  s,  s]  // 7
+      ];
+      const edges = [
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        [4, 5], [5, 6], [6, 7], [7, 4],
+        [0, 4], [1, 5], [2, 6], [3, 7]
+      ];
+      const faces = [
+        [0, 1, 2, 3], // back (-z)
+        [5, 4, 7, 6], // front (+z)
+        [4, 0, 3, 7], // left (-x)
+        [1, 5, 6, 2], // right (+x)
+        [3, 2, 6, 7], // top (+y)
+        [4, 5, 1, 0]  // bottom (-y)
+      ];
+      return { vertices, edges, faces };
+    }
+
+    function getPyramid() {
+      const b = 68;
+      const h = 85;
+      const vertices = [
+        [-b, -h / 2, -b], // 0
+        [ b, -h / 2, -b], // 1
+        [ b, -h / 2,  b], // 2
+        [-b, -h / 2,  b], // 3
+        [ 0,  h / 2,  0]  // 4
+      ];
+      const edges = [
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        [0, 4], [1, 4], [2, 4], [3, 4]
+      ];
+      const faces = [
+        [0, 3, 2, 1],
+        [0, 1, 4],
+        [1, 2, 4],
+        [2, 3, 4],
+        [3, 0, 4]
+      ];
+      return { vertices, edges, faces };
+    }
+
+    function getCylinder() {
+      const r = 58;
+      const h2 = 45;
+      const segs = 16;
+      const vertices = [];
+      const edges = [];
+      for (let i = 0; i < segs; i++) {
+        const a = (i / segs) * Math.PI * 2;
+        vertices.push([Math.cos(a) * r, -h2, Math.sin(a) * r]); // 2*i: bottom
+        vertices.push([Math.cos(a) * r,  h2, Math.sin(a) * r]); // 2*i+1: top
+      }
+      for (let i = 0; i < segs; i++) {
+        const next = (i + 1) % segs;
+        edges.push([i * 2, next * 2]);
+        edges.push([i * 2 + 1, next * 2 + 1]);
+        if (i % 4 === 0) {
+          edges.push([i * 2, i * 2 + 1]);
+        }
+      }
+      return { vertices, edges, faces: [] };
+    }
+
+    function getSphere() {
+      const r = 66;
+      const segs = 24;
+      const vertices = [];
+      const edges = [];
+      const configs = [
+        { axis: 'xz', r: r, y: 0 },
+        { axis: 'xz', r: r * 0.84, y: r * 0.48 },
+        { axis: 'xz', r: r * 0.84, y: -r * 0.48 },
+        { axis: 'xy', r: r, z: 0 },
+        { axis: 'yz', r: r, x: 0 }
+      ];
+      configs.forEach(cfg => {
+        const start = vertices.length;
+        for (let i = 0; i < segs; i++) {
+          const a = (i / segs) * Math.PI * 2;
+          let pt;
+          if (cfg.axis === 'xz') {
+            pt = [Math.cos(a) * cfg.r, cfg.y, Math.sin(a) * cfg.r];
+          } else if (cfg.axis === 'xy') {
+            pt = [Math.cos(a) * cfg.r, Math.sin(a) * cfg.r, cfg.z];
+          } else {
+            pt = [cfg.x, Math.sin(a) * cfg.r, Math.cos(a) * cfg.r];
+          }
+          vertices.push(pt);
+          if (i > 0) edges.push([start + i - 1, start + i]);
+        }
+        edges.push([start + segs - 1, start]);
+      });
+      return { vertices, edges, faces: [] };
+    }
+
+    function getPoints() {
+      const span = 56;
+      const vertices = [];
+      const steps = [-span, 0, span];
+      for (const x of steps) {
+        for (const y of steps) {
+          for (const z of steps) {
+            vertices.push([x, y, z]);
+          }
+        }
+      }
+      return { vertices, edges: [], faces: [] };
+    }
+
+    function getModel() {
+      switch (currentForm) {
+        case 'sphere': return getSphere();
+        case 'pyramid': return getPyramid();
+        case 'cylinder': return getCylinder();
+        case 'points': return getPoints();
+        default: return getCube();
+      }
+    }
+
+    function updateTripod(cosY, sinY, cosX, sinX) {
+      if (!axisSvg) return;
+      const projectAxis = (x, y, z) => {
+        const x1 = x * cosY + z * sinY;
+        const z1 = -x * sinY + z * cosY;
+        const y1 = y * cosX - z1 * sinX;
+        return { x: 20 + x1, y: 20 - y1 };
+      };
+      const lines = axisSvg.querySelectorAll('line');
+      const texts = axisSvg.querySelectorAll('text');
+      if (lines.length >= 3 && texts.length >= 3) {
+        const pY = projectAxis(0, 14, 0);
+        const pX = projectAxis(14, 0, 0);
+        const pZ = projectAxis(0, 0, 14);
+
+        lines[0].setAttribute('x2', pY.x.toFixed(1));
+        lines[0].setAttribute('y2', pY.y.toFixed(1));
+        texts[0].setAttribute('x', pY.x.toFixed(1));
+        texts[0].setAttribute('y', (pY.y - 2).toFixed(1));
+
+        lines[1].setAttribute('x2', pX.x.toFixed(1));
+        lines[1].setAttribute('y2', pX.y.toFixed(1));
+        texts[1].setAttribute('x', (pX.x - 3).toFixed(1));
+        texts[1].setAttribute('y', (pX.y + 4).toFixed(1));
+
+        lines[2].setAttribute('x2', pZ.x.toFixed(1));
+        lines[2].setAttribute('y2', pZ.y.toFixed(1));
+        texts[2].setAttribute('x', (pZ.x + 3).toFixed(1));
+        texts[2].setAttribute('y', (pZ.y + 4).toFixed(1));
+      }
+    }
+
+    function updateRingArc() {
+      if (!ringArc) return;
+      // Active arc tracks rotation yaw angle
+      const centerAngle = (Math.PI * 0.5) + (yaw - 35 * (Math.PI / 180));
+      const halfSpan = 0.38;
+      const a1 = centerAngle + halfSpan;
+      const a2 = centerAngle - halfSpan;
+      const x1 = 180 + 155 * Math.cos(a1);
+      const y1 = 70 + 52 * Math.sin(a1);
+      const x2 = 180 + 155 * Math.cos(a2);
+      const y2 = 70 + 52 * Math.sin(a2);
+      ringArc.setAttribute('d', `M ${x1.toFixed(1)} ${y1.toFixed(1)} A 155 52 0 0 0 ${x2.toFixed(1)} ${y2.toFixed(1)}`);
+    }
+
+    function render() {
+      const cosY = Math.cos(yaw);
+      const sinY = Math.sin(yaw);
+      const cosX = Math.cos(pitch);
+      const sinX = Math.sin(pitch);
+
+      // Update Degree Readout
+      let deg = Math.round((yaw * 180 / Math.PI) % 360);
+      if (deg < 0) deg += 360;
+      rotDeg.textContent = `${deg}°`;
+
+      updateRingArc();
+      updateTripod(cosY, sinY, cosX, sinX);
+
+      const model = getModel();
+      const cx = 160;
+      const cy = 148;
+
+      // Project vertices
+      const projected = model.vertices.map(([vx, vy, vz]) => {
+        let x = vx;
+        let y = vy;
+        let z = vz;
+
+        // Intrude tool modifier
+        if (currentTool === 'intrude') {
+          const mag = Math.hypot(x, y, z);
+          if (mag > 0.01) {
+            const factor = 1 + 0.18 * Math.sin(mag * 0.05 + yaw);
+            x *= factor;
+            y *= factor;
+            z *= factor;
+          }
+        }
+
+        const x1 = x * cosY + z * sinY;
+        const z1 = -x * sinY + z * cosY;
+        const y1 = y * cosX - z1 * sinX;
+        const z2 = y * sinX + z1 * cosX;
+        return {
+          x: cx + x1,
+          y: cy - y1,
+          z: z2,
+          orig: [x, y, z]
+        };
+      });
+
+      // Face visibility & lighting
+      const faceVisibility = (model.faces || []).map(face => {
+        const pts = face.map(idx => projected[idx]);
+        let area = 0;
+        for (let i = 0; i < pts.length; i++) {
+          const p1 = pts[i];
+          const p2 = pts[(i + 1) % pts.length];
+          area += (p1.x * p2.y - p2.x * p1.y);
+        }
+        return area > 0;
+      });
+
+      // Edge classifications
+      const edgeFaceMap = new Map();
+      (model.faces || []).forEach((face, fIdx) => {
+        for (let i = 0; i < face.length; i++) {
+          const a = face[i];
+          const b = face[(i + 1) % face.length];
+          const key = Math.min(a, b) + '_' + Math.max(a, b);
+          if (!edgeFaceMap.has(key)) edgeFaceMap.set(key, []);
+          edgeFaceMap.get(key).push(faceVisibility[fIdx]);
+        }
+      });
+
+      let svgContent = '';
+
+      // Shaded / Textured Faces (when Render, Polygons, or Texture tool is selected)
+      if (['render', 'polygons', 'texture'].includes(currentTool) && model.faces?.length) {
+        model.faces.forEach((face, fIdx) => {
+          if (!faceVisibility[fIdx]) return;
+          const ptsStr = face.map(idx => `${projected[idx].x.toFixed(1)},${projected[idx].y.toFixed(1)}`).join(' ');
+
+          let fillStyle = 'rgba(255, 255, 255, 0.35)';
+          if (currentTool === 'polygons') {
+            fillStyle = (fIdx % 2 === 0) ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.45)';
+          } else if (currentTool === 'render') {
+            fillStyle = (fIdx === 4) ? 'rgba(255, 255, 255, 0.7)' : (fIdx === 3 ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.3)');
+          } else if (currentTool === 'texture') {
+            fillStyle = 'rgba(255, 255, 255, 0.2)';
+          }
+
+          svgContent += `<polygon points="${ptsStr}" fill="${fillStyle}" stroke="none" />`;
+
+          // Add texture lines if texture tool active
+          if (currentTool === 'texture' && face.length === 4) {
+            const p0 = projected[face[0]];
+            const p1 = projected[face[1]];
+            const p2 = projected[face[2]];
+            const p3 = projected[face[3]];
+            for (let t = 0.25; t < 1; t += 0.25) {
+              const lx1 = p0.x + (p3.x - p0.x) * t;
+              const ly1 = p0.y + (p3.y - p0.y) * t;
+              const lx2 = p1.x + (p2.x - p1.x) * t;
+              const ly2 = p1.y + (p2.y - p1.y) * t;
+              svgContent += `<line x1="${lx1.toFixed(1)}" y1="${ly1.toFixed(1)}" x2="${lx2.toFixed(1)}" y2="${ly2.toFixed(1)}" stroke="#0a0a0a" stroke-width="0.8" stroke-dasharray="2 2" stroke-opacity="0.45" />`;
+            }
+          }
+        });
+      }
+
+      // Draw Edges
+      model.edges.forEach(([a, b]) => {
+        const p1 = projected[a];
+        const p2 = projected[b];
+        const key = Math.min(a, b) + '_' + Math.max(a, b);
+        const faceInfo = edgeFaceMap.get(key);
+
+        let stroke = '#0a0a0a';
+        let strokeWidth = '2.4';
+        let strokeDash = '';
+        let strokeOpacity = '1';
+
+        if (faceInfo && faceInfo.length) {
+          const frontCount = faceInfo.filter(Boolean).length;
+          if (frontCount === 0) {
+            // Hidden back-edge
+            stroke = '#2b303a';
+            strokeWidth = '1.2';
+            strokeDash = 'stroke-dasharray="3.5 3"';
+            strokeOpacity = '0.35';
+          } else if (frontCount === 1) {
+            // Silhouette outer edge
+            stroke = '#0a0a0a';
+            strokeWidth = '2.4';
+          } else {
+            // Internal visible crease
+            stroke = '#0a0a0a';
+            strokeWidth = '1.8';
+          }
+        } else {
+          // Geometry without faces (sphere/cylinder rings)
+          const avgZ = (p1.z + p2.z) / 2;
+          stroke = '#0a0a0a';
+          strokeWidth = avgZ > 0 ? '1.8' : '1.1';
+          strokeOpacity = avgZ > 0 ? '0.9' : '0.32';
+        }
+
+        svgContent += `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-opacity="${strokeOpacity}" stroke-linecap="round" stroke-linejoin="round" ${strokeDash} />`;
+      });
+
+      // Draw Vertices (Points cloud or when points tool is active)
+      if (currentForm === 'points' || currentTool === 'points') {
+        projected.forEach(p => {
+          const radius = Math.max(1.8, Math.min(3.8, 2.8 + p.z * 0.015));
+          const opacity = Math.max(0.25, Math.min(1, 0.65 + p.z * 0.005));
+          svgContent += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${radius.toFixed(1)}" fill="#0a0a0a" opacity="${opacity.toFixed(2)}" />`;
+        });
+      }
+
+      svg.innerHTML = svgContent;
+    }
+
+    stage.addEventListener('pointerdown', e => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startYaw = yaw;
+      startPitch = pitch;
+      try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    stage.addEventListener('pointermove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      yaw = startYaw + dx * 0.012;
+      pitch = Math.max(0.12, Math.min(1.25, startPitch - dy * 0.008));
+      render();
+    });
+
+    const stopDrag = e => {
+      if (!isDragging) return;
+      isDragging = false;
+      try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+
+    stage.addEventListener('pointerup', stopDrag);
+    stage.addEventListener('pointercancel', stopDrag);
+
+    // Keyboard rotation
+    stage.setAttribute('tabindex', '0');
+    stage.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        yaw -= 5 * (Math.PI / 180);
+        render();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        yaw += 5 * (Math.PI / 180);
+        render();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        pitch = Math.min(1.25, pitch + 0.05);
+        render();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        pitch = Math.max(0.12, pitch - 0.05);
+        render();
+      }
+    });
+
+    // Form switching
+    formBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formBtns.forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentForm = btn.dataset.form || 'cube';
+        render();
+      });
+    });
+
+    // Tool switching
+    toolBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        toolBtns.forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentTool = btn.dataset.tool || 'rotation';
+        render();
+      });
+    });
+
+    // Lighting switching
+    const applyLighting = lightType => {
+      currentLight = lightType;
+      if (!shadow) return;
+      if (lightType === 'spot') {
+        shadow.style.filter = 'blur(14px)';
+        shadow.style.transform = 'scaleY(0.55) scaleX(1)';
+      } else if (lightType === 'area') {
+        shadow.style.filter = 'blur(22px)';
+        shadow.style.transform = 'scaleY(0.55) scaleX(1.3)';
+      } else if (lightType === 'target') {
+        shadow.style.filter = 'blur(12px)';
+        shadow.style.transform = 'translate(-18px, 4px) scaleY(0.55) scaleX(1.1)';
+      } else if (lightType === 'sun') {
+        shadow.style.filter = 'blur(8px)';
+        shadow.style.transform = 'translate(14px, 2px) scaleY(0.5) scaleX(1.05)';
+      }
+    };
+
+    lightCards.forEach(card => {
+      card.addEventListener('click', () => {
+        lightCards.forEach(c => c.classList.remove('is-active'));
+        card.classList.add('is-active');
+        applyLighting(card.dataset.light || 'spot');
+      });
+    });
+
+    // Brightness slider
+    if (brightnessInput && brightnessFill) {
+      brightnessInput.addEventListener('input', e => {
+        const val = Number(e.target.value);
+        brightnessFill.style.width = `${val}%`;
+        const stageEl = document.getElementById('vStage');
+        if (stageEl) {
+          stageEl.style.filter = `brightness(${(val / 72).toFixed(2)})`;
+        }
+      });
+    }
+
+    // Shadow Density slider
+    if (shadowInput && shadowFill) {
+      shadowInput.addEventListener('input', e => {
+        const val = Number(e.target.value);
+        shadowFill.style.width = `${val}%`;
+        if (shadow) {
+          shadow.style.opacity = `${(val / 100) * 0.9}`;
+        }
+      });
+    }
+
+    // Minimize & Close buttons
+    if (minBtn && vectorWindow) {
+      minBtn.addEventListener('click', () => {
+        vectorWindow.classList.toggle('is-minimized');
+      });
+    }
+    if (closeBtn && vectorWindow) {
+      closeBtn.addEventListener('click', () => {
+        yaw = 35 * (Math.PI / 180);
+        pitch = 28 * (Math.PI / 180);
+        formBtns.forEach(b => b.classList.toggle('is-active', b.dataset.form === 'cube'));
+        toolBtns.forEach(b => b.classList.toggle('is-active', b.dataset.tool === 'rotation'));
+        lightCards.forEach(c => c.classList.toggle('is-active', c.dataset.light === 'spot'));
+        currentForm = 'cube';
+        currentTool = 'rotation';
+        currentLight = 'spot';
+        applyLighting('spot');
+        if (brightnessInput && brightnessFill) {
+          brightnessInput.value = '72';
+          brightnessFill.style.width = '72%';
+          const stageEl = document.getElementById('vStage');
+          if (stageEl) stageEl.style.filter = '';
+        }
+        if (shadowInput && shadowFill) {
+          shadowInput.value = '65';
+          shadowFill.style.width = '65%';
+          if (shadow) shadow.style.opacity = '';
+        }
+        render();
+      });
+    }
+
+    // Initial render
+    render();
+  }
+
+  initVectorStudio();
 
   // SITE LOADER
   const siteLoader = document.getElementById('siteLoader');

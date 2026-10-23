@@ -463,6 +463,210 @@
     </div>
   </section>
 
+  <!-- NYXAND 3D VECTOR STUDIO -->
+  <section class="vector-studio-section" id="vector-studio">
+    <div class="section-header vector-header">
+      <div>
+        <p class="section-label">Vectors / 04</p>
+        <h2 class="section-title reveal">NYXAND 3D vector studio</h2>
+      </div>
+      <span class="vector-note">isometric vector engine · university lab</span>
+    </div>
+
+    <div class="vector-window" id="vectorWindow">
+      <!-- Window Top Header Bar -->
+      <header class="v-header">
+        <div class="v-date"><span>Sat</span> <span class="v-dash">—</span> <span>19 January</span></div>
+        <div class="v-controls">
+          <span class="v-year">2019</span>
+          <div class="v-window-actions">
+            <button type="button" class="v-btn-icon" aria-label="Minimize">—</button>
+            <button type="button" class="v-btn-icon" aria-label="Close">✕</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Canvas Stage Layout -->
+      <div class="v-stage-layout">
+        
+        <!-- Left Toolbar -->
+        <aside class="v-sidebar-left">
+          <div class="v-group">
+            <span class="v-label">Forms</span>
+            <div class="v-forms-row">
+              <button type="button" class="v-form-btn is-active" data-form="cube" aria-label="Cube form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>
+              </button>
+              <button type="button" class="v-form-btn" data-form="sphere" aria-label="Sphere form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3.5" ry="9"/></svg>
+              </button>
+              <button type="button" class="v-form-btn" data-form="pyramid" aria-label="Pyramid form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 19h20L12 3z"/><path d="M12 3v16"/></svg>
+              </button>
+              <button type="button" class="v-form-btn" data-form="cylinder" aria-label="Cylinder form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="8" ry="3"/><ellipse cx="12" cy="18" rx="8" ry="3"/><path d="M4 6v12M20 6v12"/></svg>
+              </button>
+              <button type="button" class="v-form-btn" data-form="points" aria-label="Points cloud">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="v-group">
+            <span class="v-label">Tools</span>
+            <div class="v-tools-list">
+              <button type="button" class="v-tool-btn" data-tool="render">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>
+                <span>Render</span>
+              </button>
+              <button type="button" class="v-tool-btn is-active" data-tool="rotation">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L4 6.5v9L12 20l8-4.5v-9L12 2z"/><path d="M7 11a5 5 0 0 1 10 0"/></svg>
+                <span>Rotation</span>
+              </button>
+              <button type="button" class="v-tool-btn" data-tool="texture">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+                <span>Texture</span>
+              </button>
+              <button type="button" class="v-tool-btn" data-tool="polygons">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 22 8.5 18 20 6 20 2 8.5 12 2"/></svg>
+                <span>Polygons</span>
+              </button>
+              <button type="button" class="v-tool-btn" data-tool="points">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><path d="M7 5h10M5 7v10M19 7v10M7 19h10"/></svg>
+                <span>Points</span>
+              </button>
+              <button type="button" class="v-tool-btn" data-tool="intrude">
+                <svg class="v-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17l6-6 4 4 6-6"/><path d="M14 5h6v6"/></svg>
+                <span>Intrude</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="v-axis-widget">
+            <svg viewBox="0 0 40 40" class="v-axis-svg">
+              <line x1="20" y1="20" x2="20" y2="4" stroke="#111" stroke-width="1.5" />
+              <text x="20" y="2" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="600">Y</text>
+              <line x1="20" y1="20" x2="6" y2="28" stroke="#111" stroke-width="1.5" />
+              <text x="3" y="32" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="600">X</text>
+              <line x1="20" y1="20" x2="34" y2="28" stroke="#111" stroke-width="1.5" />
+              <text x="38" y="32" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="600">Z</text>
+            </svg>
+          </div>
+        </aside>
+
+        <!-- Center 3D Stage -->
+        <main class="v-center-stage" id="vStage">
+          <!-- Perspective Floor Grid (SVG) -->
+          <svg class="v-floor-grid" viewBox="0 0 600 400" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="gridFade" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#7e8590" stop-opacity="0.3"/>
+                <stop offset="70%" stop-color="#7e8590" stop-opacity="0.08"/>
+                <stop offset="100%" stop-color="#7e8590" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g stroke="url(#gridFade)" stroke-width="1">
+              <line x1="300" y1="60" x2="-200" y2="400"/>
+              <line x1="300" y1="60" x2="-40" y2="400"/>
+              <line x1="300" y1="60" x2="100" y2="400"/>
+              <line x1="300" y1="60" x2="200" y2="400"/>
+              <line x1="300" y1="60" x2="270" y2="400"/>
+              <line x1="300" y1="60" x2="330" y2="400"/>
+              <line x1="300" y1="60" x2="400" y2="400"/>
+              <line x1="300" y1="60" x2="500" y2="400"/>
+              <line x1="300" y1="60" x2="640" y2="400"/>
+              <line x1="300" y1="60" x2="800" y2="400"/>
+              <ellipse cx="300" cy="270" rx="270" ry="70" fill="none"/>
+              <ellipse cx="300" cy="255" rx="220" ry="56" fill="none"/>
+              <ellipse cx="300" cy="242" rx="170" ry="44" fill="none"/>
+            </g>
+          </svg>
+
+          <!-- 3D Vector Canvas / Renderer -->
+          <div class="v-3d-container">
+            <div class="v-contact-shadow" id="vShadow"></div>
+
+            <svg class="v-rotation-ring" viewBox="0 0 360 140">
+              <ellipse cx="180" cy="70" rx="155" ry="52" fill="none" stroke="#7e8590" stroke-width="1.2" stroke-opacity="0.5"/>
+              <path id="vRingArc" d="M 135 120 A 155 52 0 0 0 225 120" fill="none" stroke="#0a0a0a" stroke-width="4.5" stroke-linecap="round"/>
+            </svg>
+
+            <svg class="v-wireframe-svg" id="vSvg" viewBox="0 0 320 320"></svg>
+          </div>
+
+          <div class="v-rotation-display">
+            <span class="v-rot-label">Rotation</span>
+            <div class="v-rot-value" id="vRotDeg">35°</div>
+          </div>
+        </main>
+
+        <!-- Right Controls: Lightning & Sliders -->
+        <aside class="v-sidebar-right">
+          <div class="v-group">
+            <span class="v-label">Lightning</span>
+            <div class="v-lighting-grid">
+              <button type="button" class="v-light-card is-active" data-light="spot">
+                <div class="v-light-preview v-light-spot">
+                  <div class="v-spot-glow"></div>
+                </div>
+                <span>Spot</span>
+              </button>
+              <button type="button" class="v-light-card" data-light="area">
+                <div class="v-light-preview v-light-area">
+                  <div class="v-dots-matrix"></div>
+                </div>
+                <span>Area</span>
+              </button>
+              <button type="button" class="v-light-card" data-light="target">
+                <div class="v-light-preview v-light-target">
+                  <span class="v-arrow-icon">↙</span>
+                </div>
+                <span>Target</span>
+              </button>
+              <button type="button" class="v-light-card" data-light="sun">
+                <div class="v-light-preview v-light-sun">
+                  <div class="v-sun-circle"></div>
+                </div>
+                <span>Sun</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="v-slider-group">
+            <div class="v-slider-header">
+              <span class="v-label">Brightness</span>
+            </div>
+            <div class="v-slider-track" id="vBrightnessSlider">
+              <div class="v-slider-fill" id="vBrightnessFill" style="width: 72%;"></div>
+              <input type="range" id="vBrightnessInput" min="20" max="100" value="72" aria-label="Brightness" class="v-range-input" />
+            </div>
+          </div>
+
+          <div class="v-slider-group">
+            <div class="v-slider-header">
+              <span class="v-label">Shadow Density</span>
+            </div>
+            <div class="v-slider-track" id="vShadowSlider">
+              <div class="v-slider-fill" id="vShadowFill" style="width: 65%;"></div>
+              <input type="range" id="vShadowInput" min="0" max="100" value="65" aria-label="Shadow Density" class="v-range-input" />
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- Bottom Status Bar -->
+      <footer class="v-footer">
+        <div class="v-stamp">
+          <span>END</span>
+          <span>IS</span>
+          <span>UI .</span>
+        </div>
+        <div class="v-number">013</div>
+      </footer>
+    </div>
+  </section>
+
   <!-- EXPERIENCE -->
   <section class="experience-section" id="experience">
     <div class="section-header">
