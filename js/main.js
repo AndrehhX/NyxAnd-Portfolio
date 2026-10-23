@@ -143,9 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getAvailability = () => {
-      const now = new Date();
-      const day = now.getDay();
-      const hour = now.getHours();
+      // Horario local en Guatemala (UTC-6)
+      const gtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Guatemala' }));
+      const day = gtDate.getDay();
+      const hour = gtDate.getHours();
       const isWeekend = day === 0 || day === 6;
       const isSleeping = !isWeekend && (hour >= 21 || hour < 4);
 
@@ -196,6 +197,27 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setInterval(updateClocks, 1000);
     window.setInterval(updateAvailability, 60000);
 
+    const cacheKey = 'nyxand_github_commit_cache';
+    const applyCommitData = latest => {
+      if (!githubActivity) return;
+      if (!latest) {
+        githubActivity.textContent = 'Sin actividad pública reciente.';
+        if (githubEventTime) githubEventTime.textContent = 'Fecha: no hay un evento reciente';
+        if (githubEventMessage) githubEventMessage.textContent = 'Commit: no disponible';
+        return;
+      }
+      githubActivity.textContent = 'Último push · AndrehhX/NyxAnd-Portfolio';
+      const commitDate = latest.commit?.author?.date || latest.commit?.committer?.date;
+      if (githubEventTime) githubEventTime.textContent = `Fecha: ${formatGithubDate(commitDate)}`;
+      if (githubEventMessage) githubEventMessage.textContent = `Commit: ${getCommitMessage(null, latest)}`;
+    };
+
+    // Render from cache first if available
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) applyCommitData(JSON.parse(cached));
+    } catch (_) {}
+
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 10000);
 
@@ -209,20 +231,15 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .then(commits => {
         const latest = Array.isArray(commits) ? commits[0] : null;
-        if (!githubActivity) return;
-        if (!latest) {
-          githubActivity.textContent = 'Sin actividad pública reciente.';
-          if (githubEventTime) githubEventTime.textContent = 'Fecha: no hay un evento reciente';
-          if (githubEventMessage) githubEventMessage.textContent = 'Commit: no disponible';
-          return;
+        applyCommitData(latest);
+        if (latest) {
+          try { localStorage.setItem(cacheKey, JSON.stringify(latest)); } catch (_) {}
         }
-
-        githubActivity.textContent = 'Último push · AndrehhX/NyxAnd-Portfolio';
-        const commitDate = latest.commit?.author?.date || latest.commit?.committer?.date;
-        if (githubEventTime) githubEventTime.textContent = `Fecha: ${formatGithubDate(commitDate)}`;
-        if (githubEventMessage) githubEventMessage.textContent = `Commit: ${getCommitMessage(null, latest)}`;
       })
       .catch(() => {
+        try {
+          if (localStorage.getItem(cacheKey)) return;
+        } catch (_) {}
         if (githubActivity) githubActivity.textContent = 'Actividad pública no disponible ahora.';
         if (githubEventTime) githubEventTime.textContent = 'Fecha: pendiente de respuesta';
         if (githubEventMessage) githubEventMessage.textContent = 'Commit: pendiente de respuesta';
@@ -380,9 +397,12 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
       !href.startsWith('#') &&
       !href.startsWith('http') &&
       !href.startsWith('mailto') &&
-      !href.startsWith('tel')
+      !href.startsWith('tel') &&
+      !link.hasAttribute('download') &&
+      link.getAttribute('target') !== '_blank'
     ) {
       link.addEventListener('click', e => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         e.preventDefault();
         overlay.classList.add('entering');
         setTimeout(() => { window.location.href = href; }, 400);
@@ -492,46 +512,6 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
   });
 
 
-  // ── COUNTER ANIMATION ────────────────────
-  function animateCounter(el) {
-    const target = parseInt(el.dataset.target, 10);
-    if (prefersReducedMotion) {
-      el.textContent = target;
-      return;
-    }
-    let start = 0;
-    const duration = 1200;
-    const startTime = performance.now();
-
-    function update(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease out cubic
-      const current = Math.round(eased * target);
-      el.textContent = current;
-      if (progress < 1) requestAnimationFrame(update);
-    }
-    requestAnimationFrame(update);
-  }
-
-  const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !entry.target.dataset.counted) {
-        entry.target.dataset.counted = 'true';
-        animateCounter(entry.target);
-      }
-    });
-  }, { threshold: 0.5 });
-
-  document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
-
-
-  // ── QUICK LINKS ACTIVE STATE ──────────────
-  document.querySelectorAll('.ql-item').forEach(item => {
-    item.addEventListener('mouseover', () => {
-      item.querySelector('.ql-arrow').style.transition = 'transform 0.2s ease';
-    });
-  });
 
 
   // ── CARD TILT EFFECT ─────────────────────
@@ -567,25 +547,6 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
   });
 
 
-  // ── BLOG STACK HOVER ─────────────────────
-  const blogStack = document.querySelector('.blog-stack');
-  if (blogStack) {
-    blogStack.addEventListener('mouseenter', () => {
-      const b2 = blogStack.querySelector('.bc-2');
-      const b3 = blogStack.querySelector('.bc-3');
-      if (b2) b2.style.transform = 'translate(24px, 24px) rotate(-2deg)';
-      if (b3) b3.style.transform = 'translate(46px, 46px) rotate(3deg)';
-    });
-    blogStack.addEventListener('mouseleave', () => {
-      const b2 = blogStack.querySelector('.bc-2');
-      const b3 = blogStack.querySelector('.bc-3');
-      if (b2) b2.style.transform = '';
-      if (b3) b3.style.transform = '';
-    });
-    blogStack.querySelectorAll('.bc-2, .bc-3').forEach(el => {
-      el.style.transition = 'transform 0.4s cubic-bezier(0.4,0,0.2,1)';
-    });
-  }
 
 
   // ── SECTION TITLE LETTER ANIMATE ─────────
@@ -611,16 +572,5 @@ body{margin:0;min-height:100vh;padding:24px;box-sizing:border-box;background:#f4
   });
 
 
-  // ── GRAIN OVERLAY FOR CTA ─────────────────
-  const cta = document.querySelector('.cta-section');
-  if (cta) {
-    cta.addEventListener('mousemove', e => {
-      const rect = cta.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      cta.style.setProperty('--mx', x + '%');
-      cta.style.setProperty('--my', y + '%');
-    });
-  }
 
 });
